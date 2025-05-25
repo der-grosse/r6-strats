@@ -18,6 +18,9 @@ You can access the tool youself at [r6.dorf-cloud.de](https://r6.dorf-cloud.de).
 - add new map blueprints
 - add toggle for floors of map
 - add bombsite indicator
+- zoom slider
+- scroll bar
+- make notes / upload screenshots for specific assets
 
 ### Strat View
 
