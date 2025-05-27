@@ -13,6 +13,8 @@ import { cn } from "@/src/utils";
 import { useCallback, useMemo, useState } from "react";
 import ColorPickerDialog from "../ColorPickerDialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import PrimaryGadgetIcon from "../PrimaryGadgetIcon";
+import GadgetIcon from "../GadgetIcon";
 
 export default function useMountAssets(
   { team, operators }: { team: Team; operators: PickedOperator[] },
@@ -165,6 +167,8 @@ export default function useMountAssets(
         switch (asset.type) {
           case "operator":
             return <Operator asset={asset} team={team} operators={operators} />;
+          case "gadget":
+            return <GadgetIcon id={asset.gadget} className="h-full w-full" />;
           default:
             return <>Missing Asset</>;
         }
