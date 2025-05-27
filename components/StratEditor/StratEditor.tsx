@@ -2,7 +2,7 @@
 import { useCallback, useMemo, useState } from "react";
 import MAPS from "@/src/static/maps";
 import StratEditorLayout from "./Layout";
-import StratEditorCanvas from "./Canvas";
+import StratEditorCanvas, { ASSET_BASE_SIZE, CANVAS_BASE_SIZE } from "./Canvas";
 import useMountAssets from "./Assets";
 import {
   addAsset,
@@ -52,10 +52,10 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
     <StratEditorLayout
       onAssetAdd={(asset) => {
         const placedAsset = {
+          size: { width: ASSET_BASE_SIZE, height: ASSET_BASE_SIZE },
+          position: { x: CANVAS_BASE_SIZE / 20, y: CANVAS_BASE_SIZE / 20 },
           ...asset,
           id: `${asset.id}-${getHightestID(assets) + 1}` as any,
-          size: { width: 20, height: 20 },
-          position: { x: 590, y: 440 },
         };
         setAssets((assets) => [...assets, placedAsset]);
         addAsset(strat.id, placedAsset);

@@ -9,9 +9,10 @@ import { ScrollArea } from "../../ui/scroll-area";
 import { Button } from "../../ui/button";
 import PrimaryGadgetIcon from "@/components/PrimaryGadgetIcon";
 import SecondaryGadgetIcon from "@/components/SecondaryGadgetIcon";
+import { ASSET_BASE_SIZE } from "../Canvas";
 
 export interface StratEditorGadgetsSidebarProps {
-  onAssetAdd: (asset: Asset) => void;
+  onAssetAdd: (asset: Asset & Partial<PlacedAsset>) => void;
   operators: PickedOperator[];
 }
 
@@ -30,7 +31,13 @@ export default function StratEditorGadgetsSidebar(
     .filter(Boolean);
   const selectedPrimaryGadetIDs = selectedOperators
     .map((op) =>
-      "gadget" in op ? { id: op.gadget, pickedOPID: op.pickedOPID } : undefined!
+      "gadget" in op
+        ? {
+            id: op.gadget,
+            pickedOPID: op.pickedOPID,
+            gadget: DEFENDER_PRIMARY_GADGETS.find((g) => g.id === op.gadget),
+          }
+        : undefined!
     )
     .filter(Boolean);
   const selectedSecondaryGadgetIDs = selectedOperators
@@ -39,6 +46,7 @@ export default function StratEditorGadgetsSidebar(
         ? op.secondaryGadgets?.map((g) => ({
             id: g,
             pickedOPID: op.pickedOPID,
+            gadget: DEFENDER_SECONDARY_GADGETS.find((sg) => sg.id === g),
           })) ?? []
         : []
     )
@@ -72,6 +80,11 @@ export default function StratEditorGadgetsSidebar(
                       type: "gadget",
                       gadget: gadget.id,
                       pickedOPID: gadget.pickedOPID,
+                      size: {
+                        width: ASSET_BASE_SIZE,
+                        height:
+                          ASSET_BASE_SIZE * (gadget.gadget?.aspectRatio ?? 1),
+                      },
                     });
                   }}
                 >
@@ -96,6 +109,11 @@ export default function StratEditorGadgetsSidebar(
                       type: "gadget",
                       gadget: gadget.id,
                       pickedOPID: gadget.pickedOPID,
+                      size: {
+                        width: ASSET_BASE_SIZE,
+                        height:
+                          ASSET_BASE_SIZE * (gadget.gadget?.aspectRatio ?? 1),
+                      },
                     });
                   }}
                 >
@@ -117,6 +135,10 @@ export default function StratEditorGadgetsSidebar(
                   id: `gadget-${gadget}`,
                   type: "gadget",
                   gadget: gadget.id,
+                  size: {
+                    width: ASSET_BASE_SIZE,
+                    height: ASSET_BASE_SIZE * (gadget.aspectRatio ?? 1),
+                  },
                 });
               }}
             >
@@ -136,6 +158,10 @@ export default function StratEditorGadgetsSidebar(
                   id: `gadget-${gadget}`,
                   type: "gadget",
                   gadget: gadget.id,
+                  size: {
+                    width: ASSET_BASE_SIZE,
+                    height: ASSET_BASE_SIZE * (gadget.aspectRatio ?? 1),
+                  },
                 });
               }}
             >

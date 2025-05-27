@@ -15,6 +15,7 @@ import ColorPickerDialog from "../ColorPickerDialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import PrimaryGadgetIcon from "../PrimaryGadgetIcon";
 import GadgetIcon from "../GadgetIcon";
+import AssetOutline from "./assets/AssetOutline";
 
 export default function useMountAssets(
   { team, operators }: { team: Team; operators: PickedOperator[] },
@@ -168,7 +169,11 @@ export default function useMountAssets(
           case "operator":
             return <Operator asset={asset} team={team} operators={operators} />;
           case "gadget":
-            return <GadgetIcon id={asset.gadget} className="h-full w-full" />;
+            return (
+              <AssetOutline asset={asset} team={team} operators={operators}>
+                <GadgetIcon id={asset.gadget} className="h-full w-full" />
+              </AssetOutline>
+            );
           default:
             return <>Missing Asset</>;
         }

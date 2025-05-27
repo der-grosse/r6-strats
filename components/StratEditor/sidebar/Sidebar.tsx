@@ -26,7 +26,7 @@ import StratEditorPlayerOperatorsSidebar from "./PlayerOPs";
 import config from "@/src/static/config";
 
 export interface StratEditorSidebarProps {
-  onAssetAdd: (asset: Asset) => void;
+  onAssetAdd: (asset: Asset & Partial<PlacedAsset>) => void;
   strat: Strat;
   team: Team;
 }

@@ -20,12 +20,13 @@ interface CanvasProps<A extends Asset> {
 }
 
 // should be a multiple of 4 and 3 to have nicer numbers for aspect ratio
-const BASE_SIZE = 1200;
+export const CANVAS_BASE_SIZE = 2400;
 const MIN_ZOOM_FACTOR = 0.15;
-const MIN_ASSET_SIZE = 10;
-const DRAG_DEADZONE = 5;
+const MIN_ASSET_SIZE = 8;
+const DRAG_DEADZONE = 1;
 const ZOOM_MODIFIER = 0.004;
 const SCROLL_MODIFIER = 0.5;
+export const ASSET_BASE_SIZE = 20;
 
 export default function StratEditorCanvas<A extends Asset>({
   map,
@@ -41,15 +42,15 @@ export default function StratEditorCanvas<A extends Asset>({
   const svgRef = useRef<SVGSVGElement>(null);
 
   const [viewBox, setViewBox] = useState({
-    width: BASE_SIZE,
-    height: (BASE_SIZE / 4) * 3,
+    width: CANVAS_BASE_SIZE,
+    height: (CANVAS_BASE_SIZE / 4) * 3,
   });
   // Calculate viewBox based on map dimensions
   useEffect(() => {
     if (!map) return;
     const aspectRatio =
       map.floors.length === 1 || map.floors.length > 2 ? 4 / 3 : 8 / 3;
-    const width = BASE_SIZE;
+    const width = CANVAS_BASE_SIZE;
     const height = width / aspectRatio;
     setViewBox({ width, height });
   }, [map]);

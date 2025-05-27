@@ -25,7 +25,7 @@ export default function OperatorIcon(props: OperatorIconProps) {
     <img
       src={img}
       alt={op?.name}
-      className={cn("w-8 h-8", props.className)}
+      className={cn("w-8 h-8 object-contain", props.className)}
       draggable={false}
     />
   );

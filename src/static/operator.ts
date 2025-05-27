@@ -510,12 +510,14 @@ export const DEFENDER_PRIMARY_GADGETS = [
     name: "Armor Panel",
     icon: ["/gadgets/castle.png"],
     count: 4,
+    aspectRatio: 0.5,
   },
   {
     id: "entry_denial_device",
     name: "Entry Denial Device",
     icon: ["/gadgets/edd.png"],
     count: 5,
+    aspectRatio: 0.5,
   },
   {
     id: "shumikha_launcher",
@@ -558,6 +560,7 @@ export const DEFENDER_PRIMARY_GADGETS = [
     name: "Black Mirror",
     icon: ["/gadgets/mira.png"],
     count: 2,
+    aspectRatio: 0.5,
   },
   {
     id: "gu_mine",
@@ -624,6 +627,7 @@ export const DEFENDER_PRIMARY_GADGETS = [
     name: "Surya Gate",
     icon: ["/gadgets/surya.png"],
     count: 3,
+    aspectRatio: 0.5,
   },
   {
     id: "kona_station",
@@ -642,6 +646,7 @@ export const DEFENDER_PRIMARY_GADGETS = [
     name: "Kiba Barrier",
     icon: ["/gadgets/kiba.png"],
     count: 5,
+    aspectRatio: 0.5,
   },
   {
     id: "fenrir",
@@ -661,7 +666,13 @@ export const DEFENDER_PRIMARY_GADGETS = [
     icon: ["/gadgets/skopi.png"],
     count: 1,
   },
-] as const;
+] satisfies readonly {
+  id: DefenderPrimaryGadget;
+  name: string;
+  icon: string[];
+  count?: number;
+  aspectRatio?: number;
+}[];
 
 export type DefenderPrimaryGadget = Extract<
   (typeof DEFENDERS)[number],
@@ -692,6 +703,7 @@ export const DEFENDER_SECONDARY_GADGETS = [
     name: "Observation Blocker",
     icon: ["/gadgets/obs_block.png"],
     count: 3,
+    aspectRatio: 0.5,
   },
   {
     id: "impact_grenade",
@@ -711,7 +723,13 @@ export const DEFENDER_SECONDARY_GADGETS = [
     icon: ["/gadgets/proxy.png"],
     count: 2,
   },
-] as const;
+] satisfies readonly {
+  id: string;
+  name: string;
+  icon: string[];
+  count?: number;
+  aspectRatio?: number;
+}[];
 
 export type DefenderSecondaryGadget =
   (typeof DEFENDER_SECONDARY_GADGETS)[number]["id"];

@@ -7,25 +7,29 @@ You can access the tool youself at [r6.dorf-cloud.de](https://r6.dorf-cloud.de).
 
 ### Technical
 
-- deploy with new postgres database
-- use better docker image for lighter container
+- use websocket instead of polling for active strat updates
 
 ### Editor
 
 - add layout assets to editor
 - make doors, windows and walls clickable to easily add assets
-- add new gadget assets
+- edit history with undo/redo
+- click and drag for selecting mulptiple elements at once
+- add default color to operators since they might not be easily visible otherwise
+- edit attributes of multiple assets at once
 - add new map blueprints
 - add toggle for floors of map
-- add bombsite indicator
 - zoom slider
 - scroll bars when zoomed in
 - make notes / upload screenshots for specific assets
+- add bombsite indicator
+- somehow add alternatives for strat
 
 ### Strat View
 
 - show operator to pick with secondary gadget and if you should pick shotgun
 - add settings to toggle what setup is shown (only yours, other setup grayed out, ...)
+- show description of strat
 
 ### User Management
 
