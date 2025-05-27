@@ -20,7 +20,7 @@ class StratsDBClass {
         operator: null,
         positionID: null,
         stratsID: stratID,
-        isPowerOP: 0,
+        isPowerOP: false,
       }))
     );
 
@@ -127,7 +127,7 @@ class StratsDBClass {
           operator: op.operator,
           stratsID: updatedStrat.id,
           positionID: op.positionID,
-          isPowerOP: op.isPowerOP ? 1 : 0,
+          isPowerOP: op.isPowerOP ?? false,
         });
       }
     }
@@ -145,7 +145,7 @@ class StratsDBClass {
           gadget: asset.type === "gadget" ? asset.gadget : undefined,
           operator: asset.type === "operator" ? asset.operator : undefined,
           side: asset.type === "operator" ? asset.side : undefined,
-          showIcon: asset.type === "operator" ? (asset.showIcon ? 1 : 0) : 0,
+          iconType: asset.type === "operator" ? asset.iconType : undefined,
           rotate: asset.type === "rotate" ? asset.variant : undefined,
           pickedOPID: asset.pickedOPID,
           width: asset.size.width,
@@ -175,7 +175,7 @@ class StratsDBClass {
         gadget: asset.type === "gadget" ? asset.gadget : undefined,
         operator: asset.type === "operator" ? asset.operator : undefined,
         side: asset.type === "operator" ? asset.side : undefined,
-        showIcon: asset.type === "operator" ? (asset.showIcon ? 1 : 0) : 0,
+        iconType: asset.type === "operator" ? asset.iconType : undefined,
         rotate: asset.type === "rotate" ? asset.variant : undefined,
         pickedOPID: asset.pickedOPID,
         width: asset.size.width,
@@ -202,7 +202,7 @@ class StratsDBClass {
       gadget: asset.type === "gadget" ? asset.gadget : undefined,
       operator: asset.type === "operator" ? asset.operator : undefined,
       side: asset.type === "operator" ? asset.side : undefined,
-      showIcon: asset.type === "operator" ? (asset.showIcon ? 1 : 0) : 0,
+      iconType: asset.type === "operator" ? asset.iconType : undefined,
       rotate: asset.type === "rotate" ? asset.variant : undefined,
       pickedOPID: asset.pickedOPID,
       width: asset.size.width,
@@ -258,7 +258,7 @@ class StratsDBClass {
       type: string;
       operator: string | null;
       side: "att" | "def" | null;
-      showIcon: number | null;
+      iconType: "default" | "hidden" | "bw" | null;
       gadget: string | null;
       rotate: string | null;
       width: number;
@@ -269,7 +269,7 @@ class StratsDBClass {
       operator: string | null;
       positionID: number | null;
       stratsID: number;
-      isPowerOP: number;
+      isPowerOP: boolean;
     }[];
   }): Strat[] {
     const parsedStrats: Strat[] = [];
@@ -296,7 +296,7 @@ class StratsDBClass {
                 return {
                   operator: r.operator,
                   side: r.side,
-                  showIcon: r.showIcon === 1,
+                  iconType: r.iconType,
                 };
               case "rotate":
                 return {
@@ -313,7 +313,7 @@ class StratsDBClass {
           id: r.id,
           operator: r.operator ?? undefined,
           positionID: r.positionID ?? undefined,
-          isPowerOP: r.isPowerOP === 1,
+          isPowerOP: r.isPowerOP,
         }));
 
       parsedStrats.push({

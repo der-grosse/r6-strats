@@ -1,5 +1,6 @@
 import {
   integer,
+  numeric,
   primaryKey,
   pgTable,
   text,
@@ -89,10 +90,10 @@ export const placedAssets = pgTable("placed_assets", {
     .notNull()
     .references(() => strats.id, { onDelete: "cascade" }),
   assetID: text("asset_id").notNull(),
-  positionX: integer("position_x").notNull(),
-  positionY: integer("position_y").notNull(),
-  width: integer("width").notNull(),
-  height: integer("height").notNull(),
+  positionX: numeric("position_x", { mode: "number" }).notNull(),
+  positionY: numeric("position_y", { mode: "number" }).notNull(),
+  width: numeric("width", { mode: "number" }).notNull(),
+  height: numeric("height", { mode: "number" }).notNull(),
   pickedOPID: integer("picked_op_id").references(() => pickedOperators.id, {
     onDelete: "set null",
     onUpdate: "cascade",
@@ -103,7 +104,9 @@ export const placedAssets = pgTable("placed_assets", {
   // Operator type
   operator: text("operator"),
   side: text("side", { enum: ["att", "def"] }),
-  showIcon: integer("show_icon"),
+  iconType: text("icon_type", {
+    enum: ["default", "hidden", "bw"],
+  }),
 
   // Gadget type
   gadget: text("gadget"),
@@ -122,5 +125,5 @@ export const pickedOperators = pgTable("picked_operators", {
   stratsID: integer("strats_id")
     .notNull()
     .references(() => strats.id, { onDelete: "cascade" }),
-  isPowerOP: integer("is_power_op").notNull(),
+  isPowerOP: boolean("is_power_op").notNull(),
 });

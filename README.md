@@ -19,7 +19,7 @@ You can access the tool youself at [r6.dorf-cloud.de](https://r6.dorf-cloud.de).
 - add toggle for floors of map
 - add bombsite indicator
 - zoom slider
-- scroll bar
+- scroll bars when zoomed in
 - make notes / upload screenshots for specific assets
 
 ### Strat View
@@ -31,3 +31,7 @@ You can access the tool youself at [r6.dorf-cloud.de](https://r6.dorf-cloud.de).
 
 - Reset password
 - Add Email to user
+
+### Misc
+
+- add default strats

@@ -25,10 +25,11 @@ export default function Operator(props: OperatorProps) {
   })();
   return (
     <div className="w-[130%] h-[130%] m-[-15%] relative">
-      {props.asset.showIcon && (
+      {props.asset.iconType !== "hidden" && (
         <OperatorIcon
           op={props.asset.operator}
           className="w-full h-full absolute z-10"
+          variant={props.asset.iconType}
         />
       )}
       <div

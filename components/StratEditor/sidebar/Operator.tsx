@@ -49,7 +49,7 @@ export default function StratEditorOperatorsSidebar(
                       operator: op.name,
                       type: "operator",
                       side: "def",
-                      showIcon: true,
+                      iconType: "bw",
                       pickedOPID: op.pickedOPID,
                     });
                   }}
@@ -71,7 +71,7 @@ export default function StratEditorOperatorsSidebar(
                   operator: op.name,
                   type: "operator",
                   side: "def",
-                  showIcon: true,
+                  iconType: "bw",
                 });
               }}
             >
@@ -92,7 +92,7 @@ export default function StratEditorOperatorsSidebar(
                       operator: op.name,
                       type: "operator",
                       side: "def",
-                      showIcon: true,
+                      iconType: "bw",
                     });
                   }}
                 >

@@ -15,7 +15,7 @@ export default function PrimaryGadgetIcon(props: PrimaryGadgetIconProps) {
     <img
       src={icon}
       alt={gadget?.name ?? props.id}
-      className={cn("w-8 h-8", props.className)}
+      className={cn("w-8 h-8 object-contain", props.className)}
       draggable={false}
     />
   );

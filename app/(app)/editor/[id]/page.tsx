@@ -23,7 +23,7 @@ export default async function StratEditorPage({
   params: Promise<{ id: string }>;
 }>) {
   const id = Number((await paramsRaw).id);
-  const strat = await getStrat(id);
+  const strat = id && !isNaN(id) ? await getStrat(id) : null;
   const team = await getTeam();
 
   if (!strat) {

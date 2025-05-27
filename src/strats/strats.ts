@@ -48,7 +48,7 @@ export async function createStrat(data: {
 
     await db.insert(pickedOperators).values(
       Array.from({ length: PLAYER_COUNT }, (_, i) => ({
-        isPowerOP: 0,
+        isPowerOP: false,
         operator: null,
         positionID: positions[i]?.id,
         stratsID: newStrat.id,
@@ -168,9 +168,10 @@ export async function updatePickedOperator(
   if (!strat) throw new Error("Strat not found");
   if (strat.teamID !== user.teamID)
     throw new Error("Strat must be in the same team");
-  db.update(pickedOperators)
+  await db
+    .update(pickedOperators)
     .set({
-      isPowerOP: operator.isPowerOP ? 1 : 0,
+      isPowerOP: operator.isPowerOP,
       operator: operator.operator,
       positionID: operator.positionID,
       stratsID: stratID,

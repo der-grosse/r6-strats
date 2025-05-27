@@ -1,4 +1,12 @@
-import { Brush, Eye, EyeOff, GripVertical, Trash } from "lucide-react";
+import {
+  Brush,
+  Eye,
+  EyeOff,
+  GripVertical,
+  Trash,
+  UserRound,
+  UserRoundPen,
+} from "lucide-react";
 import { Button } from "../ui/button";
 import Operator from "./assets/Operator";
 import { cn } from "@/src/utils";
@@ -38,6 +46,7 @@ export default function useMountAssets(
               const pickedOperatorOfMember = operators?.find(
                 (op) => op.positionID === member.positionID
               );
+              if (!pickedOperatorOfMember) return null;
               return (
                 <Tooltip delayDuration={200} key={member.id}>
                   <TooltipTrigger asChild>
@@ -104,11 +113,17 @@ export default function useMountAssets(
               onClick={() => {
                 updateAsset({
                   ...asset,
-                  showIcon: !asset.showIcon,
+                  iconType: getNextOperatorIconType(asset.iconType),
                 });
               }}
             >
-              {asset.showIcon ? <Eye /> : <EyeOff />}
+              {asset.iconType === "default" ? (
+                <UserRoundPen />
+              ) : asset.iconType === "bw" ? (
+                <UserRound />
+              ) : (
+                <EyeOff />
+              )}
             </Button>
           )}
           <Button
@@ -165,4 +180,19 @@ export default function useMountAssets(
   );
 
   return { renderAsset, UI: dialog };
+}
+
+function getNextOperatorIconType(
+  current: "default" | "hidden" | "bw" | undefined | null
+): "default" | "hidden" | "bw" {
+  switch (current) {
+    case "default":
+      return "hidden";
+    case "hidden":
+      return "bw";
+    case "bw":
+      return "default";
+    default:
+      return "default";
+  }
 }

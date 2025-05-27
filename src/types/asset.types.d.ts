@@ -40,7 +40,7 @@ interface OperatorAsset {
   type: "operator";
   operator: string;
   side: "att" | "def";
-  showIcon: boolean;
+  iconType: "default" | "hidden" | "bw";
 }
 
 interface GadgetAsset {

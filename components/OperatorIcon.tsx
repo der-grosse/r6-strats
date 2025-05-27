@@ -8,6 +8,7 @@ import { cn } from "@/src/utils";
 
 export interface OperatorIconProps {
   op: Attacker | Defender | string;
+  variant?: "default" | "bw";
   className?: string;
 }
 
@@ -18,9 +19,11 @@ export default function OperatorIcon(props: OperatorIconProps) {
     typeof props.op === "string"
       ? OPERATORS.find((op) => op.name === props.op)
       : props.op;
+  const img =
+    props.variant === "bw" && op && "iconBW" in op ? op.iconBW : op?.icon;
   return (
     <img
-      src={op?.icon}
+      src={img}
       alt={op?.name}
       className={cn("w-8 h-8", props.className)}
       draggable={false}

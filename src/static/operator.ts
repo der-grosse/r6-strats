@@ -161,6 +161,7 @@ export const ATTACKERS = [
 export type Defender = {
   name: string;
   icon: string;
+  iconBW: string;
   gadget?: PrimaryGadget;
   secondaryGadgets?: DefenderSecondaryGadget[];
   hasPrimaryShotgun?: boolean;
@@ -176,6 +177,7 @@ export const DEFENDERS = [
   {
     name: "Sentry",
     icon: "/ops/def/sentry.webp",
+    iconBW: "/ops/def/sentry_bw.png",
     secondaryGadgets: [
       "deployable_shield",
       "bulletproof_camera",
@@ -189,6 +191,7 @@ export const DEFENDERS = [
   {
     name: "Smoke",
     icon: "/ops/def/smoke.webp",
+    iconBW: "/ops/def/smoke_bw.png",
     gadget: "toxic_canister",
     secondaryGadgets: ["barbed_wire", "proximity_alarm"],
     hasPrimaryShotgun: true,
@@ -196,6 +199,7 @@ export const DEFENDERS = [
   {
     name: "Mute",
     icon: "/ops/def/mute.webp",
+    iconBW: "/ops/def/mute_bw.png",
     gadget: "jammer",
     secondaryGadgets: ["c4", "bulletproof_camera"],
     hasPrimaryShotgun: true,
@@ -203,6 +207,7 @@ export const DEFENDERS = [
   {
     name: "Castle",
     icon: "/ops/def/castle.webp",
+    iconBW: "/ops/def/castle_bw.png",
     gadget: "armor_panel",
     secondaryGadgets: ["bulletproof_camera", "barbed_wire"],
     hasPrimaryShotgun: true,
@@ -211,12 +216,14 @@ export const DEFENDERS = [
   {
     name: "Pulse",
     icon: "/ops/def/pulse.webp",
+    iconBW: "/ops/def/pulse_bw.png",
     secondaryGadgets: ["c4", "deployable_shield", "observation_blocker"],
     hasPrimaryShotgun: true,
   },
   {
     name: "Doc",
     icon: "/ops/def/doc.webp",
+    iconBW: "/ops/def/doc_bw.png",
     secondaryGadgets: ["bulletproof_camera", "barbed_wire"],
     hasPrimaryShotgun: true,
     hasSecondaryShotgun: true,
@@ -224,6 +231,7 @@ export const DEFENDERS = [
   {
     name: "Rook",
     icon: "/ops/def/rook.webp",
+    iconBW: "/ops/def/rook_bw.png",
     secondaryGadgets: [
       "proximity_alarm",
       "impact_grenade",
@@ -234,6 +242,7 @@ export const DEFENDERS = [
   {
     name: "Kapkan",
     icon: "/ops/def/kapkan.webp",
+    iconBW: "/ops/def/kapkan_bw.png",
     gadget: "entry_denial_device",
     secondaryGadgets: ["barbed_wire", "bulletproof_camera"],
     hasPrimaryShotgun: true,
@@ -241,6 +250,7 @@ export const DEFENDERS = [
   {
     name: "Tachanka",
     icon: "/ops/def/tachanka.webp",
+    iconBW: "/ops/def/tachanka_bw.png",
     gadget: "shumikha_launcher",
     secondaryGadgets: ["deployable_shield", "barbed_wire", "proximity_alarm"],
     hasPrimaryShotgun: true,
@@ -248,6 +258,7 @@ export const DEFENDERS = [
   {
     name: "Jäger",
     icon: "/ops/def/jager.webp",
+    iconBW: "/ops/def/jager_bw.png",
     gadget: "active_defense_system",
     secondaryGadgets: ["bulletproof_camera", "observation_blocker"],
     hasPrimaryShotgun: true,
@@ -255,6 +266,7 @@ export const DEFENDERS = [
   {
     name: "Bandit",
     icon: "/ops/def/bandit.webp",
+    iconBW: "/ops/def/bandit_bw.png",
     gadget: "shock_wire",
     secondaryGadgets: ["c4", "barbed_wire"],
     hasPrimaryShotgun: true,
@@ -262,6 +274,7 @@ export const DEFENDERS = [
   {
     name: "Frost",
     icon: "/ops/def/frost.webp",
+    iconBW: "/ops/def/frost_bw.png",
     gadget: "welcome_mat",
     secondaryGadgets: ["deployable_shield", "bulletproof_camera"],
     hasPrimaryShotgun: true,
@@ -270,6 +283,7 @@ export const DEFENDERS = [
   {
     name: "Valkyrie",
     icon: "/ops/def/valkyrie.webp",
+    iconBW: "/ops/def/valkyrie_bw.png",
     gadget: "black_eye",
     secondaryGadgets: ["c4", "impact_grenade"],
     hasPrimaryShotgun: true,
@@ -277,6 +291,7 @@ export const DEFENDERS = [
   {
     name: "Caveira",
     icon: "/ops/def/caveira.webp",
+    iconBW: "/ops/def/caveira_bw.png",
     secondaryGadgets: [
       "impact_grenade",
       "proximity_alarm",
@@ -287,6 +302,7 @@ export const DEFENDERS = [
   {
     name: "Echo",
     icon: "/ops/def/echo.webp",
+    iconBW: "/ops/def/echo_bw.png",
     gadget: "yokai",
     secondaryGadgets: ["deployable_shield", "impact_grenade"],
     hasPrimaryShotgun: true,
@@ -294,6 +310,7 @@ export const DEFENDERS = [
   {
     name: "Mira",
     icon: "/ops/def/mira.webp",
+    iconBW: "/ops/def/mira_bw.png",
     gadget: "black_mirror",
     secondaryGadgets: ["c4", "proximity_alarm"],
     hasPrimaryShotgun: true,
@@ -302,6 +319,7 @@ export const DEFENDERS = [
   {
     name: "Lesion",
     icon: "/ops/def/lesion.webp",
+    iconBW: "/ops/def/lesion_bw.png",
     gadget: "gu_mine",
     secondaryGadgets: ["observation_blocker", "bulletproof_camera"],
     hasPrimaryShotgun: true,
@@ -310,6 +328,7 @@ export const DEFENDERS = [
   {
     name: "Ela",
     icon: "/ops/def/ela.webp",
+    iconBW: "/ops/def/ela_bw.png",
     gadget: "grzmot_mine",
     secondaryGadgets: ["deployable_shield", "barbed_wire", "impact_grenade"],
     hasPrimaryShotgun: true,
@@ -317,11 +336,13 @@ export const DEFENDERS = [
   {
     name: "Vigil",
     icon: "/ops/def/vigil.webp",
+    iconBW: "/ops/def/vigil_bw.png",
     secondaryGadgets: ["impact_grenade", "bulletproof_camera"],
   },
   {
     name: "Maestro",
     icon: "/ops/def/maestro.webp",
+    iconBW: "/ops/def/maestro_bw.png",
     gadget: "evil_eye",
     secondaryGadgets: ["barbed_wire", "impact_grenade", "observation_blocker"],
     hasPrimaryShotgun: true,
@@ -330,6 +351,7 @@ export const DEFENDERS = [
   {
     name: "Alibi",
     icon: "/ops/def/alibi.webp",
+    iconBW: "/ops/def/alibi_bw.png",
     gadget: "prisma",
     secondaryGadgets: ["proximity_alarm", "observation_blocker"],
     hasPrimaryShotgun: true,
@@ -338,6 +360,7 @@ export const DEFENDERS = [
   {
     name: "Clash",
     icon: "/ops/def/clash.webp",
+    iconBW: "/ops/def/clash_bw.png",
     gadget: "riot_shield",
     secondaryGadgets: ["barbed_wire", "impact_grenade"],
     hasSecondaryShotgun: true,
@@ -345,6 +368,7 @@ export const DEFENDERS = [
   {
     name: "Kaid",
     icon: "/ops/def/kaid.webp",
+    iconBW: "/ops/def/kaid_bw.png",
     gadget: "electroclaw",
     secondaryGadgets: ["c4", "barbed_wire", "observation_blocker"],
     hasPrimaryShotgun: true,
@@ -352,18 +376,21 @@ export const DEFENDERS = [
   {
     name: "Mozzie",
     icon: "/ops/def/mozzie.webp",
+    iconBW: "/ops/def/mozzie_bw.png",
     gadget: "pest",
     secondaryGadgets: ["c4", "barbed_wire", "impact_grenade"],
   },
   {
     name: "Warden",
     icon: "/ops/def/warden.webp",
+    iconBW: "/ops/def/warden_bw.png",
     secondaryGadgets: ["deployable_shield", "c4", "observation_blocker"],
     hasPrimaryShotgun: true,
   },
   {
     name: "Goyo",
     icon: "/ops/def/goyo.webp",
+    iconBW: "/ops/def/goyo_bw.png",
     gadget: "volcan_canister",
     secondaryGadgets: [
       "proximity_alarm",
@@ -375,12 +402,14 @@ export const DEFENDERS = [
   {
     name: "Wamai",
     icon: "/ops/def/wamai.webp",
+    iconBW: "/ops/def/wamai_bw.png",
     gadget: "magnet",
     secondaryGadgets: ["impact_grenade", "proximity_alarm"],
   },
   {
     name: "Oryx",
     icon: "/ops/def/oryx.webp",
+    iconBW: "/ops/def/oryx_bw.png",
     secondaryGadgets: ["barbed_wire", "proximity_alarm"],
     hasPrimaryShotgun: true,
     hasSecondaryShotgun: true,
@@ -388,6 +417,7 @@ export const DEFENDERS = [
   {
     name: "Melusi",
     icon: "/ops/def/melusi.webp",
+    iconBW: "/ops/def/melusi_bw.png",
     gadget: "banshee",
     secondaryGadgets: ["bulletproof_camera", "impact_grenade"],
     hasPrimaryShotgun: true,
@@ -396,6 +426,7 @@ export const DEFENDERS = [
   {
     name: "Aruni",
     icon: "/ops/def/aruni.webp",
+    iconBW: "/ops/def/aruni_bw.png",
     gadget: "surya_gate",
     secondaryGadgets: ["barbed_wire", "bulletproof_camera"],
     hasSecondaryShotgun: true,
@@ -403,6 +434,7 @@ export const DEFENDERS = [
   {
     name: "Thunderbird",
     icon: "/ops/def/thunderbird.webp",
+    iconBW: "/ops/def/thunderbird_bw.png",
     gadget: "kona_station",
     secondaryGadgets: [
       "deployable_shield",
@@ -415,6 +447,7 @@ export const DEFENDERS = [
   {
     name: "Thorn",
     icon: "/ops/def/thorn.webp",
+    iconBW: "/ops/def/thorn_bw.png",
     gadget: "razorbloom_shell",
     secondaryGadgets: ["deployable_shield", "barbed_wire"],
     hasPrimaryShotgun: true,
@@ -422,6 +455,7 @@ export const DEFENDERS = [
   {
     name: "Azami",
     icon: "/ops/def/azami.webp",
+    iconBW: "/ops/def/azami_bw.png",
     gadget: "kiba_barrier",
     secondaryGadgets: ["impact_grenade", "barbed_wire"],
     hasPrimaryShotgun: true,
@@ -429,12 +463,14 @@ export const DEFENDERS = [
   {
     name: "Solis",
     icon: "/ops/def/solis.webp",
+    iconBW: "/ops/def/solis_bw.png",
     secondaryGadgets: ["proximity_alarm", "bulletproof_camera"],
     hasPrimaryShotgun: true,
   },
   {
     name: "Fenrir",
     icon: "/ops/def/fenrir.webp",
+    iconBW: "/ops/def/fenrir_bw.png",
     gadget: "fenrir",
     secondaryGadgets: ["bulletproof_camera", "observation_blocker"],
     hasPrimaryShotgun: true,
@@ -443,12 +479,14 @@ export const DEFENDERS = [
   {
     name: "Tubarão",
     icon: "/ops/def/tubarao.webp",
+    iconBW: "/ops/def/tubarao_bw.png",
     gadget: "zoto_canister",
     secondaryGadgets: ["c4", "proximity_alarm"],
   },
   {
     name: "Skopós",
     icon: "/ops/def/skopos.webp",
+    iconBW: "/ops/def/skopos_bw.png",
     gadget: "skopos",
     secondaryGadgets: ["impact_grenade", "proximity_alarm"],
   },
@@ -482,7 +520,7 @@ export const DEFENDER_PRIMARY_GADGETS = [
   {
     id: "shumikha_launcher",
     name: "Shumikha Launcher",
-    icon: ["MISSING"],
+    icon: ["/MISSING"],
     count: 20,
   },
   {
