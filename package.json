@@ -7,7 +7,7 @@
     "build-server": "esbuild index.ts --bundle --outfile=dist/index.js --platform=node --external:./node_modules/*",
     "build-next": "next build",
     "build": "npm run build-server && npm run build-next",
-    "start": "NODE_ENV=production node dist/server.js",
+    "start": "NODE_ENV=production node dist/index.js",
     "lint": "next lint",
     "start-local-db": "docker compose -f docker-compose-postgres.yml up",
     "typecheck": "tsc --noEmit",
