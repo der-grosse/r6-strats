@@ -13,8 +13,6 @@ RUN npm install --legacy-peer-deps
 # Copy the rest of the application code
 COPY . .
 
-RUN mkdir -p /app/data
-
 # Build the Next.js application
 RUN npm run build
 

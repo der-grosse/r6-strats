@@ -1,6 +1,6 @@
 import { PHASE_PRODUCTION_BUILD } from "next/constants";
 import { type Namespace, type Socket } from "socket.io";
-import cookie from "cookie";
+import * as cookie from "cookie";
 import { verifyJWT } from "../auth/jwt";
 import { createSocketActions } from "./server.actions";
 import {
