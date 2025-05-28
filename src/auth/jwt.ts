@@ -1,9 +1,6 @@
 "use server";
 import * as jwt from "jose";
-import db from "../db/db";
-import { users } from "../db/schema";
-import { eq } from "drizzle-orm";
-
+import { PHASE_PRODUCTION_BUILD } from "next/constants";
 // These should be set as environment variables in your deployment platform
 const JWT_PRIVATE_KEY = process.env.JWT_PRIVATE_KEY;
 const JWT_PUBLIC_KEY = process.env.JWT_PUBLIC_KEY;
@@ -15,6 +12,12 @@ let publicKey: CryptoKey | null = null;
 let privateKey: CryptoKey | null = null;
 
 async function loadKeys() {
+  if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) {
+    console.info(
+      "Skipping JWT key loading in production build phase. Keys should be set as environment variables."
+    );
+    return;
+  }
   try {
     publicKey = publicKey ?? (await jwt.importSPKI(publicKeyStr, "RS256"));
     privateKey = privateKey ?? (await jwt.importPKCS8(privateKeyStr, "RS256"));

@@ -11,11 +11,12 @@ You can access the tool youself at [r6.dorf-cloud.de](https://r6.dorf-cloud.de).
 
 ### Editor
 
+- rotate assets
 - add layout assets to editor
-- make doors, windows and walls clickable to easily add assets
 - edit history with undo/redo
 - click and drag for selecting mulptiple elements at once
 - add default color to operators since they might not be easily visible otherwise
+- make doors, windows and walls clickable to easily add assets
 - edit attributes of multiple assets at once
 - add new map blueprints
 - add toggle for floors of map
