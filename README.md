@@ -1,7 +1,7 @@
 # Rainbow Six Siege Strat Editor
 
 This is a web application to create and share strategies for Rainbow Six Siege. You can assign operators, set gadget positions, what should be reinforced and more. The strats can be shared with your team and filtered by for your currrent map, site and banend operators.
-You can access the tool youself at [r6.dorf-cloud.de](https://r6.dorf-cloud.de).
+You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 
 ## TODOs
 

@@ -316,7 +316,6 @@ export default function StratEditorCanvas<A extends Asset>({
       shortcut: ["Backspace", "Delete"],
       action() {
         if (document.activeElement !== svgRef.current) return;
-        console.log("delete", selectedAssets);
         onAssetRemove(selectedAssets);
       },
     },

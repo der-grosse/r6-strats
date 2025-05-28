@@ -1,10 +1,11 @@
 "use client";
 
+import { useSocket } from "@/components/context/SocketContext";
 import { Button } from "@/components/ui/button";
-import { socket } from "@/src/socket/client";
 import { useEffect, useState } from "react";
 
 export default function Home() {
+  const socket = useSocket();
   const [isConnected, setIsConnected] = useState(false);
   const [transport, setTransport] = useState("N/A");
   const [connectionError, setConnectionError] = useState<string | null>(null);
@@ -12,7 +13,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!socket) return;
-    console.log("Socket test page mounted, socket:", socket);
+    console.debug("Socket test page mounted, socket:", socket);
 
     // Handle initial state if already connected
     if (socket.connected) {
@@ -20,20 +21,20 @@ export default function Home() {
     }
 
     function onConnect() {
-      console.log("Socket connected with ID:", socket!.id);
+      console.debug("Socket connected with ID:", socket!.id);
       setIsConnected(true);
       setConnectionError(null);
       setTransport(socket!.io?.engine?.transport?.name || "unknown");
 
       // Listen for transport upgrades (e.g., from polling to websocket)
       socket!.io.engine.on("upgrade", (transport) => {
-        console.log("Transport upgraded to:", transport.name);
+        console.debug("Transport upgraded to:", transport.name);
         setTransport(transport.name);
       });
     }
 
     function onDisconnect(reason: string) {
-      console.log("Socket disconnected:", reason);
+      console.debug("Socket disconnected:", reason);
       setIsConnected(false);
       setTransport("N/A");
     }
@@ -45,7 +46,7 @@ export default function Home() {
     }
 
     function onMessage(message: string) {
-      console.log("Received message:", message);
+      console.debug("Received message:", message);
       setMessages((prev) => [...prev, message].slice(-5)); // Keep last 5 messages
     }
 
@@ -53,11 +54,11 @@ export default function Home() {
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("connect_error", onConnectError);
-    socket.on("message", onMessage);
+    socket.on("debug:message", onMessage);
 
     // Force a connection attempt if not already connected
     if (!socket.connected) {
-      console.log("Attempting to connect socket...");
+      console.debug("Attempting to connect socket...");
       socket.connect();
     }
 
@@ -66,7 +67,7 @@ export default function Home() {
       socket!.off("connect", onConnect);
       socket!.off("disconnect", onDisconnect);
       socket!.off("connect_error", onConnectError);
-      socket!.off("message", onMessage);
+      socket!.off("debug:message", onMessage);
     };
   }, [socket]);
 
@@ -128,7 +129,7 @@ export default function Home() {
               <Button
                 onClick={() => {
                   const timestamp = new Date().toISOString().substring(11, 19);
-                  socket?.emit("message", `Test message (${timestamp})`);
+                  socket?.emit("debug:message", `Test message (${timestamp})`);
                 }}
                 disabled={!isConnected}
                 variant="default"
@@ -141,7 +142,7 @@ export default function Home() {
       </div>
 
       <div className="p-4 border rounded-lg">
-        <h2 className="font-semibold mb-2">Message Log</h2>
+        <h2 className="font-semibold mb-2">Message log</h2>
         {messages.length === 0 ? (
           <p className="text-gray-500">No messages received yet</p>
         ) : (

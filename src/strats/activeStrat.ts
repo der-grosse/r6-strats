@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import db from "../db/db";
 import { activeStrat } from "../db/schema";
 import StratsDB from "./stratsDB";
+import { getSocketServer } from "../socket/server.init";
 
 class ActiveStratClass {
   async setActiveStrat(user: JWTPayload, stratID: Strat["id"]) {
@@ -19,6 +20,9 @@ class ActiveStratClass {
         .set({ stratID })
         .where(eq(activeStrat.teamID, user.teamID));
     }
+    const strat = await StratsDB.get(user, stratID);
+    const socket = await getSocketServer();
+    socket?.in("active-strat").emit("active-strat:changed", strat!);
   }
 
   async getActiveStrat(user: JWTPayload): Promise<Strat | null> {

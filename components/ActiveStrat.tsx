@@ -1,7 +1,8 @@
 "use client";
-import { getActive } from "@/src/strats/strats";
 import { useEffect, useState } from "react";
 import StratDisplay from "./StratDisplay";
+import { useSocket } from "./context/SocketContext";
+import useSocketEvent from "./hooks/useSocketEvent";
 
 export interface ActiveStratProps {
   defaultOpen?: Strat | null;
@@ -9,27 +10,18 @@ export interface ActiveStratProps {
 }
 
 export default function ActiveStrat(props: ActiveStratProps) {
+  const socket = useSocket();
+  useEffect(() => {
+    socket.emit("active-strat:subscribe");
+    return () => {
+      socket.emit("active-strat:unsubscribe");
+    };
+  }, []);
   const [strat, setStrat] = useState<Strat | null>(props.defaultOpen ?? null);
 
-  useEffect(() => {
-    let stop = false;
-
-    (async () => {
-      while (!stop) {
-        const current = await getActive();
-        if (stop) return;
-        if (current) {
-          document.title = `Current Strat | ${current.name} | ${current.site}`;
-          setStrat(current);
-        }
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
-    })();
-
-    return () => {
-      stop = true;
-    };
-  }, [setStrat]);
+  useSocketEvent("active-strat:changed", (strat) => {
+    setStrat(strat);
+  });
 
   return <StratDisplay strat={strat} team={props.team} />;
 }

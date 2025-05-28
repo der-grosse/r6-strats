@@ -14,7 +14,7 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-const SERVER_URL = process.env.SERVER_URL || "http://localhost:3001";
+const SERVER_URL = process.env.SERVER_URL || "http://localhost:3001/team-1";
 const SOCKET_PATH = process.env.SOCKET_PATH || "/api/socketio";
 
 console.log(`
@@ -27,7 +27,7 @@ Socket Path: ${SOCKET_PATH}
 // Create the Socket.IO client
 const socket = io(SERVER_URL, {
   path: SOCKET_PATH,
-  transports: ["websocket", "polling"],
+  transports: ["polling"],
   reconnectionAttempts: 3,
   timeout: 5000,
 });
@@ -43,6 +43,8 @@ socket.on("connect", () => {
 
   console.log('\nType a message to send or "exit" to quit:');
 
+  socket.emit("active-strat:subscribe");
+
   // Allow sending messages from the console
   rl.on("line", (input) => {
     if (input.toLowerCase() === "exit") {
@@ -50,7 +52,7 @@ socket.on("connect", () => {
       rl.close();
       process.exit(0);
     } else {
-      socket.emit("message", input);
+      socket.emit("active-strat:change", parseInt(input));
       console.log(`📤 Sent message: ${input}`);
     }
   });
@@ -64,8 +66,8 @@ socket.on("disconnect", (reason) => {
   console.log(`🔌 Disconnected: ${reason}`);
 });
 
-socket.on("message", (msg) => {
-  console.log(`📩 Received: ${msg}`);
+socket.on("active-strat:changed", (strat) => {
+  console.log(`📩 New active Strat: ${strat.name}`);
 });
 
 // Set a timeout to check if connection was not successful

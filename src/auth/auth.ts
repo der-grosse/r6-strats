@@ -28,9 +28,10 @@ export async function resetJWT(payload?: JWTPayload) {
   }
   if (!payload) throw new Error("User not found");
 
-  (await cookies()).set("jwt", await generateJWT(payload), {
+  const cookie = await cookies();
+  cookie.set("jwt", await generateJWT(payload), {
     httpOnly: true,
-    maxAge: 60 * 60 * 24 * 7, // 1 week
+    maxAge: 60 * 60 * 24 * 30, // 1 month
   });
 }
 
