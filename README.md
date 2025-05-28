@@ -5,15 +5,12 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 
 ## TODOs
 
-### Technical
-
-- use websocket instead of polling for active strat updates
-
 ### Editor
 
+- edit history with undo/redo
 - rotate assets
 - add layout assets to editor
-- edit history with undo/redo
+- add websocket for live updates to enable collaborative editing
 - click and drag for selecting mulptiple elements at once
 - add default color to operators since they might not be easily visible otherwise
 - make doors, windows and walls clickable to easily add assets
