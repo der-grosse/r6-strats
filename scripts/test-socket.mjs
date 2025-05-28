@@ -14,7 +14,7 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-const SERVER_URL = process.env.SERVER_URL || "http://localhost:3001/team-1";
+const SERVER_URL = process.env.SERVER_URL || "http://localhost:3000/team-1";
 const SOCKET_PATH = process.env.SOCKET_PATH || "/api/socketio";
 
 console.log(`

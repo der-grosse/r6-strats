@@ -14,9 +14,7 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import {
-  Check,
   ChevronDown,
-  ChevronRight,
   Database,
   Edit,
   FolderOpen,
@@ -32,7 +30,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../../../components/ui/collapsible";
-import { setActive } from "@/src/strats/strats";
 import { Checkbox } from "../../../components/ui/checkbox";
 import { useRouter } from "next/navigation";
 import { getGoogleDrawingsEditURL } from "@/src/googleDrawings";
@@ -41,9 +38,12 @@ import { logout } from "@/src/auth/auth";
 import MapSelector from "@/components/MapSelector";
 import SiteSelector from "@/components/SiteSelector";
 import OperatorPicker from "@/components/OperatorPicker";
+import { useSocket } from "@/components/context/SocketContext";
+import { setActive } from "@/src/strats/strats";
 
 export function AppSidebar(props: { teamName: string }) {
   const router = useRouter();
+  const socket = useSocket();
   const { filter, setFilter, filteredStrats, isLeading, setIsLeading } =
     useFilter();
 
@@ -189,6 +189,7 @@ export function AppSidebar(props: { teamName: string }) {
                             onClick={async () => {
                               if (isLeading) {
                                 await setActive(strat.id);
+                                socket.emit("active-strat:change", strat);
                                 if (window.location.pathname !== "/") {
                                   router.push("/");
                                 }

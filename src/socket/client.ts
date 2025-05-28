@@ -15,8 +15,7 @@ let socketInstance: SocketClient = null!;
 
 export function getSocketClient(user: JWTPayload): SocketClient {
   if (!socketInstance && typeof window !== "undefined") {
-    const socketUrl =
-      process.env.NEXT_PUBLIC_SOCKET_URL ?? window.location.origin;
+    const socketUrl = window.location.origin;
 
     console.debug("Creating Socket.IO client connection to:", socketUrl);
 

@@ -13,13 +13,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DEFENDERS } from "@/src/static/operator";
-import { setActive } from "@/src/strats/strats";
 import { Eye, Pencil } from "lucide-react";
 import Link from "next/link";
 import config from "@/src/static/config";
+import { useSocket } from "@/components/context/SocketContext";
+import { setActive } from "@/src/strats/strats";
 
 export default function StratsPage() {
   const { filteredStrats, isLeading } = useFilter();
+  const socket = useSocket();
   return (
     <div className="w-full h-full p-4 flex flex-col gap-4">
       <div className="grid grid-cols-3 gap-1 items-center">
@@ -76,6 +78,7 @@ export default function StratsPage() {
                     onClick={async () => {
                       if (isLeading) {
                         await setActive(strat.id);
+                        socket.emit("active-strat:change", strat);
                       }
                     }}
                   >

@@ -1,5 +1,5 @@
 export interface ClientToServerSocketEvents {
-  "active-strat:change": (stratID: Strat["id"]) => void;
+  "active-strat:change": (strat: Strat) => void;
   "active-strat:subscribe": () => void;
   "active-strat:unsubscribe": () => void;
   "debug:message": (message: string) => void;

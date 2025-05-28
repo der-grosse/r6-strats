@@ -2,9 +2,6 @@ import type { Metadata } from "next";
 import { Noto_Sans } from "next/font/google";
 import favicon from "@/public/favicon.ico";
 import "./globals.css";
-import { getSocketServer } from "@/src/socket/server.init";
-
-getSocketServer();
 
 const notoSans = Noto_Sans({
   variable: "--font-noto-sans",

@@ -3,8 +3,6 @@ import {
   ClientToServerSocketEvents,
   ServerToClientSocketEvents,
 } from "./types";
-import ActiveStratDB from "../strats/activeStrat";
-import StratsDB from "../strats/stratsDB";
 
 export async function createSocketActions(
   io: Namespace,
@@ -26,13 +24,7 @@ export async function createSocketActions(
     );
   });
 
-  socket.on("active-strat:change", async (stratID) => {
-    ActiveStratDB.setActiveStrat(socket.user, stratID);
-  });
-
-  socket.on("active-strat:change", async (stratID) => {
-    const strat = await StratsDB.get(socket.user, stratID);
-    if (!strat) return;
+  socket.on("active-strat:change", async (strat) => {
     io.in("active-strat").emit("active-strat:changed", strat);
   });
 }

@@ -26,7 +26,7 @@ const MIN_ASSET_SIZE = 8;
 const DRAG_DEADZONE = 1;
 const ZOOM_MODIFIER = 0.004;
 const SCROLL_MODIFIER = 0.5;
-export const ASSET_BASE_SIZE = 20;
+export const ASSET_BASE_SIZE = 40;
 
 export default function StratEditorCanvas<A extends Asset>({
   map,
