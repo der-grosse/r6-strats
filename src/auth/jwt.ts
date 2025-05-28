@@ -13,9 +13,7 @@ let privateKey: CryptoKey | null = null;
 
 async function loadKeys() {
   if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) {
-    console.info(
-      "Skipping JWT key loading in production build phase. Keys should be set as environment variables."
-    );
+    // Skip this during build time
     return;
   }
   try {

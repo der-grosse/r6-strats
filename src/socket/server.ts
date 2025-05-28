@@ -4,7 +4,7 @@ import { type Server } from "socket.io";
 let ioInstance: Server | null = null;
 export async function createSocketServer() {
   if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) {
-    console.info("Skipping socket server creation in production build phase.");
+    // Skip this during build time
     return;
   }
   //@ts-ignore -- is defined by next.js
@@ -17,12 +17,17 @@ export async function createSocketServer() {
   console.log("Creating socket server...");
   const { createServer } = await import("node:http");
   const { Server } = await import("socket.io");
-  const httpServer = createServer({});
+  const httpServer = createServer({}, (req, res) => {
+    if (req.url === "/api/test") {
+      res.writeHead(200, { "Content-Type": "text/plain" });
+      res.end("Socket server is running");
+    }
+  });
 
   const port = process.env.SOCKET_PORT || 3001;
 
   httpServer.listen(port, () => {
-    console.log(`server listening at http://localhost:${port}`);
+    console.log(`Socket listening on ${port}`);
   });
 
   const io = new Server(httpServer, {
