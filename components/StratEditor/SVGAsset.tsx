@@ -11,6 +11,7 @@ interface SVGAssetProps {
   children: React.ReactNode;
   ctrlKeyDown?: boolean;
   menu?: React.ReactNode;
+  zoom: number;
 }
 
 export default function SVGAsset({
@@ -22,6 +23,7 @@ export default function SVGAsset({
   children,
   ctrlKeyDown = false,
   menu,
+  zoom,
 }: Readonly<SVGAssetProps>) {
   const assetRef = useRef<SVGGElement>(null);
 
@@ -36,7 +38,15 @@ export default function SVGAsset({
       className="select-none"
     >
       {menu && (
-        <foreignObject style={{ overflow: "visible" }}>{menu}</foreignObject>
+        <foreignObject
+          style={{ overflow: "visible" }}
+          // matrix(sx, 0, 0, sy, cx-sx*cx, cy-sy*cy) -> to scale with a transform origin at the center bottom
+          transform={`matrix(${zoom}, 0, 0, ${zoom}, ${
+            size.width / 2 - (size.width / 2) * zoom
+          }, 0) translate(0 ${-size.height * (1 - zoom)})`}
+        >
+          {menu}
+        </foreignObject>
       )}
       <g
         transform={`rotate(${rotation} ${size.width / 2} ${size.height / 2})`}

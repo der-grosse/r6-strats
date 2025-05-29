@@ -442,6 +442,7 @@ export default function StratEditorCanvas<A extends Asset>({
               selected={selectedAssets.includes(asset.id)}
               ctrlKeyDown={ctrlKeyDown}
               menu={render.menu}
+              zoom={zoomFactor}
             >
               {render.asset}
             </SVGAsset>

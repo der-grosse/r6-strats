@@ -7,7 +7,6 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 
 ### Editor
 
-- rotate assets
 - add layout assets to editor
 - add websocket for live updates to enable collaborative editing
 - click and drag for selecting mulptiple elements at once
