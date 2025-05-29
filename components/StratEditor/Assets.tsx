@@ -39,7 +39,7 @@ export default function useMountAssets(
       return (
         <div
           className={cn(
-            "absolute bottom-[110%] left-[50%] -translate-x-1/2 bg-muted text-muted-foreground rounded flex items-center justify-center scale-200 origin-bottom"
+            "absolute bottom-[110%] left-[50%] -translate-x-1/2 bg-muted text-muted-foreground rounded flex items-center justify-center scale-200 origin-bottom z-100"
           )}
         >
           <GripVertical className="cursor-grab" />

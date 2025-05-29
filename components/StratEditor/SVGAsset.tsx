@@ -37,17 +37,6 @@ export default function SVGAsset({
       }}
       className="select-none"
     >
-      {menu && (
-        <foreignObject
-          style={{ overflow: "visible" }}
-          // matrix(sx, 0, 0, sy, cx-sx*cx, cy-sy*cy) -> to scale with a transform origin at the center bottom
-          transform={`matrix(${zoom}, 0, 0, ${zoom}, ${
-            size.width / 2 - (size.width / 2) * zoom
-          }, 0) translate(0 ${-size.height * (1 - zoom)})`}
-        >
-          {menu}
-        </foreignObject>
-      )}
       <g
         transform={`rotate(${rotation} ${size.width / 2} ${size.height / 2})`}
         className="cursor-move"
@@ -55,7 +44,7 @@ export default function SVGAsset({
         <foreignObject
           width={size.width}
           height={size.height}
-          style={{ overflow: "visible" }}
+          style={{ overflow: "visible", zIndex: 1 }}
         >
           {children}
         </foreignObject>
@@ -87,6 +76,37 @@ export default function SVGAsset({
           }}
         />
       </g>
+      {menu && (
+        <foreignObject
+          style={{ overflow: "visible", zIndex: 2 }}
+          // matrix(sx, 0, 0, sy, cx-sx*cx, cy-sy*cy) -> to scale with a transform origin at the center bottom
+          transform={`matrix(${zoom}, 0, 0, ${zoom}, ${
+            size.width / 2 - (size.width / 2) * zoom
+          }, 0) translate(${size.width / 2} ${
+            -size.height * (1 - zoom)
+          }) translate(0, ${
+            // Adjust the vertical position based on rotation
+            rotation === 0
+              ? 0
+              : (() => {
+                  const diagonalHalf = Math.sqrt(
+                    Math.pow(size.width / 2, 2) + Math.pow(size.height / 2, 2)
+                  );
+                  const normalizedRotation = Math.abs(rotation % 90);
+                  const radians = (normalizedRotation * Math.PI) / 180;
+
+                  const baseAngle = Math.atan2(size.height, size.width);
+                  const rotatedAngle = baseAngle + radians;
+                  const offset =
+                    diagonalHalf * Math.sin(rotatedAngle) - size.height / 2;
+
+                  return -Math.max(0, offset);
+                })()
+          })`}
+        >
+          {menu}
+        </foreignObject>
+      )}
     </g>
   );
 }
