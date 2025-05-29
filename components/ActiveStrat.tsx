@@ -21,6 +21,7 @@ export default function ActiveStrat(props: ActiveStratProps) {
 
   useSocketEvent("active-strat:changed", (strat) => {
     setStrat(strat);
+    document.title = `Current strat | ${strat.name} | ${strat.map} - ${strat.site}`;
   });
 
   return <StratDisplay strat={strat} team={props.team} />;

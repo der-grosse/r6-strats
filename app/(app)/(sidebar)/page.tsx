@@ -3,9 +3,14 @@ import { getTeam } from "@/src/auth/team";
 import { getActive } from "@/src/strats/strats";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Current Strat",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const active = await getActive();
+
+  return {
+    title: `Current strat | ${active?.name} | ${active?.map} - ${active?.site}`,
+    description: "View the currently active strat",
+  };
+}
 
 export default async function Home() {
   const active = await getActive();
