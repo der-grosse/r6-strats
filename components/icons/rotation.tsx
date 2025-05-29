@@ -3,20 +3,28 @@ import RotationPath from "./rotationPath";
 export interface RotationProps {
   className?: string;
   color?: string;
-  variant: RotateAsset["variant"];
+  variant: Exclude<RotateAsset["variant"], "explosion">;
+  height?: number;
+  width?: number;
 }
 
 export default function Rotation(props: RotationProps) {
-  const { className, color = "#cfe2f3", variant } = props;
+  const {
+    className,
+    color = "#cfe2f3",
+    variant,
+    height = 300,
+    width = 300,
+  } = props;
 
   return (
-    <svg viewBox="0 0 300 200" className={className}>
+    <svg viewBox={`0 0 ${width} ${height}`} className={className}>
       <RotationPath
         x={0}
         y={0}
-        width={300}
-        height={200}
-        outerColor={color}
+        width={width}
+        height={height}
+        color={color}
         variant={variant}
       />
     </svg>

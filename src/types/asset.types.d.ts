@@ -32,7 +32,8 @@ interface RotateAsset {
     | "jump"
     | "headholes"
     | "floorholes"
-    | "ceilingholes";
+    | "ceilingholes"
+    | "explosion";
 }
 
 interface OperatorAsset {

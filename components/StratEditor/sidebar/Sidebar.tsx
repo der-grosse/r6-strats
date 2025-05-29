@@ -24,6 +24,7 @@ import { MAX_REINFORCEMENT } from "@/src/static/general";
 import Link from "next/link";
 import StratEditorPlayerOperatorsSidebar from "./PlayerOPs";
 import config from "@/src/static/config";
+import StratEditorLayoutSidebar from "./Layout";
 
 export interface StratEditorSidebarProps {
   onAssetAdd: (asset: Asset & Partial<PlacedAsset>) => void;
@@ -82,6 +83,8 @@ export default function StratEditorSidebar(
             team={props.team}
           />
         );
+      case "layout-assets":
+        return <StratEditorLayoutSidebar onAssetAdd={onAssetAdd} />;
       default:
         return (
           <div className="flex items-center justify-center h-full">

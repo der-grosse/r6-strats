@@ -1,4 +1,5 @@
 import OperatorIcon from "@/components/OperatorIcon";
+import { getAssetColor } from "../Assets";
 
 export interface OperatorProps {
   asset: Extract<PlacedAsset, { type: "operator" }>;
@@ -7,22 +8,7 @@ export interface OperatorProps {
 }
 
 export default function Operator(props: OperatorProps) {
-  const color = (() => {
-    if (props.asset.customColor) return props.asset.customColor;
-    if (!props.asset.pickedOPID) return undefined;
-    const pickedOP = props.operators.find(
-      (op) => op.id === props.asset.pickedOPID
-    );
-    if (!pickedOP) return undefined;
-    const postion = props.team.playerPositions.find(
-      (pos) => pos.id === pickedOP.positionID
-    );
-    if (!postion) return undefined;
-    const teamMember = props.team.members.find(
-      (member) => member.id === postion.playerID
-    );
-    return teamMember?.defaultColor;
-  })();
+  const color = getAssetColor(props.asset, props.operators, props.team);
   return (
     <div className="w-[130%] h-[130%] m-[-15%] relative">
       {props.asset.iconType !== "hidden" && (

@@ -3,9 +3,9 @@ export interface RotationPathProps {
   y: number;
   width: number;
   height: number;
+  innerColor?: string;
   color?: string;
-  outerColor?: string;
-  variant: RotateAsset["variant"];
+  variant: Exclude<RotateAsset["variant"], "explosion">;
 }
 
 export default function RotationPath(props: RotationPathProps) {
@@ -14,13 +14,13 @@ export default function RotationPath(props: RotationPathProps) {
     y,
     width,
     height,
+    innerColor = "#b97a56",
     color = "#cfe2f3",
-    outerColor = "#cfe2f3",
   } = props;
-  const barBorderWidth = height * 0.04;
+  const barBorderWidth = height * 0.06;
   const barSpacing = height * 0.1;
   const barHeight = (height - barBorderWidth * 4 - barSpacing * 2) / 3;
-  const borderRadius = height * 0.075;
+  const borderRadius = height * 0.025;
 
   const bars = (() => {
     switch (props.variant) {
@@ -51,7 +51,7 @@ export default function RotationPath(props: RotationPathProps) {
         strokeWidth={barBorderWidth}
         rx={borderRadius}
         ry={borderRadius}
-        stroke={outerColor}
+        stroke={color}
       />
       {/* white fill between top and middle bar */}
       <rect
@@ -60,7 +60,7 @@ export default function RotationPath(props: RotationPathProps) {
         width={width - barBorderWidth}
         height={barSpacing + barBorderWidth * 1.5}
         stroke="none"
-        fill={outerColor}
+        fill={color}
       />
       {/* white fill between middle and bottom bar */}
       <rect
@@ -69,7 +69,7 @@ export default function RotationPath(props: RotationPathProps) {
         width={width - barBorderWidth}
         height={barSpacing + barBorderWidth * 2}
         stroke="none"
-        fill={outerColor}
+        fill={color}
       />
       {/* top bar */}
       <rect
@@ -80,18 +80,18 @@ export default function RotationPath(props: RotationPathProps) {
         strokeWidth={barBorderWidth}
         rx={borderRadius}
         ry={borderRadius}
-        fill={bars[0] ? color : "none"}
+        fill={bars[0] ? innerColor : "none"}
       />
       {/* middle bar */}
       <rect
         x={x + barBorderWidth}
-        y={y + (barBorderWidth * 3) / 2 + barHeight + barSpacing}
+        y={y + barBorderWidth * 1.65 + barHeight + barSpacing}
         width={width - barBorderWidth * 2}
         height={barHeight}
         strokeWidth={barBorderWidth}
         rx={borderRadius}
         ry={borderRadius}
-        fill={bars[1] ? color : "none"}
+        fill={bars[1] ? innerColor : "none"}
       />
       {/* bottom bar */}
       <rect
@@ -102,7 +102,7 @@ export default function RotationPath(props: RotationPathProps) {
         strokeWidth={barBorderWidth}
         rx={borderRadius}
         ry={borderRadius}
-        fill={bars[2] ? color : "none"}
+        fill={bars[2] ? innerColor : "none"}
       />
     </g>
   );

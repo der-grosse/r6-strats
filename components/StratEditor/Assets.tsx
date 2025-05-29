@@ -14,6 +14,9 @@ import ColorPickerDialog from "../ColorPickerDialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import GadgetIcon from "../GadgetIcon";
 import AssetOutline from "./assets/AssetOutline";
+import Reinforcement from "../icons/reinforcement";
+import Rotation from "../icons/rotation";
+import Explosion from "./assets/Explosion";
 
 export default function useMountAssets(
   { team, operators }: { team: Team; operators: PickedOperator[] },
@@ -172,6 +175,29 @@ export default function useMountAssets(
                 <GadgetIcon id={asset.gadget} className="h-full w-full" />
               </AssetOutline>
             );
+          case "reinforcement":
+            return (
+              <Reinforcement
+                height={asset.size.height}
+                width={asset.size.width}
+                color={getAssetColor(asset, operators, team)}
+              />
+            );
+          case "rotate":
+            if (asset.variant === "explosion") {
+              return (
+                <Explosion color={getAssetColor(asset, operators, team)} />
+              );
+            } else {
+              return (
+                <Rotation
+                  variant={asset.variant}
+                  height={asset.size.height}
+                  width={asset.size.width}
+                  color={getAssetColor(asset, operators, team)}
+                />
+              );
+            }
           default:
             return <>Missing Asset</>;
         }
@@ -200,4 +226,23 @@ function getNextOperatorIconType(
     default:
       return "default";
   }
+}
+
+export function getAssetColor(
+  asset: PlacedAsset,
+  pickedOPs: PickedOperator[],
+  team: Team
+): string | undefined {
+  if (asset.customColor) return asset.customColor;
+  if (!asset.pickedOPID) return undefined;
+  const pickedOP = pickedOPs.find((op) => op.id === asset.pickedOPID);
+  if (!pickedOP) return undefined;
+  const postion = team.playerPositions.find(
+    (pos) => pos.id === pickedOP.positionID
+  );
+  if (!postion) return undefined;
+  const teamMember = team.members.find(
+    (member) => member.id === postion.playerID
+  );
+  return teamMember?.defaultColor ?? undefined;
 }

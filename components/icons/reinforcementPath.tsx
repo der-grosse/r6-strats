@@ -8,8 +8,8 @@ export interface ReinforcementPathProps {
 
 export default function ReinforcementPath(props: ReinforcementPathProps) {
   const { x, y, width, height, color = "#cfe2f3" } = props;
-  const barBorderWidth = height * 0.04;
-  const barSpacing = height * 0.075;
+  const barBorderWidth = height * 0.06;
+  const barSpacing = height * 0.15;
   const barHeight = (height - barBorderWidth * 2 - barSpacing) / 2;
   const borderRadius = height * 0.075;
   return (
