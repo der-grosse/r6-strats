@@ -5,7 +5,7 @@ const MAPS: R6Map[] = [
     floors: [
       {
         floor: "B",
-        src: "/map_blueprints/bank/b.jpg",
+        src: "/map_blueprints/bank/b.png",
         layers: {
           doors: "/map_blueprints/bank/b-doors.svg",
           reinforcements: "/map_blueprints/bank/b-reinforcements.svg",
@@ -14,7 +14,7 @@ const MAPS: R6Map[] = [
       },
       {
         floor: "1F",
-        src: "/map_blueprints/bank/1f.jpg",
+        src: "/map_blueprints/bank/1f.png",
         layers: {
           doors: "/map_blueprints/bank/1f-doors.svg",
           reinforcements: "/map_blueprints/bank/1f-reinforcements.svg",
@@ -24,7 +24,7 @@ const MAPS: R6Map[] = [
       },
       {
         floor: "2F",
-        src: "/map_blueprints/bank/2f.jpg",
+        src: "/map_blueprints/bank/2f.png",
         layers: {
           doors: "/map_blueprints/bank/2f-doors.svg",
           reinforcements: "/map_blueprints/bank/2f-reinforcements.svg",
