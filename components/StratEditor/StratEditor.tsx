@@ -156,6 +156,7 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
         const placedAsset = {
           size: { width: ASSET_BASE_SIZE, height: ASSET_BASE_SIZE },
           position: { x: CANVAS_BASE_SIZE / 20, y: CANVAS_BASE_SIZE / 20 },
+          rotation: 0,
           ...asset,
           id: `${asset.id}-${getHightestID(assets) + 1}` as any,
         };

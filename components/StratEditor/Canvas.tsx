@@ -1,8 +1,9 @@
 "use client";
-import { useRef, useState, useEffect, useMemo, useCallback } from "react";
+import { useRef, useState, useEffect, useMemo, useCallback, act } from "react";
 import SVGAsset from "./SVGAsset";
 import { useKeys } from "../hooks/useKey";
 import isKeyDown from "../hooks/isKeyDown";
+import { deepCopy } from "../deepCopy";
 
 interface Asset {
   id: string;
@@ -17,7 +18,10 @@ interface CanvasProps<A extends Asset> {
   assets: A[];
   onAssetChange: (assets: A[]) => void;
   onAssetRemove: (assets: A["id"][]) => void;
-  renderAsset: (asset: A, selected: boolean) => React.ReactNode;
+  renderAsset: (
+    asset: A,
+    selected: boolean
+  ) => { asset: React.ReactNode; menu: React.ReactNode | null };
 }
 
 // should be a multiple of 4 and 3 to have nicer numbers for aspect ratio
@@ -104,10 +108,11 @@ export default function StratEditorCanvas<A extends Asset>({
   lastZoomedViewBox.current = zoomedViewBox;
 
   const [isDragging, setIsDragging] = useState(false);
-  const [isResizing, setIsResizing] = useState(false);
+  const [isResizingOrRotating, setIsResizingOrRotating] = useState(false);
   const [actionStart, setActionStart] = useState({
     x: 0,
     y: 0,
+    asset: null as A | null,
     startPositions: [] as {
       id: string;
       x: number;
@@ -140,7 +145,7 @@ export default function StratEditorCanvas<A extends Asset>({
 
       if (isResizeHandle) {
         // resizing asset
-        setIsResizing(true);
+        setIsResizingOrRotating(true);
       } else {
         // dragging asset
         setIsDragging(true);
@@ -148,6 +153,9 @@ export default function StratEditorCanvas<A extends Asset>({
       setActionStart({
         x: svgP.x,
         y: svgP.y,
+        asset: deepCopy(
+          assetsRef.current.find((a) => a.id === assetId) || null
+        ),
         startPositions: assetsRef.current
           .filter((a) => selectedAssets.includes(a.id) || a.id === assetId)
           .map((a) => ({
@@ -163,7 +171,8 @@ export default function StratEditorCanvas<A extends Asset>({
 
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
-      if (selectedAssets.length === 0 || (!isDragging && !isResizing)) return;
+      if (selectedAssets.length === 0 || (!isDragging && !isResizingOrRotating))
+        return;
 
       const svg = svgRef.current;
       if (!svg) return;
@@ -200,12 +209,54 @@ export default function StratEditorCanvas<A extends Asset>({
             };
           })
         );
-      } else if (isResizing) {
+      } else if (isResizingOrRotating) {
         const selected = assets.filter((a) => selectedAssets.includes(a.id));
-        if (selected.length > 0) {
+        if (selected.length === 0) return;
+
+        if (e.ctrlKey) {
+          // rotating asset
+          const startX = actionStart.asset
+            ? actionStart.asset.position.x + actionStart.asset.size.width / 2
+            : actionStart.x;
+          const startY = actionStart.asset
+            ? actionStart.asset.position.y + actionStart.asset.size.height / 2
+            : actionStart.y;
+
+          const deltaX = svgP.x - startX;
+          const deltaY = svgP.y - startY;
+
+          // 45° is to eliminate the offset from starting the drag at the bottom right corner
+          const baseAngle = 45 + (actionStart.asset?.rotation || 0);
+
+          setAssets((assets) =>
+            assets.map((a) => {
+              if (!selectedAssets.includes(a.id)) return a;
+              const startPos = actionStart.startPositions.find(
+                (pos) => pos.id === a.id
+              );
+              if (!startPos) return a;
+              const angle = Math.atan2(deltaY, deltaX);
+              let rotation =
+                (startPos.rotation +
+                  angle * (180 / Math.PI) +
+                  720 -
+                  baseAngle) %
+                360;
+              // snap to 45° increments if shift is held
+              if (e.shiftKey) {
+                rotation = Math.round(rotation / 45) * 45;
+              }
+              return {
+                ...a,
+                rotation,
+              };
+            })
+          );
+        } else {
           const deltaX = svgP.x - actionStart.x;
           const deltaY = svgP.y - actionStart.y;
 
+          // resizing asset
           const makeSquare = e.shiftKey;
 
           setAssets((assets) =>
@@ -235,11 +286,11 @@ export default function StratEditorCanvas<A extends Asset>({
         }
       }
     },
-    [isDragging, isResizing, selectedAssets, actionStart]
+    [isDragging, isResizingOrRotating, selectedAssets, actionStart]
   );
 
   const handleMouseUp = useCallback(() => {
-    if (isDragging || isResizing) {
+    if (isDragging || isResizingOrRotating) {
       onAssetChange(
         selectedAssets
           .map((s) => assetsRef.current.find((a) => a.id === s)!)
@@ -247,8 +298,8 @@ export default function StratEditorCanvas<A extends Asset>({
       );
     }
     setIsDragging(false);
-    setIsResizing(false);
-  }, [isDragging, isResizing, selectedAssets]);
+    setIsResizingOrRotating(false);
+  }, [isDragging, isResizingOrRotating, selectedAssets]);
 
   const handleWheel = useCallback(
     (e: WheelEvent) => {
@@ -296,7 +347,7 @@ export default function StratEditorCanvas<A extends Asset>({
   );
 
   useEffect(() => {
-    if (isDragging || isResizing) {
+    if (isDragging || isResizingOrRotating) {
       window.addEventListener("mousemove", handleMouseMove, { passive: false });
       window.addEventListener("mouseup", handleMouseUp);
     }
@@ -304,7 +355,7 @@ export default function StratEditorCanvas<A extends Asset>({
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDragging, isResizing, handleMouseUp, handleMouseMove]);
+  }, [isDragging, isResizingOrRotating, handleMouseUp, handleMouseMove]);
 
   // add non-passive handleWheel event listener to svg
   useEffect(() => {
@@ -374,23 +425,28 @@ export default function StratEditorCanvas<A extends Asset>({
         ))}
 
         {/* Render assets */}
-        {assets.map((asset) => (
-          <SVGAsset
-            key={asset.id}
-            position={asset.position}
-            size={asset.size}
-            onMouseDown={(e, isResizeHandle) =>
-              handleMouseDown(e, asset.id, isResizeHandle)
-            }
-            selected={selectedAssets.includes(asset.id)}
-            ctrlKeyDown={ctrlKeyDown}
-          >
-            {renderAsset(
-              asset,
-              selectedAssets.length === 1 && selectedAssets[0] === asset.id
-            )}
-          </SVGAsset>
-        ))}
+        {assets.map((asset) => {
+          const render = renderAsset(
+            asset,
+            selectedAssets.length === 1 && selectedAssets[0] === asset.id
+          );
+          return (
+            <SVGAsset
+              key={asset.id}
+              position={asset.position}
+              size={asset.size}
+              rotation={asset.rotation || 0}
+              onMouseDown={(e, isResizeHandle) =>
+                handleMouseDown(e, asset.id, isResizeHandle)
+              }
+              selected={selectedAssets.includes(asset.id)}
+              ctrlKeyDown={ctrlKeyDown}
+              menu={render.menu}
+            >
+              {render.asset}
+            </SVGAsset>
+          );
+        })}
       </svg>
     </div>
   );

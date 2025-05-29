@@ -1,6 +1,5 @@
 import {
   Brush,
-  Eye,
   EyeOff,
   GripVertical,
   Trash,
@@ -13,7 +12,6 @@ import { cn } from "@/src/utils";
 import { useCallback, useMemo, useState } from "react";
 import ColorPickerDialog from "../ColorPickerDialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import PrimaryGadgetIcon from "../PrimaryGadgetIcon";
 import GadgetIcon from "../GadgetIcon";
 import AssetOutline from "./assets/AssetOutline";
 
@@ -41,7 +39,7 @@ export default function useMountAssets(
             "absolute bottom-[110%] left-[50%] -translate-x-1/2 bg-muted text-muted-foreground rounded flex items-center justify-center scale-200 origin-bottom"
           )}
         >
-          <GripVertical />
+          <GripVertical className="cursor-grab" />
           <div className="bg-border w-[1px] h-6" />
           {team.members
             .filter((m) => m.positionID)
@@ -178,12 +176,10 @@ export default function useMountAssets(
             return <>Missing Asset</>;
         }
       })();
-      return (
-        <>
-          {selected && menu(asset)}
-          {assetElement}
-        </>
-      );
+      return {
+        menu: selected ? menu(asset) : undefined,
+        asset: assetElement,
+      };
     },
     [menu, team, operators]
   );

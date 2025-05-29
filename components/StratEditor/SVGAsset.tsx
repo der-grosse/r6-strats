@@ -5,21 +5,23 @@ import { cn } from "@/src/utils";
 interface SVGAssetProps {
   position: { x: number; y: number };
   size: { width: number; height: number };
+  rotation: number;
   onMouseDown: (e: React.MouseEvent, isResizeHandle: boolean) => void;
   selected: boolean;
   children: React.ReactNode;
-  className?: string;
   ctrlKeyDown?: boolean;
+  menu?: React.ReactNode;
 }
 
 export default function SVGAsset({
   position,
   size,
+  rotation,
   onMouseDown,
   selected,
   children,
-  className,
   ctrlKeyDown = false,
+  menu,
 }: Readonly<SVGAssetProps>) {
   const assetRef = useRef<SVGGElement>(null);
 
@@ -31,42 +33,50 @@ export default function SVGAsset({
       onClick={(e) => {
         e.stopPropagation();
       }}
-      className={cn("cursor-move select-none", className)}
+      className="select-none"
     >
-      <foreignObject
-        width={size.width}
-        height={size.height}
-        style={{ overflow: "visible" }}
+      {menu && (
+        <foreignObject style={{ overflow: "visible" }}>{menu}</foreignObject>
+      )}
+      <g
+        transform={`rotate(${rotation} ${size.width / 2} ${size.height / 2})`}
+        className="cursor-move"
       >
-        {children}
-      </foreignObject>
-      <rect
-        x={0}
-        y={0}
-        width={size.width}
-        height={size.height}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1"
-        className={cn("pointer-events-none", !selected && "hidden")}
-      />
-      <circle
-        cx={size.width}
-        cy={size.height}
-        r=".5%"
-        fill="currentColor"
-        className={cn(
-          "resize-handle",
-          !selected && "hidden",
-          ctrlKeyDown
-            ? "cursor-[url(/cursor/rotate.png),_grab]"
-            : "cursor-se-resize"
-        )}
-        onMouseDown={(e) => {
-          e.stopPropagation();
-          onMouseDown(e, true);
-        }}
-      />
+        <foreignObject
+          width={size.width}
+          height={size.height}
+          style={{ overflow: "visible" }}
+        >
+          {children}
+        </foreignObject>
+        <rect
+          x={0}
+          y={0}
+          width={size.width}
+          height={size.height}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1"
+          className={cn("pointer-events-none", !selected && "hidden")}
+        />
+        <circle
+          cx={size.width}
+          cy={size.height}
+          r=".5%"
+          fill="currentColor"
+          className={cn(
+            "resize-handle",
+            !selected && "hidden",
+            ctrlKeyDown
+              ? "cursor-[url(/cursor/rotate.png),_grab]"
+              : "cursor-se-resize"
+          )}
+          onMouseDown={(e) => {
+            e.stopPropagation();
+            onMouseDown(e, true);
+          }}
+        />
+      </g>
     </g>
   );
 }
