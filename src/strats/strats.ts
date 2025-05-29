@@ -145,7 +145,7 @@ export async function deleteStratAssets(
   revalidatePath("/", "layout");
 }
 
-export async function addAsset(stratID: Strat["id"], asset: PlacedAsset) {
+export async function addStratAsset(stratID: Strat["id"], asset: PlacedAsset) {
   const user = await getPayload();
   StratsDB.addAsset(user!, stratID, asset);
 

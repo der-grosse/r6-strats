@@ -94,6 +94,7 @@ export const placedAssets = pgTable("placed_assets", {
   positionY: numeric("position_y", { mode: "number" }).notNull(),
   width: numeric("width", { mode: "number" }).notNull(),
   height: numeric("height", { mode: "number" }).notNull(),
+  rotation: numeric("rotation", { mode: "number" }).notNull().default(0),
   pickedOPID: integer("picked_op_id").references(() => pickedOperators.id, {
     onDelete: "set null",
     onUpdate: "cascade",

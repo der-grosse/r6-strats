@@ -7,7 +7,6 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 
 ### Editor
 
-- edit history with undo/redo
 - rotate assets
 - add layout assets to editor
 - add websocket for live updates to enable collaborative editing

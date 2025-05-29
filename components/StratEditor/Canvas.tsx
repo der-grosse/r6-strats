@@ -2,19 +2,20 @@
 import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import SVGAsset from "./SVGAsset";
 import { useKeys } from "../hooks/useKey";
+import isKeyDown from "../hooks/isKeyDown";
 
 interface Asset {
   id: string;
   type: string;
   position: { x: number; y: number };
   size: { width: number; height: number };
+  rotation?: number;
 }
 
 interface CanvasProps<A extends Asset> {
   map: R6Map | null;
   assets: A[];
   onAssetChange: (assets: A[]) => void;
-  onAssetInput: (assets: A[]) => void;
   onAssetRemove: (assets: A["id"][]) => void;
   renderAsset: (asset: A, selected: boolean) => React.ReactNode;
 }
@@ -30,13 +31,16 @@ export const ASSET_BASE_SIZE = 40;
 
 export default function StratEditorCanvas<A extends Asset>({
   map,
-  assets,
+  assets: propAssets,
   onAssetChange,
-  onAssetInput,
   onAssetRemove,
   renderAsset,
 }: Readonly<CanvasProps<A>>) {
-  const assetsRef = useRef<A[]>(assets);
+  const [assets, setAssets] = useState<A[]>(propAssets);
+  useEffect(() => {
+    setAssets(propAssets);
+  }, [propAssets]);
+  const assetsRef = useRef<A[]>(propAssets);
   assetsRef.current = assets;
 
   const svgRef = useRef<SVGSVGElement>(null);
@@ -110,6 +114,7 @@ export default function StratEditorCanvas<A extends Asset>({
       y: number;
       width: number;
       height: number;
+      rotation: number;
     }[],
   });
 
@@ -148,6 +153,7 @@ export default function StratEditorCanvas<A extends Asset>({
           .map((a) => ({
             ...a.position,
             ...a.size,
+            rotation: a.rotation || 0,
             id: a.id,
           })),
       });
@@ -177,24 +183,22 @@ export default function StratEditorCanvas<A extends Asset>({
         const distance = Math.sqrt(dx ** 2 + dy ** 2);
         if (distance < DRAG_DEADZONE) return;
 
-        onAssetInput(
-          selectedAssets
-            .map((s) => assets.find((a) => a.id === s)!)
-            .filter(Boolean)
-            .map((asset) => {
-              const startPos = actionStart.startPositions.find(
-                (pos) => pos.id === asset.id
-              );
-              if (!startPos) return asset;
+        setAssets((assets) =>
+          assets.map((asset) => {
+            if (!selectedAssets.includes(asset.id)) return asset;
+            const startPos = actionStart.startPositions.find(
+              (pos) => pos.id === asset.id
+            );
+            if (!startPos) return asset;
 
-              return {
-                ...asset,
-                position: {
-                  x: startPos.x + dx,
-                  y: startPos.y + dy,
-                },
-              };
-            })
+            return {
+              ...asset,
+              position: {
+                x: startPos.x + dx,
+                y: startPos.y + dy,
+              },
+            };
+          })
         );
       } else if (isResizing) {
         const selected = assets.filter((a) => selectedAssets.includes(a.id));
@@ -204,11 +208,10 @@ export default function StratEditorCanvas<A extends Asset>({
 
           const makeSquare = e.shiftKey;
 
-          onAssetInput(
-            selectedAssets
-              .map((s) => assets.find((a) => a.id === s)!)
-              .filter(Boolean)
-              .map((a) => ({
+          setAssets((assets) =>
+            assets.map((a) => {
+              if (!selectedAssets.includes(a.id)) return a;
+              return {
                 ...a,
                 size: (() => {
                   const startPos = actionStart.startPositions.find(
@@ -226,7 +229,8 @@ export default function StratEditorCanvas<A extends Asset>({
                     height: maxSide,
                   };
                 })(),
-              }))
+              };
+            })
           );
         }
       }
@@ -339,6 +343,8 @@ export default function StratEditorCanvas<A extends Asset>({
     },
   ]);
 
+  const ctrlKeyDown = isKeyDown("Control");
+
   return (
     <div className="relative overflow-hidden w-full h-full">
       <svg
@@ -377,6 +383,7 @@ export default function StratEditorCanvas<A extends Asset>({
               handleMouseDown(e, asset.id, isResizeHandle)
             }
             selected={selectedAssets.includes(asset.id)}
+            ctrlKeyDown={ctrlKeyDown}
           >
             {renderAsset(
               asset,

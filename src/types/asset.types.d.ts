@@ -52,6 +52,7 @@ interface GadgetAsset {
 type PlacedAsset = Asset & {
   position: Position;
   size: Size;
+  rotation: number;
 };
 
 interface Position {

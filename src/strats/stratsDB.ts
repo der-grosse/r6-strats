@@ -150,6 +150,7 @@ class StratsDBClass {
           pickedOPID: asset.pickedOPID,
           width: asset.size.width,
           height: asset.size.height,
+          rotation: asset.rotation,
         });
       }
     }
@@ -180,6 +181,7 @@ class StratsDBClass {
         pickedOPID: asset.pickedOPID,
         width: asset.size.width,
         height: asset.size.height,
+        rotation: asset.rotation,
       })
       .where(
         and(
@@ -207,6 +209,7 @@ class StratsDBClass {
       pickedOPID: asset.pickedOPID,
       width: asset.size.width,
       height: asset.size.height,
+      rotation: asset.rotation,
     });
   }
 
@@ -263,6 +266,7 @@ class StratsDBClass {
       rotate: string | null;
       width: number;
       height: number;
+      rotation: number;
     }[];
     pickedOperators: {
       id: number;
@@ -283,6 +287,7 @@ class StratsDBClass {
           id: r.assetID,
           position: { x: r.positionX, y: r.positionY },
           size: { width: r.width, height: r.height },
+          rotation: r.rotation,
           pickedOPID: r.pickedOPID,
           customColor: r.customColor,
           type: r.type,

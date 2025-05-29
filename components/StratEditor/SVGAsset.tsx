@@ -9,6 +9,7 @@ interface SVGAssetProps {
   selected: boolean;
   children: React.ReactNode;
   className?: string;
+  ctrlKeyDown?: boolean;
 }
 
 export default function SVGAsset({
@@ -18,6 +19,7 @@ export default function SVGAsset({
   selected,
   children,
   className,
+  ctrlKeyDown = false,
 }: Readonly<SVGAssetProps>) {
   const assetRef = useRef<SVGGElement>(null);
 
@@ -53,7 +55,13 @@ export default function SVGAsset({
         cy={size.height}
         r=".5%"
         fill="currentColor"
-        className={cn("resize-handle cursor-se-resize", !selected && "hidden")}
+        className={cn(
+          "resize-handle",
+          !selected && "hidden",
+          ctrlKeyDown
+            ? "cursor-[url(/cursor/rotate.png),_grab]"
+            : "cursor-se-resize"
+        )}
         onMouseDown={(e) => {
           e.stopPropagation();
           onMouseDown(e, true);
