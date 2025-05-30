@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # Install dependencies
-RUN npm install --legacy-peer-deps
+RUN npm install --legacy-peer-deps --production
 
 # Copy the rest of the application code
 COPY . .
@@ -27,7 +27,6 @@ COPY --from=base /app/package.json /app/package-lock.json ./
 COPY --from=base /app/.next ./.next
 COPY --from=base /app/public ./public
 COPY --from=base /app/node_modules ./node_modules
-COPY --from=base /app/src ./src
 COPY --from=base /app/dist ./dist
 
 # Expose the port the app runs on
