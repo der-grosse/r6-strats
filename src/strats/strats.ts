@@ -100,7 +100,7 @@ export async function getActive() {
   return activeStrat;
 }
 
-export async function setActive(newStrat: Strat["id"]) {
+export async function setActive(newStrat: Strat["id"] | null) {
   const user = await getPayload();
   await ActiveStratDB.setActiveStrat(user!, newStrat);
 }

@@ -4,20 +4,24 @@ import { activeStrat } from "../db/schema";
 import StratsDB from "./stratsDB";
 
 class ActiveStratClass {
-  async setActiveStrat(user: JWTPayload, stratID: Strat["id"]) {
-    const active = (
-      await db
-        .select()
-        .from(activeStrat)
-        .where(eq(activeStrat.teamID, user.teamID))
-    )[0];
-    if (!active) {
-      await db.insert(activeStrat).values({ teamID: user.teamID, stratID });
-    } else if (active.stratID !== stratID) {
-      await db
-        .update(activeStrat)
-        .set({ stratID })
-        .where(eq(activeStrat.teamID, user.teamID));
+  async setActiveStrat(user: JWTPayload, stratID: Strat["id"] | null) {
+    if (!stratID) {
+      await db.delete(activeStrat).where(eq(activeStrat.teamID, user.teamID));
+    } else {
+      const active = (
+        await db
+          .select()
+          .from(activeStrat)
+          .where(eq(activeStrat.teamID, user.teamID))
+      )[0];
+      if (!active) {
+        await db.insert(activeStrat).values({ teamID: user.teamID, stratID });
+      } else if (active.stratID !== stratID) {
+        await db
+          .update(activeStrat)
+          .set({ stratID })
+          .where(eq(activeStrat.teamID, user.teamID));
+      }
     }
   }
 

@@ -77,9 +77,11 @@ export const activeStrat = pgTable(
     teamID: integer("team_id")
       .notNull()
       .references(() => team.id, { onDelete: "cascade" }),
-    stratID: integer("strat_id").references(() => strats.id, {
-      onDelete: "cascade",
-    }),
+    stratID: integer("strat_id")
+      .notNull()
+      .references(() => strats.id, {
+        onDelete: "cascade",
+      }),
   },
   (table) => [primaryKey({ columns: [table.teamID, table.stratID] })]
 );

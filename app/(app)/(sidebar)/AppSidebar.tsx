@@ -15,13 +15,16 @@ import {
 } from "@/components/ui/sidebar";
 import {
   ChevronDown,
+  Crown,
   Database,
   Edit,
+  Eye,
   FolderOpen,
   Link2,
   LogOut,
   MapPinned,
   Users,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { useFilter } from "../../../components/context/FilterContext";
@@ -30,7 +33,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../../../components/ui/collapsible";
-import { Checkbox } from "../../../components/ui/checkbox";
 import { useRouter } from "next/navigation";
 import { getGoogleDrawingsEditURL } from "@/src/googleDrawings";
 import { Button } from "@/components/ui/button";
@@ -40,6 +42,13 @@ import SiteSelector from "@/components/SiteSelector";
 import OperatorPicker from "@/components/OperatorPicker";
 import { useSocket } from "@/components/context/SocketContext";
 import { setActive } from "@/src/strats/strats";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/src/utils";
 
 export function AppSidebar(props: { teamName: string }) {
   const router = useRouter();
@@ -88,7 +97,7 @@ export function AppSidebar(props: { teamName: string }) {
                     <Link href="/">
                       <SidebarMenuButton>
                         <FolderOpen className="mr-2" />
-                        Current Strat
+                        Active Strat
                       </SidebarMenuButton>
                     </Link>
                   </SidebarMenuItem>
@@ -251,18 +260,49 @@ export function AppSidebar(props: { teamName: string }) {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <Checkbox
-              id="sidebar-leading-checkbox"
-              className="mx-2"
-              checked={isLeading}
-              onCheckedChange={(checked) => setIsLeading(!!checked)}
-            />
-            <label
-              htmlFor="sidebar-leading-checkbox"
-              className="text-sm leading-none"
-            >
-              Lead current open strat
-            </label>
+            <Tooltip delayDuration={750}>
+              <TooltipTrigger asChild>
+                <SidebarMenuButton onClick={() => setIsLeading(!isLeading)}>
+                  {isLeading ? <Crown /> : <Eye />}
+                  {isLeading
+                    ? "Leading active strat"
+                    : "Not leading active strat"}
+                </SidebarMenuButton>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p className="text-sm">Lead active strat</p>
+                <p className="text-xs text-muted-foreground">
+                  When this option is selected, your open strat will be shown to
+                  all users of your team, that have the <em>Active strat</em>{" "}
+                  tab open.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip delayDuration={750}>
+              <TooltipTrigger asChild>
+                <SidebarMenuAction
+                  disabled={!isLeading}
+                  className={cn(
+                    "cursor-pointer p-2 -my-1.5 w-7",
+                    !isLeading && "pointer-events-none"
+                  )}
+                  onClick={() => {
+                    if (!isLeading) return;
+                    setActive(null);
+                    socket.emit("active-strat:change", null);
+                  }}
+                >
+                  <X className={cn(!isLeading && "text-muted-foreground")} />
+                </SidebarMenuAction>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p className="text-sm">Clear currently open strat</p>
+                <p className="text-xs text-muted-foreground">
+                  You can only clear the current strat when you are leading the
+                  currently open strat.
+                </p>
+              </TooltipContent>
+            </Tooltip>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
