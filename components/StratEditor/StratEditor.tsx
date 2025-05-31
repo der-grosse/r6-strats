@@ -67,11 +67,9 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
       history.current.shift();
       historyIndex.current -= 1;
     }
-    console.log(`Pushing to history:`, historyIndex.current, history.current);
   }, []);
 
   const redo = useCallback(() => {
-    console.log(`Redoing:`, historyIndex.current, history.current);
     if (historyIndex.current < history.current.length - 1) {
       historyIndex.current += 1;
       const event = history.current[historyIndex.current];
@@ -85,15 +83,10 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
     deleteStratAssets,
   ]);
   const undo = useCallback(() => {
-    console.log(`Undoing:`, historyIndex.current, history.current);
     if (historyIndex.current >= 0) {
       const event = history.current[historyIndex.current];
       historyIndex.current -= 1;
-      setAssets((assets) => {
-        const newAssets = undoEvent(strat.id, assets, event);
-        console.log(`Undo result:`, newAssets);
-        return newAssets;
-      });
+      setAssets((assets) => undoEvent(strat.id, assets, event));
     }
   }, [
     setAssets,

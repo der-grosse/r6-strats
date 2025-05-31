@@ -108,7 +108,9 @@ export default function StratEditorCanvas<A extends Asset>({
   lastZoomedViewBox.current = zoomedViewBox;
 
   const [isDragging, setIsDragging] = useState(false);
-  const [isResizingOrRotating, setIsResizingOrRotating] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
+  const [isRotating, setIsRotating] = useState(false);
+  const actionEndTime = useRef(0);
   const [actionStart, setActionStart] = useState({
     x: 0,
     y: 0,
@@ -126,7 +128,11 @@ export default function StratEditorCanvas<A extends Asset>({
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
 
   const handleMouseDown = useCallback(
-    (e: React.MouseEvent, assetId: string, isResizeHandle: boolean) => {
+    (
+      e: React.MouseEvent,
+      assetId: string,
+      handle: "resize" | "rotate" | "none"
+    ) => {
       const svg = svgRef.current;
       if (!svg) return;
 
@@ -143,9 +149,12 @@ export default function StratEditorCanvas<A extends Asset>({
         setSelectedAssets([assetId]);
       }
 
-      if (isResizeHandle) {
+      if (handle === "resize") {
         // resizing asset
-        setIsResizingOrRotating(true);
+        setIsResizing(true);
+      } else if (handle === "rotate") {
+        // rotating asset
+        setIsRotating(true);
       } else {
         // dragging asset
         setIsDragging(true);
@@ -171,7 +180,10 @@ export default function StratEditorCanvas<A extends Asset>({
 
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
-      if (selectedAssets.length === 0 || (!isDragging && !isResizingOrRotating))
+      if (
+        selectedAssets.length === 0 ||
+        (!isDragging && !isResizing && !isRotating)
+      )
         return;
 
       const svg = svgRef.current;
@@ -209,11 +221,11 @@ export default function StratEditorCanvas<A extends Asset>({
             };
           })
         );
-      } else if (isResizingOrRotating) {
+      } else if (isResizing || isRotating) {
         const selected = assets.filter((a) => selectedAssets.includes(a.id));
         if (selected.length === 0) return;
 
-        if (e.ctrlKey) {
+        if (isRotating || e.ctrlKey) {
           // rotating asset
           const startX = actionStart.asset
             ? actionStart.asset.position.x + actionStart.asset.size.width / 2
@@ -289,20 +301,25 @@ export default function StratEditorCanvas<A extends Asset>({
         }
       }
     },
-    [isDragging, isResizingOrRotating, selectedAssets, actionStart]
+    [isDragging, isResizing, isRotating, selectedAssets, actionStart]
   );
 
-  const handleMouseUp = useCallback(() => {
-    if (isDragging || isResizingOrRotating) {
-      onAssetChange(
-        selectedAssets
-          .map((s) => assetsRef.current.find((a) => a.id === s)!)
-          .filter(Boolean)
-      );
-    }
-    setIsDragging(false);
-    setIsResizingOrRotating(false);
-  }, [isDragging, isResizingOrRotating, selectedAssets]);
+  const handleMouseUp = useCallback(
+    (e: MouseEvent) => {
+      if (isDragging || isResizing || isRotating) {
+        onAssetChange(
+          selectedAssets
+            .map((s) => assetsRef.current.find((a) => a.id === s)!)
+            .filter(Boolean)
+        );
+        actionEndTime.current = Date.now();
+      }
+      setIsDragging(false);
+      setIsResizing(false);
+      setIsRotating(false);
+    },
+    [isDragging, isResizing, isRotating, selectedAssets]
+  );
 
   const handleWheel = useCallback(
     (e: WheelEvent) => {
@@ -350,7 +367,7 @@ export default function StratEditorCanvas<A extends Asset>({
   );
 
   useEffect(() => {
-    if (isDragging || isResizingOrRotating) {
+    if (isDragging || isResizing || isRotating) {
       window.addEventListener("mousemove", handleMouseMove, { passive: false });
       window.addEventListener("mouseup", handleMouseUp);
     }
@@ -358,7 +375,7 @@ export default function StratEditorCanvas<A extends Asset>({
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDragging, isResizingOrRotating, handleMouseUp, handleMouseMove]);
+  }, [isDragging, isResizing, isRotating, handleMouseUp, handleMouseMove]);
 
   // add non-passive handleWheel event listener to svg
   useEffect(() => {
@@ -408,11 +425,33 @@ export default function StratEditorCanvas<A extends Asset>({
         preserveAspectRatio="xMidYMid meet"
         onClick={(e) => {
           e.stopPropagation();
+          // prevent deselecting assets after rotating
+          // drag of rotate can be recognized as click if you leave the click area of the asset while rotating
+          if (Date.now() - actionEndTime.current < 500) return;
           setSelectedAssets([]);
         }}
         tabIndex={0}
         focusable
       >
+        {" "}
+        {/* Global filter definitions */}
+        <defs>
+          <filter
+            id="globalDropShadow"
+            x="-50%"
+            y="-50%"
+            width="200%"
+            height="200%"
+          >
+            <feDropShadow
+              dx="0"
+              dy="0"
+              stdDeviation="1"
+              floodOpacity="0.9"
+              floodColor="#000000"
+            />
+          </filter>
+        </defs>
         {/* Render map background */}
         {map?.floors.map((floor, i) => (
           <image
@@ -426,7 +465,6 @@ export default function StratEditorCanvas<A extends Asset>({
             className="pointer-events-none"
           />
         ))}
-
         {/* Render assets */}
         {assets.map((asset) => {
           const render = renderAsset(
@@ -439,9 +477,7 @@ export default function StratEditorCanvas<A extends Asset>({
               position={asset.position}
               size={asset.size}
               rotation={asset.rotation || 0}
-              onMouseDown={(e, isResizeHandle) =>
-                handleMouseDown(e, asset.id, isResizeHandle)
-              }
+              onMouseDown={(e, handle) => handleMouseDown(e, asset.id, handle)}
               selected={selectedAssets.includes(asset.id)}
               ctrlKeyDown={ctrlKeyDown}
               menu={render.menu}

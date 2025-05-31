@@ -6,7 +6,10 @@ interface SVGAssetProps {
   position: { x: number; y: number };
   size: { width: number; height: number };
   rotation: number;
-  onMouseDown: (e: React.MouseEvent, isResizeHandle: boolean) => void;
+  onMouseDown: (
+    e: React.MouseEvent,
+    handle: "resize" | "rotate" | "none"
+  ) => void;
   selected: boolean;
   children: React.ReactNode;
   ctrlKeyDown?: boolean;
@@ -31,7 +34,7 @@ export default function SVGAsset({
     <g
       ref={assetRef}
       transform={`translate(${position.x}, ${position.y})`}
-      onMouseDown={(e) => onMouseDown(e, false)}
+      onMouseDown={(e) => onMouseDown(e, "none")}
       onClick={(e) => {
         e.stopPropagation();
       }}
@@ -56,13 +59,30 @@ export default function SVGAsset({
           fill="none"
           stroke="currentColor"
           strokeWidth="1"
+          filter="url(#globalDropShadow)"
           className={cn("pointer-events-none", !selected && "hidden")}
+        />
+        <circle
+          cx={size.width * 1.025}
+          cy={size.height * 1.025}
+          r=".75%"
+          fill="transparent"
+          className={cn(
+            "rotate-handle",
+            !selected && "hidden",
+            "cursor-[url(/cursor/rotate.png),_grab]"
+          )}
+          onMouseDown={(e) => {
+            e.stopPropagation();
+            onMouseDown(e, "rotate");
+          }}
         />
         <circle
           cx={size.width}
           cy={size.height}
           r=".5%"
           fill="currentColor"
+          filter="url(#globalDropShadow)"
           className={cn(
             "resize-handle",
             !selected && "hidden",
@@ -72,7 +92,7 @@ export default function SVGAsset({
           )}
           onMouseDown={(e) => {
             e.stopPropagation();
-            onMouseDown(e, true);
+            onMouseDown(e, "resize");
           }}
         />
       </g>
