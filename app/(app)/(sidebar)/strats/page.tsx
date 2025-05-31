@@ -18,9 +18,11 @@ import Link from "next/link";
 import config from "@/src/static/config";
 import { useSocket } from "@/components/context/SocketContext";
 import { setActive } from "@/src/strats/strats";
+import { useRouter } from "next/navigation";
 
 export default function StratsPage() {
   const { filteredStrats, isLeading } = useFilter();
+  const router = useRouter();
   const socket = useSocket();
   return (
     <div className="w-full h-full p-4 flex flex-col gap-4">
@@ -70,21 +72,29 @@ export default function StratsPage() {
                 </div>
               </TableCell>
               <TableCell className="flex gap-1 -my-2">
-                <Link href={isLeading ? "/" : `/strat/${strat.id}`}>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="cursor-pointer"
-                    onClick={async () => {
-                      if (isLeading) {
-                        await setActive(strat.id);
-                        socket.emit("active-strat:change", strat);
-                      }
-                    }}
-                  >
-                    <Eye />
-                  </Button>
-                </Link>
+                {(() => {
+                  const button = (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="cursor-pointer"
+                      onClick={async () => {
+                        if (isLeading) {
+                          await setActive(strat.id);
+                          socket.emit("active-strat:change", strat);
+                          router.push("/");
+                        }
+                      }}
+                    >
+                      <Eye />
+                    </Button>
+                  );
+                  if (isLeading) {
+                    return button;
+                  } else {
+                    return <Link href={`/strat/${strat.id}`}>{button}</Link>;
+                  }
+                })()}
                 <Link href={`/editor/${strat.id}`}>
                   <Button
                     variant="ghost"

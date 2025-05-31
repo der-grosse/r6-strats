@@ -19,6 +19,7 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 - add bombsite indicator
 - somehow add alternatives for strat
 - CTRL+d to duplicate selected elements
+- sidebar width changes based on tab
 
 ### Strat View
 
