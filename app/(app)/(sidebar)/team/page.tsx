@@ -22,9 +22,9 @@ export default async function TeamManagementPage() {
 
       <TeamMembers team={team} />
 
-      {user?.isAdmin && <TeamInviteKeys inviteKeys={inviteKeys} />}
-
       <TeamPlayerPositions team={team} canEdit={user?.isAdmin ?? false} />
+
+      {user?.isAdmin && <TeamInviteKeys inviteKeys={inviteKeys} />}
     </div>
   );
 }

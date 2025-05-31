@@ -7,14 +7,13 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 
 ### Editor
 
-- add layout assets to editor
 - add websocket for live updates to enable collaborative editing
 - click and drag for selecting mulptiple elements at once
 - add default color to operators since they might not be easily visible otherwise
 - make doors, windows and walls clickable to easily add assets
 - edit attributes of multiple assets at once
-- add new map blueprints
 - add toggle for floors of map
+- add new map blueprints
 - zoom slider
 - scroll bars when zoomed in
 - make notes / upload screenshots for specific assets
