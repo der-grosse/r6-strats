@@ -229,7 +229,7 @@ function getNextOperatorIconType(
 }
 
 export function getAssetColor(
-  asset: PlacedAsset,
+  asset: Pick<PlacedAsset, "customColor" | "pickedOPID">,
   pickedOPs: PickedOperator[],
   team: Team
 ): string | undefined {

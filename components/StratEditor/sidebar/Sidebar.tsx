@@ -25,6 +25,8 @@ import Link from "next/link";
 import StratEditorPlayerOperatorsSidebar from "./PlayerOPs";
 import config from "@/src/static/config";
 import StratEditorLayoutSidebar from "./Layout";
+import { getAssetColor } from "../Assets";
+import { ColorButton } from "@/components/ColorPickerDialog";
 
 export interface StratEditorSidebarProps {
   onAssetAdd: (asset: Asset & Partial<PlacedAsset>) => void;
@@ -54,7 +56,53 @@ export default function StratEditorSidebar(
   );
 
   const placedReeinforcements = useMemo(
-    () => props.strat.assets.filter((a) => a.type === "reinforcement").length,
+    () =>
+      Array.from(
+        props.strat.assets
+          .filter((a) => a.type === "reinforcement")
+          .reduce(
+            (acc, asset) => {
+              const cur = acc.get(asset.pickedOPID ?? -1);
+              if (cur) {
+                acc.set(asset.pickedOPID ?? -1, {
+                  ...cur,
+                  count: cur.count + 1,
+                });
+              }
+              return acc;
+            },
+            new Map([
+              ...props.strat.operators.map((op) => {
+                const position =
+                  props.team.playerPositions.find(
+                    (pos) => pos.id === op.positionID
+                  ) ?? null;
+                const player =
+                  props.team.members.find((m) => m.id === position?.playerID) ??
+                  null;
+                return [
+                  op.id,
+                  {
+                    position,
+                    player,
+                    color:
+                      getAssetColor(
+                        { pickedOPID: op.id },
+                        props.strat.operators,
+                        props.team
+                      ) ?? null,
+                    count: 0 as number,
+                  },
+                ] as const;
+              }),
+              [
+                -1,
+                { position: null, player: null, color: null, count: 0 },
+              ] as const,
+            ])
+          )
+          .values()
+      ),
     [props.strat.assets]
   );
 
@@ -177,7 +225,10 @@ export default function StratEditorSidebar(
           <TooltipTrigger asChild>
             <div className="flex gap-1 p-1 items-center cursor-default">
               <span className="text-xs text-muted-foreground text-right">
-                {MAX_REINFORCEMENT - placedReeinforcements}
+                {MAX_REINFORCEMENT -
+                  placedReeinforcements
+                    .map((v) => v.count)
+                    .reduce((a, b) => a + b, 0)}
               </span>
               <div className="flex-1">
                 <Reinforcement color="white" />
@@ -186,9 +237,33 @@ export default function StratEditorSidebar(
           </TooltipTrigger>
           <TooltipContent side="right">
             <p className="text-sm">
-              {MAX_REINFORCEMENT - placedReeinforcements} Reinforcements
-              remaining
+              {MAX_REINFORCEMENT -
+                placedReeinforcements
+                  .map((v) => v.count)
+                  .reduce((a, b) => a + b, 0)}{" "}
+              Reinforcements remaining
             </p>
+            {placedReeinforcements.map((p) => (
+              <div
+                className="flex items-center gap-1 mt-1"
+                key={p.position?.id ?? -1}
+              >
+                <p className="w-4">{p.count}x</p>
+                {p.player ? (
+                  <>
+                    <ColorButton disabled color={p.color} size="small" />
+                    <p>{p.player.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {p.position?.positionName}
+                    </p>
+                  </>
+                ) : (
+                  <p>
+                    <em>No player assigned</em>
+                  </p>
+                )}
+              </div>
+            ))}
           </TooltipContent>
         </Tooltip>
         <Tooltip delayDuration={500}>
