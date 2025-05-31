@@ -28,7 +28,7 @@ COPY --from=base /app/.next ./.next
 COPY --from=base /app/public ./public
 COPY --from=base /app/dist ./dist
 
-RUN npm install --legacy-peer-deps --production
+RUN npm install --legacy-peer-deps --omit=dev
 
 # Expose the port the app runs on
 EXPOSE 3000
