@@ -86,7 +86,7 @@ export default function SVGAsset({
             -size.height * (1 - zoom)
           }) translate(0, ${
             // Adjust the vertical position based on rotation
-            rotation === 0
+            (rotation === 0
               ? 0
               : (() => {
                   const diagonalHalf = Math.sqrt(
@@ -101,7 +101,7 @@ export default function SVGAsset({
                     diagonalHalf * Math.sin(rotatedAngle) - size.height / 2;
 
                   return -Math.max(0, offset);
-                })()
+                })()) - 15
           })`}
         >
           {menu}

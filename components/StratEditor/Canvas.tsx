@@ -253,8 +253,13 @@ export default function StratEditorCanvas<A extends Asset>({
             })
           );
         } else {
-          const deltaX = svgP.x - actionStart.x;
-          const deltaY = svgP.y - actionStart.y;
+          // Calculate delta in screen coordinates
+          const rawX = svgP.x - actionStart.x;
+          const rawY = svgP.y - actionStart.y;
+          const delta = rotateVector(
+            { x: rawX, y: rawY },
+            -(actionStart.asset?.rotation || 0)
+          );
 
           // resizing asset
           const makeSquare = e.shiftKey;
@@ -262,24 +267,22 @@ export default function StratEditorCanvas<A extends Asset>({
           setAssets((assets) =>
             assets.map((a) => {
               if (!selectedAssets.includes(a.id)) return a;
+              const startPos = actionStart.startPositions.find(
+                (pos) => pos.id === a.id
+              );
+              if (!startPos) return a;
+              const newProperties = resizeAsset(
+                {
+                  position: startPos,
+                  size: startPos,
+                  rotation: startPos.rotation,
+                },
+                delta,
+                makeSquare
+              );
               return {
                 ...a,
-                size: (() => {
-                  const startPos = actionStart.startPositions.find(
-                    (pos) => pos.id === a.id
-                  );
-                  if (!startPos) return a.size;
-                  const newSize = {
-                    width: Math.max(MIN_ASSET_SIZE, startPos.width + deltaX),
-                    height: Math.max(MIN_ASSET_SIZE, startPos.height + deltaY),
-                  };
-                  if (!makeSquare) return newSize;
-                  const maxSide = Math.max(newSize.width, newSize.height);
-                  return {
-                    width: maxSide,
-                    height: maxSide,
-                  };
-                })(),
+                ...newProperties,
               };
             })
           );
@@ -455,4 +458,38 @@ export default function StratEditorCanvas<A extends Asset>({
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
+}
+
+function rotateVector(
+  vector: { x: number; y: number },
+  angle: number
+): { x: number; y: number } {
+  const radians = (angle * Math.PI) / 180;
+  return {
+    x: vector.x * Math.cos(radians) - vector.y * Math.sin(radians),
+    y: vector.x * Math.sin(radians) + vector.y * Math.cos(radians),
+  };
+}
+
+function resizeAsset(
+  asset: Pick<Asset, "size" | "position" | "rotation">,
+  leveledDelta: { x: number; y: number },
+  makeSquare: boolean
+): Pick<Asset, "size" | "position"> {
+  let newSize = {
+    width: Math.max(MIN_ASSET_SIZE, asset.size.width + leveledDelta.x),
+    height: Math.max(MIN_ASSET_SIZE, asset.size.height + leveledDelta.y),
+  };
+  if (makeSquare) {
+    const maxSide = Math.max(newSize.width, newSize.height);
+    newSize = { width: maxSide, height: maxSide };
+  }
+  const newPosition = {
+    x: asset.position.x - (newSize.width - asset.size.width) / 2,
+    y: asset.position.y - (newSize.height - asset.size.height) / 2,
+  };
+  return {
+    size: newSize,
+    position: newPosition,
+  };
 }
