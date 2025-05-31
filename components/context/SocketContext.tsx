@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+"use client";
+import { createContext, useContext, useMemo } from "react";
 import { useUser } from "./UserContext";
 import { getSocketClient, SocketClient } from "@/src/socket/client";
 

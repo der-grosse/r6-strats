@@ -11,13 +11,15 @@ import {
 } from "@/src/strats/strats";
 import { useKeys } from "../hooks/useKey";
 import { deepCopy } from "../deepCopy";
+import { useSocket } from "../context/SocketContext";
+import useSocketEvent from "../hooks/useSocketEvent";
 
 interface StratEditorProps {
   strat: Strat;
   team: Team;
 }
 
-type HistoryEvent = AssetAdded | AssetUpdated | AssetDeleted;
+export type AssetEvent = AssetAdded | AssetUpdated | AssetDeleted;
 export interface AssetAdded {
   type: "asset-added";
   asset: PlacedAsset;
@@ -35,6 +37,14 @@ export interface AssetDeleted {
 const HISTORY_SIZE = 100;
 
 export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
+  const socket = useSocket();
+  useEffect(() => {
+    socket.emit("strat-editor:subscribe", strat.id);
+    return () => {
+      socket.emit("strat-editor:unsubscribe", strat.id);
+    };
+  }, [strat]);
+
   const [assets, setAssets] = useState<PlacedAsset[]>(strat.assets);
   const getHightestID = useCallback(
     (assets: PlacedAsset[]) =>
@@ -46,9 +56,9 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
     []
   );
 
-  const history = useRef<HistoryEvent[]>([]);
+  const history = useRef<AssetEvent[]>([]);
   const historyIndex = useRef(-1);
-  const pushHistory = useCallback((event: HistoryEvent) => {
+  const pushEvent = useCallback((event: AssetEvent, fromRemote = false) => {
     if (
       JSON.stringify(history.current[historyIndex.current]) ===
       JSON.stringify(event)
@@ -67,13 +77,23 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
       history.current.shift();
       historyIndex.current -= 1;
     }
+
+    if (!fromRemote) {
+      socket.emit("strat-editor:event", strat.id, event);
+    }
   }, []);
+
+  useSocketEvent("strat-editor:event", (event, fromSocket) => {
+    if (fromSocket === socket.id) return;
+    setAssets((assets) => redoEvent(strat.id, assets, event, true));
+  });
 
   const redo = useCallback(() => {
     if (historyIndex.current < history.current.length - 1) {
       historyIndex.current += 1;
       const event = history.current[historyIndex.current];
       setAssets((assets) => redoEvent(strat.id, assets, event));
+      socket.emit("strat-editor:event", strat.id, event);
     }
   }, [
     setAssets,
@@ -87,6 +107,9 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
       const event = history.current[historyIndex.current];
       historyIndex.current -= 1;
       setAssets((assets) => undoEvent(strat.id, assets, event));
+      for (const invertedEvent of invertEvent(event)) {
+        socket.emit("strat-editor:event", strat.id, invertedEvent);
+      }
     }
   }, [
     setAssets,
@@ -119,14 +142,14 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
       deleteAsset(asset) {
         setAssets((assets) => assets.filter((a) => a.id !== asset.id));
         deleteStratAssets(strat.id, [asset.id]);
-        pushHistory({
+        pushEvent({
           type: "asset-deleted",
           assets: [asset],
         });
       },
       updateAsset(asset) {
         setAssets((assets) => {
-          pushHistory({
+          pushEvent({
             type: "asset-updated",
             old_assets: assets.filter((a) => a.id === asset.id),
             new_assets: [asset],
@@ -155,7 +178,7 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
         };
         setAssets((assets) => [...assets, placedAsset]);
         addStratAsset(strat.id, placedAsset);
-        pushHistory({
+        pushEvent({
           type: "asset-added",
           asset: placedAsset,
         });
@@ -168,7 +191,7 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
         assets={assets}
         onAssetChange={(assets) => {
           setAssets((existing) => {
-            pushHistory({
+            pushEvent({
               type: "asset-updated",
               old_assets: existing.filter((a) =>
                 assets.some((asset) => asset.id === a.id)
@@ -185,7 +208,7 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
         }}
         onAssetRemove={(ids) => {
           setAssets((assets) => {
-            pushHistory({
+            pushEvent({
               type: "asset-deleted",
               assets: assets.filter((a) => ids.includes(a.id)),
             });
@@ -203,7 +226,7 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
 function undoEvent(
   stratID: Strat["id"],
   state: PlacedAsset[],
-  event: HistoryEvent
+  event: AssetEvent
 ) {
   switch (event.type) {
     case "asset-added":
@@ -235,34 +258,63 @@ function undoEvent(
 function redoEvent(
   stratID: Strat["id"],
   state: PlacedAsset[],
-  event: HistoryEvent
+  event: AssetEvent,
+  fromRemote = false
 ) {
   switch (event.type) {
     case "asset-added":
-      requestAnimationFrame(() => {
-        addStratAsset(stratID, event.asset);
-      });
+      if (!fromRemote)
+        requestAnimationFrame(() => {
+          addStratAsset(stratID, event.asset);
+        });
       return [...state, deepCopy(event.asset)];
     case "asset-updated":
-      requestAnimationFrame(() => {
-        updateStratAssets(stratID, event.new_assets);
-      });
+      if (!fromRemote)
+        requestAnimationFrame(() => {
+          updateStratAssets(stratID, event.new_assets);
+        });
       return state.map((a) => {
         const newAsset = event.new_assets.find((asset) => asset.id === a.id);
         if (!newAsset) return a;
         return deepCopy(newAsset);
       });
     case "asset-deleted":
-      requestAnimationFrame(() => {
-        deleteStratAssets(
-          stratID,
-          event.assets.map((a) => a.id)
-        );
-      });
+      if (!fromRemote)
+        requestAnimationFrame(() => {
+          deleteStratAssets(
+            stratID,
+            event.assets.map((a) => a.id)
+          );
+        });
       return state.filter(
         (a) => !event.assets.some((asset) => asset.id === a.id)
       );
     default:
       throw new Error(`Unknown event type: ${(event as any)?.type}`);
+  }
+}
+
+function invertEvent(event: AssetEvent): AssetEvent[] {
+  switch (event.type) {
+    case "asset-added":
+      return [
+        {
+          type: "asset-deleted",
+          assets: [event.asset],
+        },
+      ];
+    case "asset-deleted":
+      return event.assets.map((asset) => ({
+        type: "asset-added",
+        asset,
+      }));
+    case "asset-updated":
+      return [
+        {
+          type: "asset-updated",
+          old_assets: event.new_assets,
+          new_assets: event.old_assets,
+        },
+      ];
   }
 }

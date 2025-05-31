@@ -27,4 +27,28 @@ export async function createSocketActions(
   socket.on("active-strat:change", async (strat) => {
     io.in("active-strat").emit("active-strat:changed", strat);
   });
+
+  socket.on("strat-editor:subscribe", (stratID) => {
+    socket.join(`strat-editor-${stratID}`);
+    console.debug(
+      `User ${socket.user.id}:${socket.id} subscribed to strat-editor-${stratID} channel`
+    );
+  });
+  socket.on("strat-editor:unsubscribe", (stratID) => {
+    socket.leave(`strat-editor-${stratID}`);
+    console.debug(
+      `User ${socket.user.id}:${socket.id} unsubscribed from strat-editor-${stratID} channel`
+    );
+  });
+
+  socket.on("strat-editor:event", (stratID, event) => {
+    io.in(`strat-editor-${stratID}`).emit(
+      "strat-editor:event",
+      event,
+      socket.id
+    );
+    console.debug(
+      `User ${socket.user.id}:${socket.id} emitted strat-editor event for strat ${stratID}`
+    );
+  });
 }
