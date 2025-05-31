@@ -25,7 +25,7 @@ export default function AssetOutline(props: {
         if (!member) return null;
         return member.defaultColor;
       })() ??
-      DEFAULT_COLORS[0],
+      DEFAULT_COLORS.at(-1)!,
     [props.asset, props.operators, props.team]
   );
 

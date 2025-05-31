@@ -258,6 +258,7 @@ export function AppSidebar(props: { teamName: string }) {
         </Collapsible>
       </SidebarContent>
       <SidebarFooter>
+        <SidebarSeparator className="-mt-2" />
         <SidebarMenu>
           <SidebarMenuItem>
             <Tooltip delayDuration={750}>

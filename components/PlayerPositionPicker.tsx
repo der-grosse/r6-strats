@@ -44,7 +44,7 @@ export default function PlayerPositionPicker(props: PlayerPositionPickerProps) {
             <>
               <ColorButton
                 component="span"
-                color={teamMember?.defaultColor ?? DEFAULT_COLORS[0]}
+                color={teamMember?.defaultColor ?? DEFAULT_COLORS.at(-1)}
                 size="small"
                 disabled
               />
@@ -112,7 +112,7 @@ export default function PlayerPositionPicker(props: PlayerPositionPickerProps) {
                     }}
                   >
                     <ColorButton
-                      color={member.defaultColor ?? DEFAULT_COLORS[0]}
+                      color={member.defaultColor ?? DEFAULT_COLORS.at(-1)}
                       size="small"
                       disabled
                     />

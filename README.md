@@ -7,7 +7,6 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 
 ### Editor
 
-- add websocket for live updates to enable collaborative editing
 - click and drag for selecting mulptiple elements at once
 - add default color to operators since they might not be easily visible otherwise
 - make doors, windows and walls clickable to easily add assets
@@ -19,6 +18,7 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 - make notes / upload screenshots for specific assets
 - add bombsite indicator
 - somehow add alternatives for strat
+- CTRL+d to duplicate selected elements
 
 ### Strat View
 

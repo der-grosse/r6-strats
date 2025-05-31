@@ -26,10 +26,14 @@ export const DEFAULT_COLORS = [
   "#6d28d9",
   "#e879f9",
   "#fda4af",
+  "#262626",
+  "#525252",
+  "#d4d4d4",
+  "#fafafa",
 ];
 
 export default function ColorPickerDialog(props: ColorPickerDialogProps) {
-  const currentCustomColor = useRef(props.color || DEFAULT_COLORS[0]);
+  const currentCustomColor = useRef(props.color || DEFAULT_COLORS.at(-1)!);
   return (
     <Dialog
       open={props.open}
@@ -53,6 +57,7 @@ export default function ColorPickerDialog(props: ColorPickerDialogProps) {
               {DEFAULT_COLORS.map((color) => (
                 <ColorButton
                   size="large"
+                  className="outline"
                   key={color}
                   color={color}
                   onClick={(color) => {
@@ -98,8 +103,9 @@ export function ColorButton(props: {
     <Component
       type="button"
       className={cn(
-        "rounded-full hover:shadow-lg focus:outline-none focus:ring-2 not:disabled:cursor-pointer",
+        "rounded-full hover:shadow-lg focus:outline-none focus:ring-2",
         props.size === "small" ? "w-6 h-6" : "w-12 h-12",
+        !props.disabled && "cursor-pointer",
         props.className
       )}
       disabled={props.disabled}

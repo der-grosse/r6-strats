@@ -165,7 +165,7 @@ export default function TeamMembers(props: TeamMembersProps) {
                     <TableCell className="w-[50px]">
                       <ColorButton
                         size="small"
-                        color={member.defaultColor ?? DEFAULT_COLORS[0]}
+                        color={member.defaultColor ?? DEFAULT_COLORS.at(-1)}
                         onClick={() => {
                           setUserColorID(member.id);
                           setUserColorChangeOpen(true);
@@ -276,7 +276,7 @@ export default function TeamMembers(props: TeamMembersProps) {
         onClose={() => setUserColorChangeOpen(false)}
         color={
           props.team.members.find((u) => u.id === userColorID)?.defaultColor ??
-          DEFAULT_COLORS[0]
+          DEFAULT_COLORS.at(-1)
         }
         onChange={async (color) => {
           if (userColorID) await setMemberColor(color, userColorID);
