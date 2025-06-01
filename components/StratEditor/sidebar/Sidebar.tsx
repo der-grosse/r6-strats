@@ -59,7 +59,9 @@ export default function StratEditorSidebar(
     () =>
       Array.from(
         props.strat.assets
-          .filter((a) => a.type === "reinforcement")
+          .filter(
+            (a) => a.type === "reinforcement" && a.variant === "reinforcement"
+          )
           .reduce(
             (acc, asset) => {
               const cur = acc.get(asset.pickedOPID ?? -1);
