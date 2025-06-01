@@ -31,7 +31,7 @@ export default function AssetOutline(props: {
 
   return (
     <div
-      className="border-2 h-full w-full rounded-xs"
+      className="border-4 h-full w-full rounded-xs"
       style={{ borderColor: color }}
     >
       {props.children}

@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Explosion from "../assets/Explosion";
+import WoodenBarricade from "@/components/icons/woodenBarricade";
 
 export interface StratEditorLayoutSidebarProps {
   onAssetAdd: (asset: Asset & Partial<PlacedAsset>) => void;
@@ -31,12 +32,28 @@ export default function StratEditorLayoutSidebar(
             className="p-1 h-auto aspect-square"
             onClick={() => {
               props.onAssetAdd({
-                id: `reinforcement-`,
+                id: `reinforcement-reinforcement`,
                 type: "reinforcement",
+                variant: "reinforcement",
               });
             }}
           >
             <Reinforcement className="size-full" />
+          </Button>
+          <Button
+            variant="outline"
+            size="unset"
+            key="barricade"
+            className="p-1 h-auto aspect-square"
+            onClick={() => {
+              props.onAssetAdd({
+                id: `reinforcement-barricade`,
+                type: "reinforcement",
+                variant: "barricade",
+              });
+            }}
+          >
+            <WoodenBarricade />
           </Button>
           <Badge className="sticky top-0 w-full col-span-full">
             Rotate and Headholes

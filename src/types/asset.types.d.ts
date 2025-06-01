@@ -21,6 +21,7 @@ interface MarkerAsset {
 interface ReinforcementAsset {
   id: `reinforcement-${string}`;
   type: "reinforcement";
+  variant: "reinforcement" | "barricade";
 }
 
 interface RotateAsset {

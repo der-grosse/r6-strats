@@ -116,6 +116,11 @@ export const placedAssets = pgTable("placed_assets", {
 
   // Rotate type
   rotate: text("rotate"),
+
+  // reinforcement type
+  reinforcementVariant: text("reinforcement_variant", {
+    enum: ["reinforcement", "barricade"],
+  }),
 });
 
 export const pickedOperators = pgTable("picked_operators", {

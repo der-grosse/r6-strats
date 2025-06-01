@@ -8,8 +8,8 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 ### Editor
 
 - click and drag for selecting mulptiple elements at once
-- add default color to operators since they might not be easily visible otherwise
 - make doors, windows and walls clickable to easily add assets
+- show selected elements of other active users
 - edit attributes of multiple assets at once
 - add toggle for floors of map
 - add new map blueprints

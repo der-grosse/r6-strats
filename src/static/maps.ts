@@ -1,3 +1,5 @@
+import Bank1FWindows from "@/components/StratEditor/maps/bank/1f_windows";
+
 const MAPS: R6Map[] = [
   {
     name: "Bank",
@@ -6,31 +8,17 @@ const MAPS: R6Map[] = [
       {
         floor: "B",
         src: "/map_blueprints/bank/b.png",
-        layers: {
-          doors: "/map_blueprints/bank/b-doors.svg",
-          reinforcements: "/map_blueprints/bank/b-reinforcements.svg",
-          windows: "/map_blueprints/bank/b-windows.svg",
-        },
       },
       {
         floor: "1F",
         src: "/map_blueprints/bank/1f.png",
-        layers: {
-          doors: "/map_blueprints/bank/1f-doors.svg",
-          reinforcements: "/map_blueprints/bank/1f-reinforcements.svg",
-          hatches: "/map_blueprints/bank/1f-hatches.svg",
-          windows: "/map_blueprints/bank/1f-windows.svg",
-        },
+        // layers: {
+        //   windows: Bank1FWindows,
+        // },
       },
       {
         floor: "2F",
         src: "/map_blueprints/bank/2f.png",
-        layers: {
-          doors: "/map_blueprints/bank/2f-doors.svg",
-          reinforcements: "/map_blueprints/bank/2f-reinforcements.svg",
-          hatches: "/map_blueprints/bank/2f-hatches.svg",
-          windows: "/map_blueprints/bank/2f-windows.svg",
-        },
       },
     ],
   },
@@ -61,30 +49,14 @@ const MAPS: R6Map[] = [
       {
         floor: "B",
         src: "/map_blueprints/clubhouse/b.png",
-        layers: {
-          doors: "/map_blueprints/clubhouse/b-doors.svg",
-          reinforcements: "/map_blueprints/clubhouse/b-reinforcements.svg",
-        },
       },
       {
         floor: "1F",
         src: "/map_blueprints/clubhouse/1f.png",
-        layers: {
-          doors: "/map_blueprints/clubhouse/1f-doors.svg",
-          reinforcements: "/map_blueprints/clubhouse/1f-reinforcements.svg",
-          hatches: "/map_blueprints/clubhouse/1f-hatches.svg",
-          windows: "/map_blueprints/clubhouse/1f-windows.svg",
-        },
       },
       {
         floor: "2F",
         src: "/map_blueprints/clubhouse/2f.png",
-        layers: {
-          doors: "/map_blueprints/clubhouse/2f-doors.svg",
-          reinforcements: "/map_blueprints/clubhouse/2f-reinforcements.svg",
-          hatches: "/map_blueprints/clubhouse/2f-hatches.svg",
-          windows: "/map_blueprints/clubhouse/2f-windows.svg",
-        },
       },
     ],
   },
@@ -95,30 +67,14 @@ const MAPS: R6Map[] = [
       {
         floor: "B",
         src: "/map_blueprints/consulate/b.jpg",
-        layers: {
-          doors: "/map_blueprints/clubhouse/b-doors.svg",
-          reinforcements: "/map_blueprints/clubhouse/b-reinforcements.svg",
-        },
       },
       {
         floor: "1F",
         src: "/map_blueprints/consulate/1f.jpg",
-        layers: {
-          doors: "/map_blueprints/clubhouse/1f-doors.svg",
-          reinforcements: "/map_blueprints/clubhouse/1f-reinforcements.svg",
-          hatches: "/map_blueprints/clubhouse/1f-hatches.svg",
-          windows: "/map_blueprints/clubhouse/1f-windows.svg",
-        },
       },
       {
         floor: "2F",
         src: "/map_blueprints/consulate/2f.jpg",
-        layers: {
-          doors: "/map_blueprints/clubhouse/2f-doors.svg",
-          reinforcements: "/map_blueprints/clubhouse/2f-reinforcements.svg",
-          hatches: "/map_blueprints/clubhouse/2f-hatches.svg",
-          windows: "/map_blueprints/clubhouse/2f-windows.svg",
-        },
       },
     ],
   },

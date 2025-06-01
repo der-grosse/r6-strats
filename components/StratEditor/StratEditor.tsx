@@ -189,6 +189,22 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
       <StratEditorCanvas
         map={map}
         assets={assets}
+        onAssetAdd={(asset) => {
+          console.log("Adding asset", asset);
+          const placedAsset = {
+            size: { width: ASSET_BASE_SIZE, height: ASSET_BASE_SIZE },
+            position: { x: CANVAS_BASE_SIZE / 20, y: CANVAS_BASE_SIZE / 20 },
+            rotation: 0,
+            ...asset,
+            id: `${asset.id}-${getHightestID(assets) + 1}` as any,
+          };
+          setAssets((assets) => [...assets, placedAsset]);
+          addStratAsset(strat.id, placedAsset);
+          pushEvent({
+            type: "asset-added",
+            asset: placedAsset,
+          });
+        }}
         onAssetChange={(assets) => {
           setAssets((existing) => {
             pushEvent({

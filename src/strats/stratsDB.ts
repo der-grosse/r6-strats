@@ -147,6 +147,8 @@ class StratsDBClass {
           side: asset.type === "operator" ? asset.side : undefined,
           iconType: asset.type === "operator" ? asset.iconType : undefined,
           rotate: asset.type === "rotate" ? asset.variant : undefined,
+          reinforcementVariant:
+            asset.type === "reinforcement" ? asset.variant : undefined,
           pickedOPID: asset.pickedOPID,
           width: asset.size.width,
           height: asset.size.height,
@@ -178,6 +180,8 @@ class StratsDBClass {
         side: asset.type === "operator" ? asset.side : undefined,
         iconType: asset.type === "operator" ? asset.iconType : undefined,
         rotate: asset.type === "rotate" ? asset.variant : undefined,
+        reinforcementVariant:
+          asset.type === "reinforcement" ? asset.variant : undefined,
         pickedOPID: asset.pickedOPID,
         width: asset.size.width,
         height: asset.size.height,
@@ -206,6 +210,8 @@ class StratsDBClass {
       side: asset.type === "operator" ? asset.side : undefined,
       iconType: asset.type === "operator" ? asset.iconType : undefined,
       rotate: asset.type === "rotate" ? asset.variant : undefined,
+      reinforcementVariant:
+        asset.type === "reinforcement" ? asset.variant : undefined,
       pickedOPID: asset.pickedOPID,
       width: asset.size.width,
       height: asset.size.height,
@@ -264,6 +270,7 @@ class StratsDBClass {
       iconType: "default" | "hidden" | "bw" | null;
       gadget: string | null;
       rotate: string | null;
+      reinforcementVariant: "reinforcement" | "barricade" | null;
       width: number;
       height: number;
       rotation: number;
@@ -306,6 +313,13 @@ class StratsDBClass {
               case "rotate":
                 return {
                   variant: r.rotate,
+                };
+              case "reinforcement":
+                return {
+                  variant:
+                    r.reinforcementVariant === "barricade"
+                      ? "barricade"
+                      : "reinforcement",
                 };
               default:
                 return {};

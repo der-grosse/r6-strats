@@ -17,6 +17,7 @@ import AssetOutline from "./assets/AssetOutline";
 import Reinforcement from "../icons/reinforcement";
 import Rotation from "../icons/rotation";
 import Explosion from "./assets/Explosion";
+import WoodenBarricade from "../icons/woodenBarricade";
 
 export default function useMountAssets(
   { team, operators }: { team: Team; operators: PickedOperator[] },
@@ -176,6 +177,13 @@ export default function useMountAssets(
               </AssetOutline>
             );
           case "reinforcement":
+            if (asset.variant === "barricade") {
+              return (
+                <AssetOutline asset={asset} team={team} operators={operators}>
+                  <WoodenBarricade />
+                </AssetOutline>
+              );
+            }
             return (
               <Reinforcement
                 height={asset.size.height}

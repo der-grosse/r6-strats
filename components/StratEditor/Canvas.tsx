@@ -4,8 +4,9 @@ import SVGAsset from "./SVGAsset";
 import { useKeys } from "../hooks/useKey";
 import isKeyDown from "../hooks/isKeyDown";
 import { deepCopy } from "../deepCopy";
+import MapBackground from "./MapBackground";
 
-interface Asset {
+interface CanvasAsset {
   id: string;
   type: string;
   position: { x: number; y: number };
@@ -13,9 +14,10 @@ interface Asset {
   rotation?: number;
 }
 
-interface CanvasProps<A extends Asset> {
+interface CanvasProps<A extends CanvasAsset> {
   map: R6Map | null;
   assets: A[];
+  onAssetAdd: (asset: Asset & Partial<PlacedAsset>) => void;
   onAssetChange: (assets: A[]) => void;
   onAssetRemove: (assets: A["id"][]) => void;
   renderAsset: (
@@ -27,15 +29,16 @@ interface CanvasProps<A extends Asset> {
 // should be a multiple of 4 and 3 to have nicer numbers for aspect ratio
 export const CANVAS_BASE_SIZE = 2400;
 const MIN_ZOOM_FACTOR = 0.15;
-const MIN_ASSET_SIZE = 8;
+export const MIN_ASSET_SIZE = 8;
 const DRAG_DEADZONE = 1;
 const ZOOM_MODIFIER = 0.004;
 const SCROLL_MODIFIER = 0.5;
 export const ASSET_BASE_SIZE = 40;
 
-export default function StratEditorCanvas<A extends Asset>({
+export default function StratEditorCanvas<A extends CanvasAsset>({
   map,
   assets: propAssets,
+  onAssetAdd,
   onAssetChange,
   onAssetRemove,
   renderAsset,
@@ -433,7 +436,6 @@ export default function StratEditorCanvas<A extends Asset>({
         tabIndex={0}
         focusable
       >
-        {" "}
         {/* Global filter definitions */}
         <defs>
           <filter
@@ -452,19 +454,9 @@ export default function StratEditorCanvas<A extends Asset>({
             />
           </filter>
         </defs>
-        {/* Render map background */}
-        {map?.floors.map((floor, i) => (
-          <image
-            key={floor.floor}
-            href={floor.src}
-            width={viewBox.width / (map.floors.length > 1 ? 2 : 1)}
-            height={viewBox.height / (map.floors.length > 2 ? 2 : 1)}
-            x={i % 2 === 0 ? 0 : viewBox.width / 2}
-            y={(Math.floor(i / 2) * viewBox.height) / 2}
-            preserveAspectRatio="xMidYMid meet"
-            className="pointer-events-none"
-          />
-        ))}
+
+        <MapBackground map={map} viewBox={viewBox} addAsset={onAssetAdd} />
+
         {/* Render assets */}
         {assets.map((asset) => {
           const render = renderAsset(
@@ -508,10 +500,10 @@ function rotateVector(
 }
 
 function resizeAsset(
-  asset: Pick<Asset, "size" | "position" | "rotation">,
+  asset: Pick<CanvasAsset, "size" | "position" | "rotation">,
   leveledDelta: { x: number; y: number },
   makeSquare: boolean
-): Pick<Asset, "size" | "position"> {
+): Pick<CanvasAsset, "size" | "position"> {
   let newSize = {
     width: Math.max(MIN_ASSET_SIZE, asset.size.width + leveledDelta.x),
     height: Math.max(MIN_ASSET_SIZE, asset.size.height + leveledDelta.y),
