@@ -8,11 +8,7 @@ type R6FloorLayer = "doors" | "windows" | "reinforcements" | "hatches";
 interface R6Floor {
   floor: "B" | "1F" | "2F" | "3F";
   src: string;
-  layers?: {
-    [key in R6FloorLayer]?: React.FC<{
-      onClick?: (x: number, y: number, width: number, rotation: number) => void;
-    }>;
-  };
+  clickables?: React.FC<MapFloorClickableProps>;
 }
 
 interface Strat {

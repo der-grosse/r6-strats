@@ -32,46 +32,66 @@ export default function MapBackground(props: MapBackgroundProps) {
               preserveAspectRatio="xMidYMid meet"
               className="pointer-events-none"
             />
-            {floor.layers?.windows &&
-              (() => {
-                const WindowsComponent = floor.layers.windows;
-                return (
-                  <g transform={`translate(${x}, ${y})`}>
-                    <foreignObject width={width} height={height}>
-                      <WindowsComponent
-                        key={`${floor.floor}-windows`}
-                        onClick={(rel_x, rel_y, rel_size, rotation) => {
-                          const size = Math.max(
-                            rel_size * width + 10, // add a little bit of spacint that the edge is over the window edge
-                            MIN_ASSET_SIZE
-                          );
-                          const assetHeight = Math.max(
-                            (size / 4) * 3,
-                            MIN_ASSET_SIZE
-                          );
-                          const assetWidth = size;
-                          const abs_x = rel_x * width + x - assetWidth / 2;
-                          const abs_y = rel_y * height + y - assetHeight / 2;
-                          props.addAsset({
-                            type: "reinforcement",
-                            variant: "barricade",
-                            id: "reinforcement-barricade",
-                            position: {
-                              x: abs_x,
-                              y: abs_y,
-                            },
-                            size: {
-                              width: assetWidth,
-                              height: assetHeight,
-                            },
-                            rotation,
-                          });
-                        }}
-                      />
-                    </foreignObject>
-                  </g>
-                );
-              })()}
+            {floor.clickables && (
+              <g transform={`translate(${x}, ${y})`}>
+                <foreignObject width={width} height={height}>
+                  <floor.clickables
+                    onClick={(
+                      type,
+                      rel_x,
+                      rel_y,
+                      rel_width,
+                      rel_height,
+                      rotation
+                    ) => {
+                      const abs_width = Math.max(
+                        rel_width * width + 10, // add a little bit of spacint that the edge is over the window edge
+                        MIN_ASSET_SIZE
+                      );
+                      const abs_height = Math.max(
+                        rel_height * height + 10, // add a little bit of spacint that the edge is over the window edge
+                        MIN_ASSET_SIZE
+                      );
+                      const abs_x = rel_x * width + x - abs_width / 2;
+                      const abs_y = rel_y * height + y - abs_height / 2;
+                      const baseAsset = ((): Pick<
+                        ReinforcementAsset,
+                        "id" | "type" | "variant"
+                      > => {
+                        switch (type) {
+                          case "barricade":
+                            return {
+                              id: "reinforcement-barricade",
+                              type: "reinforcement",
+                              variant: "barricade",
+                            };
+                          case "reinforcement":
+                            return {
+                              id: "reinforcement-reinforcement",
+                              type: "reinforcement",
+                              variant: "reinforcement",
+                            };
+                          default:
+                            return null!;
+                        }
+                      })();
+                      props.addAsset({
+                        ...baseAsset,
+                        position: {
+                          x: abs_x,
+                          y: abs_y,
+                        },
+                        size: {
+                          width: abs_width,
+                          height: abs_height,
+                        },
+                        rotation,
+                      });
+                    }}
+                  />
+                </foreignObject>
+              </g>
+            )}
           </Fragment>
         );
       })}

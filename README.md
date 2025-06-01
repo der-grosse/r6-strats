@@ -7,6 +7,7 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 
 ### Editor
 
+- add selector for current player in sidebar -> this player gets assigned all new added assets
 - click and drag for selecting mulptiple elements at once
 - make doors, windows and walls clickable to easily add assets
 - show selected elements of other active users

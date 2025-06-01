@@ -1,4 +1,4 @@
-import Bank1FWindows from "@/components/StratEditor/maps/bank/1f_windows";
+import Bank1F from "@/components/StratEditor/maps/bank/1f";
 
 const MAPS: R6Map[] = [
   {
@@ -12,9 +12,7 @@ const MAPS: R6Map[] = [
       {
         floor: "1F",
         src: "/map_blueprints/bank/1f.png",
-        // layers: {
-        //   windows: Bank1FWindows,
-        // },
+        clickables: Bank1F,
       },
       {
         floor: "2F",
