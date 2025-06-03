@@ -245,27 +245,29 @@ export default function StratEditorSidebar(
                   .reduce((a, b) => a + b, 0)}{" "}
               Reinforcements remaining
             </p>
-            {placedReeinforcements.map((p) => (
-              <div
-                className="flex items-center gap-1 mt-1"
-                key={p.position?.id ?? -1}
-              >
-                <p className="w-4">{p.count}x</p>
-                {p.player ? (
-                  <>
-                    <ColorButton disabled color={p.color} size="small" />
-                    <p>{p.player.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {p.position?.positionName}
+            {placedReeinforcements
+              .filter((p) => p.count > 0)
+              .map((p) => (
+                <div
+                  className="flex items-center gap-1 mt-1"
+                  key={p.position?.id ?? -1}
+                >
+                  <p className="w-4">{p.count}x</p>
+                  {p.player ? (
+                    <>
+                      <ColorButton disabled color={p.color} size="small" />
+                      <p>{p.player.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {p.position?.positionName}
+                      </p>
+                    </>
+                  ) : (
+                    <p>
+                      <em>No player assigned</em>
                     </p>
-                  </>
-                ) : (
-                  <p>
-                    <em>No player assigned</em>
-                  </p>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              ))}
           </TooltipContent>
         </Tooltip>
         <Tooltip delayDuration={500}>

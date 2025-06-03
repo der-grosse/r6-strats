@@ -44,7 +44,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
   onAssetRemove,
   renderAsset,
 }: Readonly<CanvasProps<A>>) {
-  if (typeof window === "undefined") {
+  if (typeof window !== "undefined") {
     //@ts-ignore
     window.disableAssetSizeRestriction = () => {
       MAX_ASSET_SIZE = Infinity;
