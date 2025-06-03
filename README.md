@@ -7,26 +7,27 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 
 ### Editor
 
+- show error messages
+- zIndex of menu needs to be higher than all assets
+- show selected elements of other active users
+- simultaneous editing resets current non-committed changes
+- refetch state every X seconds or when window gains focus
+- variable width barricades
+- make doors, windows and walls clickable to easily add assets
 - add selector for current player in sidebar -> this player gets assigned all new added assets
 - click and drag for selecting mulptiple elements at once
-- make doors, windows and walls clickable to easily add assets
-- show selected elements of other active users
+- CTRL+d to duplicate selected elements
+- CTRL-C and CTRL-V to copy and paste selected elements
 - edit attributes of multiple assets at once
+- sidebar width changes based on tab
 - add toggle for floors of map
 - add new map blueprints
+- somehow add alternatives for strat
+- operator icons with small rectangle shapes clip outside
 - zoom slider
 - scroll bars when zoomed in
 - make notes / upload screenshots for specific assets
 - add bombsite indicator
-- somehow add alternatives for strat
-- CTRL+d to duplicate selected elements
-- CTRL-C and CTRL-V to copy and paste selected elements
-- sidebar width changes based on tab
-- show error messages
-- simultaneous editing resets current non-committed changes
-- operator icons with small rectangle shapes clip outside
-- zIndex of menu needs to be higher than all assets
-- variable width barricades
 
 ### Strat View
 

@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { MIN_ASSET_SIZE } from "./Canvas";
+import { clampAssetSize } from "./Canvas";
 
 export interface MapBackgroundProps {
   map: R6Map | null;
@@ -44,14 +44,11 @@ export default function MapBackground(props: MapBackgroundProps) {
                       rel_height,
                       rotation
                     ) => {
-                      const abs_width = Math.max(
-                        rel_width * width + 10, // add a little bit of spacint that the edge is over the window edge
-                        MIN_ASSET_SIZE
-                      );
-                      const abs_height = Math.max(
-                        rel_height * height + 10, // add a little bit of spacint that the edge is over the window edge
-                        MIN_ASSET_SIZE
-                      );
+                      const { width: abs_width, height: abs_height } =
+                        clampAssetSize({
+                          width: rel_width * width + 10, // add a little bit of spacing that the edge is over the window edge
+                          height: rel_height * height + 10, // add a little bit of spacing that the edge is over the window edge
+                        });
                       const abs_x = rel_x * width + x - abs_width / 2;
                       const abs_y = rel_y * height + y - abs_height / 2;
                       const baseAsset = ((): Pick<

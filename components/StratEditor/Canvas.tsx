@@ -29,7 +29,8 @@ interface CanvasProps<A extends CanvasAsset> {
 // should be a multiple of 4 and 3 to have nicer numbers for aspect ratio
 export const CANVAS_BASE_SIZE = 2400;
 const MIN_ZOOM_FACTOR = 0.15;
-export const MIN_ASSET_SIZE = 8;
+const MIN_ASSET_SIZE = 16;
+const MAX_ASSET_SIZE = 400;
 const DRAG_DEADZONE = 1;
 const ZOOM_MODIFIER = 0.004;
 const SCROLL_MODIFIER = 0.5;
@@ -504,10 +505,10 @@ function resizeAsset(
   leveledDelta: { x: number; y: number },
   makeSquare: boolean
 ): Pick<CanvasAsset, "size" | "position"> {
-  let newSize = {
-    width: Math.max(MIN_ASSET_SIZE, asset.size.width + leveledDelta.x),
-    height: Math.max(MIN_ASSET_SIZE, asset.size.height + leveledDelta.y),
-  };
+  let newSize = clampAssetSize({
+    width: asset.size.width + leveledDelta.x,
+    height: asset.size.height + leveledDelta.y,
+  });
   if (makeSquare) {
     const maxSide = Math.max(newSize.width, newSize.height);
     newSize = { width: maxSide, height: maxSide };
@@ -519,5 +520,16 @@ function resizeAsset(
   return {
     size: newSize,
     position: newPosition,
+  };
+}
+
+export function clampAssetSize(
+  size: { width: number; height: number },
+  min: number = MIN_ASSET_SIZE,
+  max: number = MAX_ASSET_SIZE
+): { width: number; height: number } {
+  return {
+    width: clamp(size.width, min, max),
+    height: clamp(size.height, min, max),
   };
 }
