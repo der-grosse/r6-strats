@@ -29,12 +29,18 @@ interface CanvasProps<A extends CanvasAsset> {
 // should be a multiple of 4 and 3 to have nicer numbers for aspect ratio
 export const CANVAS_BASE_SIZE = 2400;
 const MIN_ZOOM_FACTOR = 0.15;
-const MIN_ASSET_SIZE = 16;
-const MAX_ASSET_SIZE = 400;
+let MIN_ASSET_SIZE = 16;
+let MAX_ASSET_SIZE = 400;
 const DRAG_DEADZONE = 1;
 const ZOOM_MODIFIER = 0.004;
 const SCROLL_MODIFIER = 0.5;
 export const ASSET_BASE_SIZE = 40;
+
+//@ts-ignore
+window.disableAssetSizeRestriction = () => {
+  MAX_ASSET_SIZE = Infinity;
+  MIN_ASSET_SIZE = 4;
+};
 
 export default function StratEditorCanvas<A extends CanvasAsset>({
   map,
