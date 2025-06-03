@@ -36,12 +36,6 @@ const ZOOM_MODIFIER = 0.004;
 const SCROLL_MODIFIER = 0.5;
 export const ASSET_BASE_SIZE = 40;
 
-//@ts-ignore
-window.disableAssetSizeRestriction = () => {
-  MAX_ASSET_SIZE = Infinity;
-  MIN_ASSET_SIZE = 4;
-};
-
 export default function StratEditorCanvas<A extends CanvasAsset>({
   map,
   assets: propAssets,
@@ -50,6 +44,12 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
   onAssetRemove,
   renderAsset,
 }: Readonly<CanvasProps<A>>) {
+  //@ts-ignore
+  window.disableAssetSizeRestriction = () => {
+    MAX_ASSET_SIZE = Infinity;
+    MIN_ASSET_SIZE = 4;
+  };
+
   const [assets, setAssets] = useState<A[]>(propAssets);
   useEffect(() => {
     setAssets(propAssets);
