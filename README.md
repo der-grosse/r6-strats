@@ -7,10 +7,9 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 
 ### Editor
 
-- show error messages
-- zIndex of menu needs to be higher than all assets
 - show selected elements of other active users
 - simultaneous editing resets current non-committed changes
+- zIndex of menu needs to be higher than all assets
 - refetch state every X seconds or when window gains focus
 - variable width barricades
 - make doors, windows and walls clickable to easily add assets
@@ -19,6 +18,7 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 - CTRL+d to duplicate selected elements
 - CTRL-C and CTRL-V to copy and paste selected elements
 - edit attributes of multiple assets at once
+- bring to front / send to back for selected elements
 - sidebar width changes based on tab
 - add toggle for floors of map
 - add new map blueprints
@@ -28,6 +28,7 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 - scroll bars when zoomed in
 - make notes / upload screenshots for specific assets
 - add bombsite indicator
+- arrow keys for fine adjustment of selected elements
 
 ### Strat View
 

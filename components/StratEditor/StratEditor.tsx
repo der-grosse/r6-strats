@@ -20,7 +20,11 @@ interface StratEditorProps {
   team: Team;
 }
 
-export type AssetEvent = AssetAdded | AssetUpdated | AssetDeleted;
+export type AssetEvent =
+  | AssetAdded
+  | AssetUpdated
+  | AssetDeleted
+  | AssetSelection;
 export interface AssetAdded {
   type: "asset-added";
   asset: PlacedAsset;
@@ -33,6 +37,11 @@ export interface AssetUpdated {
 export interface AssetDeleted {
   type: "asset-deleted";
   assets: PlacedAsset[];
+}
+export interface AssetSelection {
+  type: "asset-selected";
+  old_selection: PlacedAsset["id"][];
+  new_selection: PlacedAsset["id"][];
 }
 
 const HISTORY_SIZE = 100;
@@ -203,7 +212,6 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
         map={map}
         assets={assets}
         onAssetAdd={(asset) => {
-          console.log("Adding asset", asset);
           const placedAsset = {
             size: { width: ASSET_BASE_SIZE, height: ASSET_BASE_SIZE },
             position: { x: CANVAS_BASE_SIZE / 20, y: CANVAS_BASE_SIZE / 20 },
@@ -367,6 +375,14 @@ function invertEvent(event: AssetEvent): AssetEvent[] {
           type: "asset-updated",
           old_assets: event.new_assets,
           new_assets: event.old_assets,
+        },
+      ];
+    case "asset-selected":
+      return [
+        {
+          type: "asset-selected",
+          old_selection: event.new_selection,
+          new_selection: event.old_selection,
         },
       ];
   }

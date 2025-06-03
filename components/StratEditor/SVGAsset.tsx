@@ -98,7 +98,7 @@ export default function SVGAsset({
       </g>
       {menu && (
         <foreignObject
-          style={{ overflow: "visible", zIndex: 2 }}
+          style={{ overflow: "visible" }}
           // matrix(sx, 0, 0, sy, cx-sx*cx, cy-sy*cy) -> to scale with a transform origin at the center bottom
           transform={`matrix(${zoom}, 0, 0, ${zoom}, ${
             size.width / 2 - (size.width / 2) * zoom

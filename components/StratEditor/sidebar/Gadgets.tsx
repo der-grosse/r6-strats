@@ -132,7 +132,7 @@ export default function StratEditorGadgetsSidebar(
               className="p-1 h-auto"
               onClick={() => {
                 props.onAssetAdd({
-                  id: `gadget-${gadget}`,
+                  id: `gadget-${gadget.id}`,
                   type: "gadget",
                   gadget: gadget.id,
                   size: {
@@ -155,7 +155,7 @@ export default function StratEditorGadgetsSidebar(
               className="p-1 h-auto"
               onClick={() => {
                 props.onAssetAdd({
-                  id: `gadget-${gadget}`,
+                  id: `gadget-${gadget.id}`,
                   type: "gadget",
                   gadget: gadget.id,
                   size: {
