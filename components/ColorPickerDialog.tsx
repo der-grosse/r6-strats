@@ -1,10 +1,11 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { HexColorPicker } from "react-colorful";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { useRef } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import { Check } from "lucide-react";
 import { cn } from "@/src/utils";
+import { Input } from "./ui/input";
 
 export interface ColorPickerDialogProps {
   color?: string;
@@ -33,7 +34,14 @@ export const DEFAULT_COLORS = [
 ];
 
 export default function ColorPickerDialog(props: ColorPickerDialogProps) {
-  const currentCustomColor = useRef(props.color || DEFAULT_COLORS.at(-1)!);
+  const [currentCustomColor, setCurrentCustomColor] = useState(
+    props.color || DEFAULT_COLORS.at(-1)!
+  );
+
+  const isValidHexColor = (color: string) => {
+    return /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(color);
+  };
+
   return (
     <Dialog
       open={props.open}
@@ -71,13 +79,21 @@ export default function ColorPickerDialog(props: ColorPickerDialogProps) {
             <HexColorPicker
               color={props.color}
               onChange={(color) => {
-                currentCustomColor.current = color;
+                setCurrentCustomColor(color);
               }}
             />
+            <Input
+              value={currentCustomColor}
+              onChange={(e) => {
+                setCurrentCustomColor(e.target.value);
+              }}
+              className="mt-4 w-48"
+            />
             <Button
-              className="mt-4 "
+              className="mt-4"
+              disabled={!isValidHexColor(currentCustomColor)}
               onClick={() => {
-                props.onChange?.(currentCustomColor.current);
+                props.onChange?.(currentCustomColor);
               }}
             >
               <Check />

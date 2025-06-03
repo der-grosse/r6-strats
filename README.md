@@ -20,7 +20,13 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 - add bombsite indicator
 - somehow add alternatives for strat
 - CTRL+d to duplicate selected elements
+- CTRL-C and CTRL-V to copy and paste selected elements
 - sidebar width changes based on tab
+- show error messages
+- simultaneous editing resets current non-committed changes
+- operator icons with small rectangle shapes clip outside
+- zIndex of menu needs to be higher than all assets
+- variable width barricades
 
 ### Strat View
 
