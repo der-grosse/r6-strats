@@ -34,10 +34,10 @@ const MAPS: R6Map[] = [
     floors: [
       {
         floor: "B",
-        src: "/map_blueprints/chalet/b.jpg",
+        src: "/map_blueprints/chalet/b.png",
       },
-      { floor: "1F", src: "/map_blueprints/chalet/1f.jpg" },
-      { floor: "2F", src: "/map_blueprints/chalet/2f.jpg" },
+      { floor: "1F", src: "/map_blueprints/chalet/1f.png" },
+      { floor: "2F", src: "/map_blueprints/chalet/2f.png" },
     ],
   },
   {
@@ -64,15 +64,15 @@ const MAPS: R6Map[] = [
     floors: [
       {
         floor: "B",
-        src: "/map_blueprints/consulate/b.jpg",
+        src: "/map_blueprints/consulate/b.png",
       },
       {
         floor: "1F",
-        src: "/map_blueprints/consulate/1f.jpg",
+        src: "/map_blueprints/consulate/1f.png",
       },
       {
         floor: "2F",
-        src: "/map_blueprints/consulate/2f.jpg",
+        src: "/map_blueprints/consulate/2f.png",
       },
     ],
   },
