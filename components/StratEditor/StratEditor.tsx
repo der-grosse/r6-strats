@@ -13,6 +13,7 @@ import { useKeys } from "../hooks/useKey";
 import { deepCopy } from "../deepCopy";
 import { useSocket } from "../context/SocketContext";
 import useSocketEvent from "../hooks/useSocketEvent";
+import { toast } from "sonner";
 
 interface StratEditorProps {
   strat: Strat;
@@ -43,7 +44,7 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
     return () => {
       socket.emit("strat-editor:unsubscribe", strat.id);
     };
-  }, [strat]);
+  }, [strat.id]);
 
   const [assets, setAssets] = useState<PlacedAsset[]>(strat.assets);
   const getHightestID = useCallback(
@@ -141,7 +142,11 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
     {
       deleteAsset(asset) {
         setAssets((assets) => assets.filter((a) => a.id !== asset.id));
-        deleteStratAssets(strat.id, [asset.id]);
+        deleteStratAssets(strat.id, [asset.id]).catch((err) =>
+          toast.error(
+            `Your changes could not be saved! Failed to delete asset: ${err.message}`
+          )
+        );
         pushEvent({
           type: "asset-deleted",
           assets: [asset],
@@ -156,7 +161,11 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
           });
           return assets.map((a) => (a.id === asset.id ? asset : a));
         });
-        updateStratAssets(strat.id, [asset]);
+        updateStratAssets(strat.id, [asset]).catch((err) =>
+          toast.error(
+            `Your changes could not be saved! Failed to update assets: ${err.message}`
+          )
+        );
       },
     }
   );
@@ -177,7 +186,11 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
           id: `${asset.id}-${getHightestID(assets) + 1}` as any,
         };
         setAssets((assets) => [...assets, placedAsset]);
-        addStratAsset(strat.id, placedAsset);
+        addStratAsset(strat.id, placedAsset).catch((err) =>
+          toast.error(
+            `Your changes could not be saved! Failed to add asset: ${err.message}`
+          )
+        );
         pushEvent({
           type: "asset-added",
           asset: placedAsset,
@@ -199,7 +212,11 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
             id: `${asset.id}-${getHightestID(assets) + 1}` as any,
           };
           setAssets((assets) => [...assets, placedAsset]);
-          addStratAsset(strat.id, placedAsset);
+          addStratAsset(strat.id, placedAsset).catch((err) =>
+            toast.error(
+              `Your changes could not be saved! Failed to add asset: ${err.message}`
+            )
+          );
           pushEvent({
             type: "asset-added",
             asset: placedAsset,
@@ -220,7 +237,11 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
               return deepCopy(newAsset);
             });
           });
-          updateStratAssets(strat.id, assets);
+          updateStratAssets(strat.id, assets).catch((err) =>
+            toast.error(
+              `Your changes could not be saved! Failed to update asset: ${err.message}`
+            )
+          );
         }}
         onAssetRemove={(ids) => {
           setAssets((assets) => {
@@ -230,7 +251,11 @@ export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
             });
             return assets.filter((a) => !ids.includes(a.id));
           });
-          deleteStratAssets(strat.id, ids);
+          deleteStratAssets(strat.id, ids).catch((err) =>
+            toast.error(
+              `Your changes could not be saved! Failed to delete asset: ${err.message}`
+            )
+          );
         }}
         renderAsset={renderAsset}
       />
@@ -247,12 +272,20 @@ function undoEvent(
   switch (event.type) {
     case "asset-added":
       requestAnimationFrame(() => {
-        deleteStratAssets(stratID, [event.asset.id]);
+        deleteStratAssets(stratID, [event.asset.id]).catch((err) =>
+          toast.error(
+            `Your changes could not be saved! Failed to delete asset: ${err.message}`
+          )
+        );
       });
       return state.filter((a) => a.id !== event.asset.id);
     case "asset-updated":
       requestAnimationFrame(() => {
-        updateStratAssets(stratID, event.old_assets);
+        updateStratAssets(stratID, event.old_assets).catch((err) =>
+          toast.error(
+            `Your changes could not be saved! Failed to update assets: ${err.message}`
+          )
+        );
       });
       return state.map((a) => {
         const oldAsset = event.old_assets.find((asset) => asset.id === a.id);
@@ -262,7 +295,11 @@ function undoEvent(
     case "asset-deleted":
       requestAnimationFrame(() => {
         for (const asset of event.assets) {
-          addStratAsset(stratID, asset);
+          addStratAsset(stratID, asset).catch((err) =>
+            toast.error(
+              `Your changes could not be saved! Failed to add asset: ${err.message}`
+            )
+          );
         }
       });
       return [...state, ...deepCopy(event.assets)];
