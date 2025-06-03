@@ -53,7 +53,8 @@ class StratsDBClass {
     const placedAssetsRows = await db
       .select()
       .from(placedAssets)
-      .where(inArray(placedAssets.stratsID, stratsIDs));
+      .where(inArray(placedAssets.stratsID, stratsIDs))
+      .orderBy(placedAssets.id);
     const pickedOperatorsRows = await db
       .select()
       .from(pickedOperators)
