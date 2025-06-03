@@ -96,7 +96,7 @@ export default function StratEditorGadgetsSidebar(
           {selectedSecondaryGadgetIDs.length > 0 && (
             <>
               <Badge className="sticky top-0 w-full col-span-full">
-                Selected primary gadgets
+                Selected secondary gadgets
               </Badge>
               {selectedSecondaryGadgetIDs.map((gadget) => (
                 <Button
