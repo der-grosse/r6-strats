@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { register } from "@/src/auth/auth";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -9,12 +9,10 @@ import { cn } from "@/src/utils";
 
 export default function JoinTeam() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const searchParamsInviteKey = searchParams.get("inviteKey");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [inviteKey, setInviteKey] = useState(searchParamsInviteKey || "");
+  const [inviteKey, setInviteKey] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -59,21 +57,14 @@ export default function JoinTeam() {
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
-            <div className={cn(!!searchParamsInviteKey && !error && "hidden")}>
-              <label htmlFor="invite-key" className="sr-only">
-                Invite Key
-              </label>
-              <Input
-                id="invite-key"
-                name="invite-key"
-                type="text"
-                required
-                placeholder="Invite Key"
+            {/* since we might load the code from search params, we need to wrap it in a suspense */}
+            <Suspense>
+              <CodeInput
                 value={inviteKey}
-                onChange={(e) => setInviteKey(e.target.value)}
-                className="w-full"
+                onChange={setInviteKey}
+                error={!!error}
               />
-            </div>
+            </Suspense>
             <div>
               <label htmlFor="username" className="sr-only">
                 Username
@@ -132,6 +123,42 @@ export default function JoinTeam() {
           </div>
         </form>
       </div>
+    </div>
+  );
+}
+
+function CodeInput({
+  value,
+  onChange,
+  error = false,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  error?: boolean;
+}) {
+  const searchParams = useSearchParams();
+  const searchParamsInviteKey = searchParams.get("inviteKey");
+  useEffect(() => {
+    if (searchParamsInviteKey) {
+      onChange(searchParamsInviteKey);
+    }
+  }, [searchParamsInviteKey, onChange]);
+
+  return (
+    <div className={cn(!!searchParamsInviteKey && !error && "hidden")}>
+      <label htmlFor="invite-key" className="sr-only">
+        Invite Key
+      </label>
+      <Input
+        id="invite-key"
+        name="invite-key"
+        type="text"
+        required
+        placeholder="Invite Key"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full"
+      />
     </div>
   );
 }
