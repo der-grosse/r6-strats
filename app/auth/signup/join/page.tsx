@@ -4,14 +4,17 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import Link from "next/link";
 import { register } from "@/src/auth/auth";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { cn } from "@/src/utils";
 
 export default function JoinTeam() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchParamsInviteKey = searchParams.get("inviteKey");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [inviteKey, setInviteKey] = useState("");
+  const [inviteKey, setInviteKey] = useState(searchParamsInviteKey || "");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -56,7 +59,7 @@ export default function JoinTeam() {
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
-            <div>
+            <div className={cn(!!searchParamsInviteKey && !error && "hidden")}>
               <label htmlFor="invite-key" className="sr-only">
                 Invite Key
               </label>

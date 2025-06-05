@@ -109,7 +109,10 @@ export default function TeamInviteKeys(props: TeamInviteKeysProps) {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => copyToClipboard(key.inviteKey)}
+                              onClick={() => {
+                                const url = `${window.location.origin}/auth/signup/join?inviteKey=${key.inviteKey}`;
+                                copyToClipboard(url);
+                              }}
                             >
                               <Copy className="h-4 w-4" />
                             </Button>

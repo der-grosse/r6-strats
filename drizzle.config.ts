@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
@@ -5,6 +6,8 @@ export default defineConfig({
   out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {
-    url: "postgresql://postgres:postgres@localhost:5432/strats",
+    url:
+      process.env.POSTGRES_URL ||
+      "postgresql://postgres:postgres@localhost:5432/strats",
   },
 });
