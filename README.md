@@ -23,6 +23,7 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 - sidebar width changes based on tab
 - add toggle for floors of map
 - add new map blueprints
+  - clubhouse 1f windows missing / wrong asset
 - somehow add alternatives for strat
 - operator icons with small rectangle shapes clip outside
 - zoom slider

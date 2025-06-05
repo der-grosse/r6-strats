@@ -1,6 +1,15 @@
 import Bank1F from "@/components/StratEditor/maps/bank/1f";
 import Bank2F from "@/components/StratEditor/maps/bank/2f";
 import BankB from "@/components/StratEditor/maps/bank/B";
+import Chalet1F from "@/components/StratEditor/maps/chalet/1f";
+import Chalet2F from "@/components/StratEditor/maps/chalet/2F";
+import ChaletB from "@/components/StratEditor/maps/chalet/B";
+import Clubhouse1F from "@/components/StratEditor/maps/clubhouse/1f";
+import Clubhouse2F from "@/components/StratEditor/maps/clubhouse/2f";
+import ClubhouseB from "@/components/StratEditor/maps/clubhouse/B";
+import Consulate1F from "@/components/StratEditor/maps/consulate/1F";
+import Consulate2F from "@/components/StratEditor/maps/consulate/2F";
+import ConsulateB from "@/components/StratEditor/maps/consulate/B";
 
 const MAPS: R6Map[] = [
   {
@@ -39,9 +48,18 @@ const MAPS: R6Map[] = [
       {
         floor: "B",
         src: "/map_blueprints/chalet/b.png",
+        clickables: ChaletB,
       },
-      { floor: "1F", src: "/map_blueprints/chalet/1f.png" },
-      { floor: "2F", src: "/map_blueprints/chalet/2f.png" },
+      {
+        floor: "1F",
+        src: "/map_blueprints/chalet/1f.png",
+        clickables: Chalet1F,
+      },
+      {
+        floor: "2F",
+        src: "/map_blueprints/chalet/2f.png",
+        clickables: Chalet2F,
+      },
     ],
   },
   {
@@ -51,14 +69,17 @@ const MAPS: R6Map[] = [
       {
         floor: "B",
         src: "/map_blueprints/clubhouse/b.png",
+        clickables: ClubhouseB,
       },
       {
         floor: "1F",
         src: "/map_blueprints/clubhouse/1f.png",
+        clickables: Clubhouse1F,
       },
       {
         floor: "2F",
         src: "/map_blueprints/clubhouse/2f.png",
+        clickables: Clubhouse2F,
       },
     ],
   },
@@ -69,14 +90,17 @@ const MAPS: R6Map[] = [
       {
         floor: "B",
         src: "/map_blueprints/consulate/b.png",
+        clickables: ConsulateB,
       },
       {
         floor: "1F",
         src: "/map_blueprints/consulate/1f.png",
+        clickables: Consulate1F,
       },
       {
         floor: "2F",
         src: "/map_blueprints/consulate/2f.png",
+        clickables: Consulate2F,
       },
     ],
   },
