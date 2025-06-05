@@ -1,4 +1,6 @@
 import Bank1F from "@/components/StratEditor/maps/bank/1f";
+import Bank2F from "@/components/StratEditor/maps/bank/2f";
+import BankB from "@/components/StratEditor/maps/bank/B";
 
 const MAPS: R6Map[] = [
   {
@@ -8,6 +10,7 @@ const MAPS: R6Map[] = [
       {
         floor: "B",
         src: "/map_blueprints/bank/b.png",
+        clickables: BankB,
       },
       {
         floor: "1F",
@@ -17,6 +20,7 @@ const MAPS: R6Map[] = [
       {
         floor: "2F",
         src: "/map_blueprints/bank/2f.png",
+        clickables: Bank2F,
       },
     ],
   },
