@@ -46,11 +46,15 @@ export default function MapBackground(props: MapBackgroundProps) {
                     ) => {
                       const { width: abs_width, height: abs_height } =
                         clampAssetSize({
-                          width: rel_width * width + 10, // add a little bit of spacing that the edge is over the window edge
-                          height: rel_height * height + 10, // add a little bit of spacing that the edge is over the window edge
+                          width:
+                            rel_width * width +
+                            (type === "barricade" ? 10 : -5), // add a little bit of spacing that the edge is over the window edge
+                          height:
+                            rel_height * height +
+                            (type === "barricade" ? 10 : -5), // add a little bit of spacing that the edge is over the window edge
                         });
                       const abs_x = rel_x * width + x - abs_width / 2;
-                      const abs_y = rel_y * height + y - abs_height / 2;
+                      const abs_y = rel_y * width + y - abs_height / 2;
                       const baseAsset = ((): Pick<
                         ReinforcementAsset,
                         "id" | "type" | "variant"

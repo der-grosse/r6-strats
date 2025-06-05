@@ -5,8 +5,10 @@ import { login } from "@/src/auth/auth";
 import { useState } from "react";
 import Link from "next/link";
 import { CircleX } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
@@ -22,7 +24,7 @@ export default function Login() {
         setError(!user);
 
         if (user) {
-          window.location.href = "/";
+          router.push("/");
         }
       }}
     >
