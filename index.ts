@@ -26,7 +26,6 @@ app.prepare().then(() => {
   const teamIO = io.of(/^\/team-(\d+)$/);
 
   createSocketServer(teamIO);
-
   httpServer
     .once("error", (err) => {
       console.error(err);
@@ -35,4 +34,27 @@ app.prepare().then(() => {
     .listen(port, () => {
       console.log(`> Ready on http://${hostname}:${port}`);
     });
+
+  // Handle graceful shutdown
+  const gracefulShutdown = (signal: string) => {
+    console.log(`\nReceived ${signal}. Shutting down gracefully...`);
+
+    io.close(() => {
+      console.log("Socket.IO server closed");
+    });
+
+    httpServer.close(() => {
+      console.log("HTTP server closed");
+      process.exit(0);
+    });
+
+    // Force close after 10 seconds
+    setTimeout(() => {
+      console.log("Force closing server");
+      process.exit(1);
+    }, 10000);
+  };
+
+  process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+  process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
 });
