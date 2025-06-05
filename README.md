@@ -18,6 +18,7 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 - CTRL+d to duplicate selected elements
 - CTRL-C and CTRL-V to copy and paste selected elements
 - edit attributes of multiple assets at once
+- make asset ordering consistent
 - bring to front / send to back for selected elements
 - sidebar width changes based on tab
 - add toggle for floors of map
