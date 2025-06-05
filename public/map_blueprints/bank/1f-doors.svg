@@ -1,25 +1,23 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="799.68" height="599.76" viewBox="0.00 0.00 3332.00 2499.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g stroke-linecap="round" id="DOUBLE_DOOR_Copy_2">
-<path d="M672.69,561.22 L771.68,561.41" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1078.25,561.69 L1120.46,561.69" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M573.69,1646.22 L672.68,1646.41" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1519.31,874.25 L1519.31,916.46" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1323.31,1557.25 L1323.31,1599.46" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1806.31,1332.25 L1806.31,1374.46" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2329.31,967.25 L2329.31,1009.46" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2010.25,1704.69 L2052.46,1704.69" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2805.25,960.69 L2847.46,960.69" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2920.31,1294.25 L2920.31,1336.46" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2758.69,1615.22 L2857.68,1615.41" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2983.25,1618.69 L3025.46,1618.69" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2264.28,2183.19 L2264.09,2282.18" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2264.28,1896.19 L2264.09,1995.18" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1676.69,1858.22 L1775.68,1858.41" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M896.25,288.69 L938.46,288.69" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M826.25,288.69 L868.46,288.69" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M965.25,288.69 L1007.46,288.69" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M975.69,1527.22 L1074.68,1527.41" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-</g>
+<svg width="799.68" height="599.76" viewBox="0 0 3332 2499" xmlns="http://www.w3.org/2000/svg">
+  <g stroke-linecap="round" fill="none" stroke="#2E2E36" stroke-width="15" stroke-linejoin="round">
+    <path d="M672.69,561.22 L771.68,561.41" />
+    <path d="M1078.25,561.69 L1120.46,561.69" />
+    <path d="M573.69,1646.22 L672.68,1646.41" />
+    <path d="M1519.31,874.25 L1519.31,916.46" />
+    <path d="M1323.31,1557.25 L1323.31,1599.46" />
+    <path d="M1806.31,1332.25 L1806.31,1374.46" />
+    <path d="M2329.31,967.25 L2329.31,1009.46" />
+    <path d="M2010.25,1704.69 L2052.46,1704.69" />
+    <path d="M2805.25,960.69 L2847.46,960.69" />
+    <path d="M2920.31,1294.25 L2920.31,1336.46" />
+    <path d="M2758.69,1615.22 L2857.68,1615.41" />
+    <path d="M2983.25,1618.69 L3025.46,1618.69" />
+    <path d="M2264.28,2183.19 L2264.09,2282.18" />
+    <path d="M2264.28,1896.19 L2264.09,1995.18" />
+    <path d="M1676.69,1858.22 L1775.68,1858.41" />
+    <path d="M896.25,288.69 L938.46,288.69" />
+    <path d="M826.25,288.69 L868.46,288.69" />
+    <path d="M965.25,288.69 L1007.46,288.69" />
+    <path d="M975.69,1527.22 L1074.68,1527.41" />
+  </g>
 </svg>

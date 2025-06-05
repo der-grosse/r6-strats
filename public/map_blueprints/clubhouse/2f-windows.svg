@@ -1,12 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="799.68" height="599.76" viewBox="0.00 0.00 3332.00 2499.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g stroke-linecap="round" id="2F_WINDOW">
-<path d="M2472.34,1646.06 L2513.01,1646.06" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1286.34,1407.06 L1327.01,1407.06" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1508.34,1407.06 L1549.01,1407.06" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2015.34,1366.06 L2056.01,1366.06" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1514.34,460.06 L1555.01,460.06" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2110.44,1546.84 L2110.44,1587.51" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-</g>
+<svg width="799.68" height="599.76" viewBox="0 0 3332 2499" xmlns="http://www.w3.org/2000/svg">
+  <g stroke-linecap="round" fill="none" stroke="#60606E" stroke-width="7" stroke-linejoin="round">
+    <path d="M2472.34,1646.06 L2513.01,1646.06" />
+    <path d="M1286.34,1407.06 L1327.01,1407.06" />
+    <path d="M1508.34,1407.06 L1549.01,1407.06" />
+    <path d="M2015.34,1366.06 L2056.01,1366.06" />
+    <path d="M1514.34,460.06 L1555.01,460.06" />
+    <path d="M2110.44,1546.84 L2110.44,1587.51" />
+  </g>
 </svg>

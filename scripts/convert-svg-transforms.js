@@ -13,11 +13,15 @@ function applyTranslateToPath(dAttribute, translateX, translateY) {
 function convertSvgTransforms(filePath) {
   const content = fs.readFileSync(filePath, 'utf8');
   
-  // Process each path with transform="translate(36 -18)"
+  // Create regex pattern using the transform values
+  const translatePattern = `translate\\(${transform[0]} ${transform[1]}\\)`;
+  const regex = new RegExp(`<path d="([^"]+)" transform="${translatePattern}" \\/>`, 'g');
+  
+  // Process each path with the dynamic transform pattern
   const converted = content.replace(
-    /<path d="([^"]+)" transform="translate\(36 -18\)" \/>/g,
+    regex,
     (match, dAttribute) => {
-      const newD = applyTranslateToPath(dAttribute, 36, -18);
+      const newD = applyTranslateToPath(dAttribute, transform[0], transform[1]);
       return `<path d="${newD}" />`;
     }
   );
@@ -25,8 +29,9 @@ function convertSvgTransforms(filePath) {
   return converted;
 }
 
+const transform = [-64, 0]; // Translate values to apply
 // Process the SVG file
-const svgPath = path.join(__dirname, '..', 'public', 'map_blueprints', 'bank', '1f-hatches.svg');
+const svgPath = path.join(__dirname, '..', 'public', 'map_blueprints', 'consulate', '2f-windows.svg');
 const convertedContent = convertSvgTransforms(svgPath);
 
 // Write the converted content back to the file

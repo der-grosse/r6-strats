@@ -127,7 +127,7 @@ function convertHatchGroups(inputFilePath, outputFilePath) {
 }
 
 // Main execution
-const inputFile = path.join(__dirname, '../public/map_blueprints/bank/1f-hatches.svg');
+const inputFile = path.join(__dirname, '../public/map_blueprints/chalet/1f-hatches.svg');
 const outputFile = inputFile.replace(/\.svg$/, '-bounding.svg');
 
 if (!fs.existsSync(inputFile)) {

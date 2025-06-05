@@ -1,18 +1,16 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="799.68" height="599.76" viewBox="0.00 0.00 3332.00 2499.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g stroke-linecap="round" transform="translate(-18.00, -54.00)" id="SINGLE_DOOR_Copy_4">
-<path d="M2506.25,918.69 L2548.46,918.69" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2442.25,661.69 L2484.46,661.69" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2174.31,1383.25 L2174.31,1425.46" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1994.69,1326.22 L2093.68,1326.41" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2021.25,914.69 L2063.46,914.69" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1731.31,1388.25 L1731.31,1430.46" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1870.25,1326.69 L1912.46,1326.69" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1784.28,621.19 L1784.09,720.18" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1124.25,1207.69 L1166.46,1207.69" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1560.25,1498.69 L1602.46,1498.69" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1731.31,1530.25 L1731.31,1572.46" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1810.69,1498.22 L1909.68,1498.41" fill="none" stroke="rgb(46, 46, 54)" stroke-width="15.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-</g>
+<svg width="799.68" height="599.76" viewBox="0 0 3332 2499" xmlns="http://www.w3.org/2000/svg">
+  <g stroke-linecap="round" fill="none" stroke="#2E2E36" stroke-width="15" stroke-linejoin="round">
+    <path d="M2488.25,864.69 L2530.46,864.69" />
+    <path d="M2424.25,607.69 L2466.46,607.69" />
+    <path d="M2156.31,1329.25 L2156.31,1371.46" />
+    <path d="M1976.69,1272.22 L2075.68,1272.41" />
+    <path d="M2003.25,860.69 L2045.46,860.69" />
+    <path d="M1713.31,1334.25 L1713.31,1376.46" />
+    <path d="M1852.25,1272.69 L1894.46,1272.69" />
+    <path d="M1766.28,567.19 L1766.09,666.18" />
+    <path d="M1106.25,1153.69 L1148.46,1153.69" />
+    <path d="M1542.25,1444.69 L1584.46,1444.69" />
+    <path d="M1713.31,1476.25 L1713.31,1518.46" />
+    <path d="M1792.69,1444.22 L1891.68,1444.41" />
+  </g>
 </svg>

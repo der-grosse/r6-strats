@@ -1,22 +1,20 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="799.68" height="599.76" viewBox="0.00 0.00 3332.00 2499.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g stroke-linecap="round" transform="translate(96.00, -43.00)" id="WINDOW_Copy_5">
-<path d="M1244.71,1000.85 L1284.65,993.21" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1153.25,1035.57 L1190.12,1018.40" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1082.98,1101.99 L1108.43,1070.27" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1040.61,1188.25 L1054.91,1150.17" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1543.34,986.06 L1628.52,986.06" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1655.34,986.06 L1740.52,986.06" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1626.34,835.06 L1667.01,835.06" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1699.34,835.06 L1740.01,835.06" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1997.34,835.06 L2038.01,835.06" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2070.34,835.06 L2111.01,835.06" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2372.34,835.06 L2413.01,835.06" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2445.34,835.06 L2486.01,835.06" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2771.34,835.06 L2812.01,835.06" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2844.34,835.06 L2885.01,835.06" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2171.94,2055.34 L2171.94,2140.52" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2171.94,2187.34 L2171.94,2272.52" fill="none" stroke="rgb(96, 96, 110)" stroke-width="7.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-</g>
+<svg width="799.68" height="599.76" viewBox="0 0 3332 2499" xmlns="http://www.w3.org/2000/svg">
+  <g stroke-linecap="round" fill="none" stroke="#60606E" stroke-width="7" stroke-linejoin="round">
+    <path d="M1340.71,957.85 L1380.65,950.21" />
+    <path d="M1249.25,992.57 L1286.12,975.40" />
+    <path d="M1178.98,1058.99 L1204.43,1027.27" />
+    <path d="M1136.61,1145.25 L1150.91,1107.17" />
+    <path d="M1639.34,943.06 L1724.52,943.06" />
+    <path d="M1751.34,943.06 L1836.52,943.06" />
+    <path d="M1722.34,792.06 L1763.01,792.06" />
+    <path d="M1795.34,792.06 L1836.01,792.06" />
+    <path d="M2093.34,792.06 L2134.01,792.06" />
+    <path d="M2166.34,792.06 L2207.01,792.06" />
+    <path d="M2468.34,792.06 L2509.01,792.06" />
+    <path d="M2541.34,792.06 L2582.01,792.06" />
+    <path d="M2867.34,792.06 L2908.01,792.06" />
+    <path d="M2940.34,792.06 L2981.01,792.06" />
+    <path d="M2267.94,2012.34 L2267.94,2097.52" />
+    <path d="M2267.94,2144.34 L2267.94,2229.52" />
+  </g>
 </svg>

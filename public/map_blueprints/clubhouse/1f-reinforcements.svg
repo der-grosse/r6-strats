@@ -1,28 +1,26 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="799.68" height="599.76" viewBox="0.00 0.00 3332.00 2499.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g stroke-linecap="round" id="REINFORCEMENT_Copy">
-<path d="M1863.71,925.11 L1946.23,925.66" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1767.71,925.11 L1850.23,925.66" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1628.85,925.11 L1713.23,925.66" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1529.85,925.11 L1614.23,925.66" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M595.71,1246.11 L678.23,1246.66" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M692.71,1246.11 L775.23,1246.66" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M617.71,1955.11 L687.59,1955.66" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M700.71,1955.11 L770.59,1955.66" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M811.71,1762.11 L894.40,1762.66" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M908.71,1762.11 L991.40,1762.66" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2243.71,1622.11 L2328.22,1622.66" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2342.71,1622.11 L2427.22,1622.66" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2109.39,2054.08 L2108.84,2127.72" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2109.39,1966.08 L2108.84,2039.72" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2109.39,1832.08 L2108.84,1905.72" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2109.39,1744.08 L2108.84,1817.72" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2111.39,1013.08 L2110.84,1097.72" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M2111.39,1112.08 L2110.84,1196.72" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1052.39,1276.08 L1051.84,1360.72" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M1052.39,1375.08 L1051.84,1459.72" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M413.39,1823.08 L412.84,1891.73" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-<path d="M413.39,1906.08 L412.84,1974.73" fill="none" stroke="rgb(204, 204, 204)" stroke-width="5.00" stroke-opacity="1.00" stroke-linejoin="round"/>
-</g>
+<svg width="799.68" height="599.76" viewBox="0 0 3332 2499" xmlns="http://www.w3.org/2000/svg">
+  <g stroke-linecap="round" fill="none" stroke="#CCC" stroke-width="5" stroke-linejoin="round">
+    <path d="M1863.71,925.11 L1946.23,925.66" />
+    <path d="M1767.71,925.11 L1850.23,925.66" />
+    <path d="M1628.85,925.11 L1713.23,925.66" />
+    <path d="M1529.85,925.11 L1614.23,925.66" />
+    <path d="M595.71,1246.11 L678.23,1246.66" />
+    <path d="M692.71,1246.11 L775.23,1246.66" />
+    <path d="M617.71,1955.11 L687.59,1955.66" />
+    <path d="M700.71,1955.11 L770.59,1955.66" />
+    <path d="M811.71,1762.11 L894.40,1762.66" />
+    <path d="M908.71,1762.11 L991.40,1762.66" />
+    <path d="M2243.71,1622.11 L2328.22,1622.66" />
+    <path d="M2342.71,1622.11 L2427.22,1622.66" />
+    <path d="M2109.39,2054.08 L2108.84,2127.72" />
+    <path d="M2109.39,1966.08 L2108.84,2039.72" />
+    <path d="M2109.39,1832.08 L2108.84,1905.72" />
+    <path d="M2109.39,1744.08 L2108.84,1817.72" />
+    <path d="M2111.39,1013.08 L2110.84,1097.72" />
+    <path d="M2111.39,1112.08 L2110.84,1196.72" />
+    <path d="M1052.39,1276.08 L1051.84,1360.72" />
+    <path d="M1052.39,1375.08 L1051.84,1459.72" />
+    <path d="M413.39,1823.08 L412.84,1891.73" />
+    <path d="M413.39,1906.08 L412.84,1974.73" />
+  </g>
 </svg>
