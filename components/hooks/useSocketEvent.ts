@@ -10,10 +10,18 @@ const useSocketEvent = <Event extends keyof ServerToClientSocketEvents>(
   const socket = useSocket();
 
   useEffect(() => {
-    socket.on(event, callback as any);
+    function cb(...args: unknown[]) {
+      //@ts-ignore
+      if (socket.debug) {
+        console.debug(`Socket event received: ${event}`, ...args);
+      }
+      //@ts-ignore
+      return callback(...args);
+    }
+    socket.on(event, cb as any);
 
     return () => {
-      socket.off(event, callback as any);
+      socket.off(event, cb as any);
     };
   }, [event, callback]);
 };

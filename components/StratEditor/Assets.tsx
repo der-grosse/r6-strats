@@ -18,6 +18,7 @@ import Reinforcement from "../icons/reinforcement";
 import Rotation from "../icons/rotation";
 import Explosion from "./assets/Explosion";
 import WoodenBarricade from "../icons/woodenBarricade";
+import { useUser } from "../context/UserContext";
 
 export default function useMountAssets(
   { team, operators }: { team: Team; operators: PickedOperator[] },
@@ -29,6 +30,7 @@ export default function useMountAssets(
     updateAsset: (asset: PlacedAsset) => void;
   }
 ) {
+  const { user } = useUser();
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const [colorPickerAsset, setColorPickerAsset] = useState<PlacedAsset | null>(
     null
@@ -165,7 +167,11 @@ export default function useMountAssets(
   );
 
   const renderAsset = useCallback(
-    function renderAsset(asset: PlacedAsset, selected: boolean) {
+    function renderAsset(
+      asset: PlacedAsset,
+      selectedBy: TeamMember["id"][],
+      lastestSelected: boolean
+    ) {
       const assetElement = (() => {
         switch (asset.type) {
           case "operator":
@@ -210,9 +216,39 @@ export default function useMountAssets(
             return <>Missing Asset</>;
         }
       })();
+      const fullAsset = (() => {
+        if (
+          selectedBy.length === 0 ||
+          selectedBy.every((id) => id === user?.id)
+        ) {
+          return assetElement;
+        } else {
+          const shadowColors = selectedBy
+            .map((id) => team.members.find((m) => m.id === id)?.defaultColor!)
+            .filter(Boolean);
+          return (
+            <div
+              style={{
+                boxShadow: shadowColors.length
+                  ? shadowColors.map((c) => `0 0 .4rem .3rem ${c}`).join(", ")
+                  : undefined,
+              }}
+              className="size-full"
+              title={`Selected by ${selectedBy
+                .map((id) => team.members.find((m) => m.id === id)?.name)
+                .join(", ")}`}
+            >
+              {assetElement}
+            </div>
+          );
+        }
+      })();
       return {
-        menu: selected ? menu(asset) : undefined,
-        asset: assetElement,
+        menu:
+          lastestSelected && selectedBy.includes(user?.id ?? -1)
+            ? menu(asset)
+            : undefined,
+        asset: fullAsset,
       };
     },
     [menu, team, operators]

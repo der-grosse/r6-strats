@@ -7,7 +7,6 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 
 ### Editor
 
-- show selected elements of other active users
 - simultaneous editing resets current non-committed changes
 - zIndex of menu needs to be higher than all assets
 - refetch state every X seconds or when window gains focus

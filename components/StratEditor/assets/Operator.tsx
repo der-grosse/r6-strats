@@ -10,7 +10,7 @@ export interface OperatorProps {
 export default function Operator(props: OperatorProps) {
   const color = getAssetColor(props.asset, props.operators, props.team);
   return (
-    <div className="w-[130%] h-[130%] m-[-15%] relative">
+    <div className="w-[130%] h-[130%] translate-[-12.5%] relative">
       {props.asset.iconType !== "hidden" && (
         <OperatorIcon
           op={props.asset.operator}

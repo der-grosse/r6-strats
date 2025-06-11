@@ -5,6 +5,9 @@ import { useKeys } from "../hooks/useKey";
 import isKeyDown from "../hooks/isKeyDown";
 import { deepCopy } from "../deepCopy";
 import MapBackground from "./MapBackground";
+import { Selection } from "./StratEditor";
+import { useUser } from "../context/UserContext";
+import { useSocket } from "../context/SocketContext";
 
 interface CanvasAsset {
   id: string;
@@ -22,8 +25,12 @@ interface CanvasProps<A extends CanvasAsset> {
   onAssetRemove: (assets: A["id"][]) => void;
   renderAsset: (
     asset: A,
-    selected: boolean
+    selectedBy: TeamMember["id"][],
+    lastestSelected: boolean
   ) => { asset: React.ReactNode; menu: React.ReactNode | null };
+  selectedAssets: Selection[];
+  onSelect: (selected: string[]) => void;
+  onDeselect: (selected: string[]) => void;
 }
 
 // should be a multiple of 4 and 3 to have nicer numbers for aspect ratio
@@ -43,6 +50,9 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
   onAssetChange,
   onAssetRemove,
   renderAsset,
+  selectedAssets,
+  onSelect,
+  onDeselect,
 }: Readonly<CanvasProps<A>>) {
   if (typeof window !== "undefined") {
     //@ts-ignore
@@ -51,6 +61,14 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
       MIN_ASSET_SIZE = 4;
     };
   }
+
+  const socket = useSocket();
+
+  const userSelectedAssets = useMemo(
+    () =>
+      selectedAssets.filter((s) => s.socketID === socket.id).map((s) => s.id),
+    [selectedAssets, socket]
+  );
 
   const [assets, setAssets] = useState<A[]>(propAssets);
   useEffect(() => {
@@ -137,8 +155,6 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
     }[],
   });
 
-  const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
-
   const handleMouseDown = useCallback(
     (
       e: React.MouseEvent,
@@ -156,9 +172,16 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
       );
 
       if (e.shiftKey) {
-        setSelectedAssets((prev) => [...prev, assetId]);
+        if (userSelectedAssets.includes(assetId)) {
+          onDeselect([assetId]);
+        } else {
+          onSelect([assetId]);
+        }
       } else {
-        setSelectedAssets([assetId]);
+        onDeselect(userSelectedAssets);
+        if (!userSelectedAssets.includes(assetId)) {
+          onSelect([assetId]);
+        }
       }
 
       if (handle === "resize") {
@@ -178,7 +201,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
           assetsRef.current.find((a) => a.id === assetId) || null
         ),
         startPositions: assetsRef.current
-          .filter((a) => selectedAssets.includes(a.id) || a.id === assetId)
+          .filter((a) => userSelectedAssets.includes(a.id) || a.id === assetId)
           .map((a) => ({
             ...a.position,
             ...a.size,
@@ -193,7 +216,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       if (
-        selectedAssets.length === 0 ||
+        userSelectedAssets.length === 0 ||
         (!isDragging && !isResizing && !isRotating)
       )
         return;
@@ -218,7 +241,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
 
         setAssets((assets) =>
           assets.map((asset) => {
-            if (!selectedAssets.includes(asset.id)) return asset;
+            if (!userSelectedAssets.includes(asset.id)) return asset;
             const startPos = actionStart.startPositions.find(
               (pos) => pos.id === asset.id
             );
@@ -234,7 +257,9 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
           })
         );
       } else if (isResizing || isRotating) {
-        const selected = assets.filter((a) => selectedAssets.includes(a.id));
+        const selected = assets.filter((a) =>
+          userSelectedAssets.includes(a.id)
+        );
         if (selected.length === 0) return;
 
         if (isRotating || e.ctrlKey) {
@@ -254,7 +279,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
 
           setAssets((assets) =>
             assets.map((a) => {
-              if (!selectedAssets.includes(a.id)) return a;
+              if (!userSelectedAssets.includes(a.id)) return a;
               const startPos = actionStart.startPositions.find(
                 (pos) => pos.id === a.id
               );
@@ -290,7 +315,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
 
           setAssets((assets) =>
             assets.map((a) => {
-              if (!selectedAssets.includes(a.id)) return a;
+              if (!userSelectedAssets.includes(a.id)) return a;
               const startPos = actionStart.startPositions.find(
                 (pos) => pos.id === a.id
               );
@@ -313,15 +338,15 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
         }
       }
     },
-    [isDragging, isResizing, isRotating, selectedAssets, actionStart]
+    [isDragging, isResizing, isRotating, userSelectedAssets, actionStart]
   );
 
   const handleMouseUp = useCallback(
     (e: MouseEvent) => {
       if (isDragging || isResizing || isRotating) {
         onAssetChange(
-          selectedAssets
-            .map((s) => assetsRef.current.find((a) => a.id === s)!)
+          userSelectedAssets
+            .map((id) => assetsRef.current.find((a) => a.id === id)!)
             .filter(Boolean)
         );
         actionEndTime.current = Date.now();
@@ -330,7 +355,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
       setIsResizing(false);
       setIsRotating(false);
     },
-    [isDragging, isResizing, isRotating, selectedAssets]
+    [isDragging, isResizing, isRotating, userSelectedAssets]
   );
 
   const handleWheel = useCallback(
@@ -403,14 +428,14 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
       shortcut: ["Backspace", "Delete"],
       action() {
         if (document.activeElement !== svgRef.current) return;
-        onAssetRemove(selectedAssets);
+        onAssetRemove(userSelectedAssets);
       },
     },
     {
       shortcut: ["Escape"],
       action() {
         if (document.activeElement !== svgRef.current) return;
-        setSelectedAssets([]);
+        onDeselect(userSelectedAssets);
       },
     },
     {
@@ -420,7 +445,11 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
       },
       action(e) {
         if (document.activeElement !== svgRef.current) return;
-        setSelectedAssets(assets.map((a) => a.id));
+        onSelect(
+          assets
+            .map((a) => a.id)
+            .filter((id) => !userSelectedAssets.includes(id))
+        );
         e.preventDefault();
       },
     },
@@ -440,7 +469,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
           // prevent deselecting assets after rotating
           // drag of rotate can be recognized as click if you leave the click area of the asset while rotating
           if (Date.now() - actionEndTime.current < 500) return;
-          setSelectedAssets([]);
+          onDeselect(userSelectedAssets);
         }}
         tabIndex={0}
         focusable
@@ -470,7 +499,10 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
         {assets.map((asset) => {
           const render = renderAsset(
             asset,
-            selectedAssets.length === 1 && selectedAssets[0] === asset.id
+            selectedAssets
+              .filter((s) => s.id === asset.id)
+              .map((s) => s.userID),
+            userSelectedAssets.at(-1) === asset.id
           );
           return (
             <SVGAsset
@@ -479,7 +511,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
               size={asset.size}
               rotation={asset.rotation || 0}
               onMouseDown={(e, handle) => handleMouseDown(e, asset.id, handle)}
-              selected={selectedAssets.includes(asset.id)}
+              selected={userSelectedAssets.includes(asset.id)}
               ctrlKeyDown={ctrlKeyDown}
               menu={render.menu}
               zoom={zoomFactor}

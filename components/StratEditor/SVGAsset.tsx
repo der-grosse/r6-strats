@@ -1,6 +1,7 @@
 "use client";
 import { useRef } from "react";
 import { cn } from "@/src/utils";
+import { useUser } from "../context/UserContext";
 
 interface SVGAssetProps {
   position: { x: number; y: number };
@@ -47,7 +48,10 @@ export default function SVGAsset({
         <foreignObject
           width={size.width}
           height={size.height}
-          style={{ overflow: "visible", zIndex: 1 }}
+          style={{
+            overflow: "visible",
+            zIndex: 1,
+          }}
         >
           {children}
         </foreignObject>
