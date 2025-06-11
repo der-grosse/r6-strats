@@ -7,9 +7,7 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 
 ### Editor
 
-- simultaneous editing resets current non-committed changes
 - zIndex of menu needs to be higher than all assets
-- refetch state every X seconds or when window gains focus
 - variable width barricades
 - make doors, windows and walls clickable to easily add assets
 - add selector for current player in sidebar -> this player gets assigned all new added assets

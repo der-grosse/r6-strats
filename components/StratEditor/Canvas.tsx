@@ -72,7 +72,19 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
 
   const [assets, setAssets] = useState<A[]>(propAssets);
   useEffect(() => {
-    setAssets(propAssets);
+    setAssets((assets) => {
+      const newAssets = propAssets.filter(
+        (a) => !assets.some((b) => b.id === a.id)
+      );
+      const filteredAssets = assets
+        .filter((a) => propAssets.some((b) => b.id === a.id))
+        .map((a) => {
+          const isEditing = isDragging || isResizing || isRotating;
+          if (userSelectedAssets.includes(a.id) && isEditing) return a;
+          return propAssets.find((b) => b.id === a.id) ?? a;
+        });
+      return [...filteredAssets, ...newAssets];
+    });
   }, [propAssets]);
   const assetsRef = useRef<A[]>(propAssets);
   assetsRef.current = assets;
@@ -178,8 +190,14 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
           onSelect([assetId]);
         }
       } else {
-        onDeselect(userSelectedAssets);
-        if (!userSelectedAssets.includes(assetId)) {
+        if (userSelectedAssets.includes(assetId)) {
+          if (userSelectedAssets.length > 1) {
+            onDeselect(userSelectedAssets.filter((id) => id !== assetId));
+          }
+        } else {
+          if (userSelectedAssets.length > 0) {
+            onDeselect(userSelectedAssets);
+          }
           onSelect([assetId]);
         }
       }

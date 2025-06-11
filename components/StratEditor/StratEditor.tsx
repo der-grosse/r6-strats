@@ -7,6 +7,7 @@ import useMountAssets from "./Assets";
 import {
   addStratAsset,
   deleteStratAssets,
+  getStrat,
   updateStratAssets,
 } from "@/src/strats/strats";
 import { useKeys } from "../hooks/useKey";
@@ -60,7 +61,25 @@ export interface AssetDeselection {
 
 const HISTORY_SIZE = 100;
 
-export function StratEditor({ strat, team }: Readonly<StratEditorProps>) {
+export function StratEditor({
+  strat: propStrat,
+  team,
+}: Readonly<StratEditorProps>) {
+  const [strat, setStrat] = useState<Strat>(propStrat);
+  useEffect(() => {
+    setStrat(propStrat);
+  }, [propStrat]);
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const new_strat = await getStrat(strat.id);
+      if (!new_strat) return;
+      setStrat(new_strat);
+      setAssets(new_strat.assets);
+      console.debug(`refreshed strat ${strat.id} from server`);
+    }, 30_000);
+
+    return () => clearInterval(interval);
+  }, [strat.id]);
   const { user } = useUser();
   const socket = useSocket();
   useEffect(() => {
