@@ -64,7 +64,7 @@ const MAPS: R6Map[] = [
   },
   {
     name: "Clubhouse",
-    sites: ["2F Gym", "B Church", "2F CCTV"],
+    sites: ["2F Gym", "B Church", "2F CCTV", "1F Bar"],
     floors: [
       {
         floor: "B",
@@ -106,7 +106,7 @@ const MAPS: R6Map[] = [
   },
   {
     name: "Kafe",
-    sites: ["3F Cocktail", "1F Kitchen", "2F Reading"],
+    sites: ["3F Cocktail", "1F Kitchen", "2F Reading", "2F Mining"],
     floors: [
       { floor: "1F", src: "/map_blueprints/kafe/1f.jpg" },
       { floor: "2F", src: "/map_blueprints/kafe/2f.jpg" },
@@ -115,7 +115,7 @@ const MAPS: R6Map[] = [
   },
   {
     name: "Lair",
-    sites: ["2F R6 Room", "1F Bunks", "B Lab"],
+    sites: ["2F R6 Room", "1F Bunks", "1F Armory", "B Lab"],
     floors: [
       { floor: "B", src: "/map_blueprints/lair/b.png" },
       { floor: "1F", src: "/map_blueprints/lair/1f.png" },
@@ -133,7 +133,7 @@ const MAPS: R6Map[] = [
   },
   {
     name: "Skyscraper",
-    sites: ["2F Tea", "2F Exhibition", "1F Kitchen"],
+    sites: ["2F Tea", "2F Exhibition", "1F Kitchen", "1F Bedroom"],
     floors: [
       { floor: "1F", src: "/map_blueprints/skyscraper/1f.jpg" },
       { floor: "2F", src: "/map_blueprints/skyscraper/2f.jpg" },
