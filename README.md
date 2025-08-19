@@ -44,7 +44,6 @@ no known bugs :)
 
 ### User Management
 
-- Player position switch order all the time -> set in team management
 - Reset password
 - Add Email to user
 

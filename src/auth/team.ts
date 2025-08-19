@@ -90,7 +90,8 @@ export async function getTeam() {
   const positionData = await db
     .select()
     .from(playerPositions)
-    .where(eq(playerPositions.teamID, user!.teamID));
+    .where(eq(playerPositions.teamID, user!.teamID))
+    .orderBy(playerPositions.id);
   const membersData = await db
     .select()
     .from(users)

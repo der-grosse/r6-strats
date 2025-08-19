@@ -44,9 +44,10 @@ export default function TeamPlayerPositions(props: TeamPlayerPositionsProps) {
                   <>
                     <Input
                       defaultValue={position.positionName ?? ""}
-                      onBlur={(e) =>
-                        setMemberPositionName(position.id, e.target.value)
-                      }
+                      onBlur={(e) => {
+                        if (e.target.value !== position.positionName)
+                          setMemberPositionName(position.id, e.target.value);
+                      }}
                     />
                     <div>
                       <DropdownMenu>

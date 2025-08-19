@@ -54,7 +54,7 @@ export default function StratEditorPlayerOperatorsSidebar({
               onChange={(positionID) => {
                 updatePickedOperator(stratID, {
                   id,
-                  positionID: positionID ?? undefined,
+                  positionID,
                 });
               }}
             />

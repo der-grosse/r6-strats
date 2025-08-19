@@ -27,6 +27,6 @@ interface Strat {
 interface PickedOperator {
   id: number;
   operator?: string;
-  positionID?: number;
+  positionID?: number | null;
   isPowerOP?: boolean;
 }

@@ -87,7 +87,8 @@ class StratsDBClass {
     const pickedOperatorsRows = await db
       .select()
       .from(pickedOperators)
-      .where(eq(pickedOperators.stratsID, id));
+      .where(eq(pickedOperators.stratsID, id))
+      .orderBy(pickedOperators.id);
 
     return (
       this.parseStratRows({
