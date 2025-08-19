@@ -7,7 +7,7 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 
 ### Bugs
 
-- No error handling / UI disable for non admins changing operators / positions in strat
+no known bugs :)
 
 ### Editor
 
@@ -44,6 +44,7 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 
 ### User Management
 
+- Player position switch order all the time -> set in team management
 - Reset password
 - Add Email to user
 

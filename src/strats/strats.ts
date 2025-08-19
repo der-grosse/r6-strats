@@ -1,12 +1,7 @@
 "use server";
 
 import db from "@/src/db/db";
-import {
-  pickedOperators,
-  placedAssets,
-  playerPositions,
-  strats,
-} from "@/src/db/schema";
+import { pickedOperators, playerPositions, strats } from "@/src/db/schema";
 import { getPayload } from "@/src/auth/getPayload";
 import { eq, is } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -161,7 +156,6 @@ export async function updatePickedOperator(
 ) {
   const user = await getPayload();
   if (!user) throw new Error("User not found");
-  if (!user.isAdmin) throw new Error("Only admins can set user position name");
   const strat = (
     await db.select().from(strats).where(eq(strats.id, stratID))
   )[0];
