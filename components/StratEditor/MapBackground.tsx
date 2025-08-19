@@ -8,6 +8,7 @@ export interface MapBackgroundProps {
     height: number;
   };
   addAsset: (asset: Asset & Partial<PlacedAsset>) => void;
+  readonly?: boolean;
 }
 
 export default function MapBackground(props: MapBackgroundProps) {
@@ -32,7 +33,7 @@ export default function MapBackground(props: MapBackgroundProps) {
               preserveAspectRatio="xMidYMid meet"
               className="pointer-events-none"
             />
-            {floor.clickables && (
+            {!props.readonly && floor.clickables && (
               <g transform={`translate(${x}, ${y})`}>
                 <foreignObject width={width} height={height}>
                   <floor.clickables

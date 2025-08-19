@@ -18,10 +18,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { archiveStrat, updateStrat } from "@/src/strats/strats";
 import {
   FolderPen,
+  Link,
   MapPinned,
   RefreshCw,
   Settings2,
   Trash,
+  Unlink,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -51,6 +53,9 @@ export default function StratEditorMetaSidebar(
   });
 
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [confirmGoogleDrawingOpen, setConfirmGoogleDrawingOpen] =
+    useState(false);
+  const [newDrawingID, setNewDrawingID] = useState("");
 
   return (
     <>
@@ -142,6 +147,23 @@ export default function StratEditorMetaSidebar(
           <Button
             variant="outline"
             className="w-full"
+            onClick={() => setConfirmGoogleDrawingOpen(true)}
+          >
+            {props.strat.drawingID ? (
+              <>
+                <Unlink className="mr-2" />
+                Unlink Google Drawing
+              </>
+            ) : (
+              <>
+                <Link className="mr-2" />
+                Link Google Drawing
+              </>
+            )}
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full"
             onClick={() => setConfirmDeleteOpen(true)}
           >
             <Trash className="mr-2" />
@@ -149,6 +171,57 @@ export default function StratEditorMetaSidebar(
           </Button>
         </div>
       </ScrollArea>
+
+      <Dialog
+        open={confirmGoogleDrawingOpen}
+        onOpenChange={setConfirmGoogleDrawingOpen}
+      >
+        <DialogContent className="w-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {props.strat.drawingID
+                ? "Unlink Google Drawing"
+                : "Link Google Drawing"}
+            </DialogTitle>
+            <DialogDescription>
+              {props.strat.drawingID
+                ? "Are you sure you want to unlink this Google Drawing?"
+                : "Please enter the Google Drawing link to link it to this strat."}
+            </DialogDescription>
+          </DialogHeader>
+          {!props.strat.drawingID && (
+            <Input
+              placeholder="Google Drawing Link"
+              value={newDrawingID}
+              onChange={(e) => {
+                const url = e.target.value;
+                setNewDrawingID(url);
+              }}
+            />
+          )}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmGoogleDrawingOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() =>
+                updateStrat({
+                  id: props.strat.id,
+                  drawingID: props.strat.drawingID ? null : newDrawingID,
+                }).then(() => {
+                  setNewDrawingID("");
+                  setConfirmGoogleDrawingOpen(false);
+                })
+              }
+            >
+              {props.strat.drawingID ? "Unlink" : "Link"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
         <DialogContent className="w-auto">

@@ -23,7 +23,6 @@ import Reinforcement from "@/components/icons/reinforcement";
 import { MAX_REINFORCEMENT } from "@/src/static/general";
 import Link from "next/link";
 import StratEditorPlayerOperatorsSidebar from "./PlayerOPs";
-import config from "@/src/static/config";
 import StratEditorLayoutSidebar from "./Layout";
 import { getAssetColor } from "../Assets";
 import { ColorButton } from "@/components/ColorPickerDialog";
@@ -32,6 +31,7 @@ export interface StratEditorSidebarProps {
   onAssetAdd: (asset: Asset & Partial<PlacedAsset>) => void;
   strat: Strat;
   team: Team;
+  hideAssets?: boolean;
 }
 
 export default function StratEditorSidebar(
@@ -175,53 +175,57 @@ export default function StratEditorSidebar(
           active={openTab === "player-ops"}
         />
         {/* operator gadget assets */}
-        <SidebarButton
-          disabled={config.disabledFeatures.includes("editor")}
-          icon={<Fingerprint />}
-          onClick={() => {
-            setOpenTab("operator-gadgets");
-            setSidebarOpen((open) =>
-              openTab === "operator-gadgets" ? !open : true
-            );
-          }}
-          tooltip={{
-            title: "Operator Gadgets",
-            description: "Add primary and secondary operator gadgets",
-          }}
-          active={openTab === "operator-gadgets"}
-        />
+        {!props.hideAssets && (
+          <SidebarButton
+            icon={<Fingerprint />}
+            onClick={() => {
+              setOpenTab("operator-gadgets");
+              setSidebarOpen((open) =>
+                openTab === "operator-gadgets" ? !open : true
+              );
+            }}
+            tooltip={{
+              title: "Operator Gadgets",
+              description: "Add primary and secondary operator gadgets",
+            }}
+            active={openTab === "operator-gadgets"}
+          />
+        )}
         {/* layout assets - rotate, reinforcement */}
-        <SidebarButton
-          disabled={config.disabledFeatures.includes("editor")}
-          icon={<LayoutGrid />}
-          onClick={() => {
-            setOpenTab("layout-assets");
-            setSidebarOpen((open) =>
-              openTab === "layout-assets" ? !open : true
-            );
-          }}
-          tooltip={{
-            title: "Layout Assets",
-            description: "Add rotates, headholes, barricades or reinforcements",
-          }}
-          active={openTab === "layout-assets"}
-        />
+        {!props.hideAssets && (
+          <SidebarButton
+            icon={<LayoutGrid />}
+            onClick={() => {
+              setOpenTab("layout-assets");
+              setSidebarOpen((open) =>
+                openTab === "layout-assets" ? !open : true
+              );
+            }}
+            tooltip={{
+              title: "Layout Assets",
+              description:
+                "Add rotates, headholes, barricades or reinforcements",
+            }}
+            active={openTab === "layout-assets"}
+          />
+        )}
         {/* operator assets - extra operators */}
-        <SidebarButton
-          disabled={config.disabledFeatures.includes("editor")}
-          icon={<CircleUserRound />}
-          onClick={() => {
-            setOpenTab("operator-assets");
-            setSidebarOpen((open) =>
-              openTab === "operator-assets" ? !open : true
-            );
-          }}
-          tooltip={{
-            title: "Operator Assets",
-            description: "Add operators or player locators to the map",
-          }}
-          active={openTab === "operator-assets"}
-        />
+        {!props.hideAssets && (
+          <SidebarButton
+            icon={<CircleUserRound />}
+            onClick={() => {
+              setOpenTab("operator-assets");
+              setSidebarOpen((open) =>
+                openTab === "operator-assets" ? !open : true
+              );
+            }}
+            tooltip={{
+              title: "Operator Assets",
+              description: "Add operators or player locators to the map",
+            }}
+            active={openTab === "operator-assets"}
+          />
+        )}
         <div className="flex-1" />
         <Tooltip delayDuration={500}>
           <TooltipTrigger asChild>

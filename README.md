@@ -12,6 +12,8 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 
 ### Editor
 
+- select secondary gadgets for ops
+- alternative ops per position per strat (leave power op as power position)
 - add tooltip to disabled
 - zIndex of menu needs to be higher than all assets
 - variable width barricades

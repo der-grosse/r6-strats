@@ -251,7 +251,7 @@ class StratsDBClass {
       site: string;
       name: string;
       description: string;
-      drawingID: string;
+      drawingID: string | null;
     }[];
     rotationIndexes: {
       rotationIndex: number;

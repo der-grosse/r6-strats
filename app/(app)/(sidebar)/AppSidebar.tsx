@@ -23,6 +23,7 @@ import {
   Link2,
   LogOut,
   MapPinned,
+  Pencil,
   Users,
   X,
 } from "lucide-react";
@@ -223,17 +224,11 @@ export function AppSidebar(props: { teamName: string }) {
                               </>
                             )}
                           </SidebarMenuButton>
-                          <SidebarMenuAction
-                            className="cursor-pointer my-0.5"
-                            onClick={() =>
-                              window.open(
-                                getGoogleDrawingsEditURL(strat.drawingID),
-                                "_blank"
-                              )
-                            }
-                          >
-                            <Edit />
-                          </SidebarMenuAction>
+                          <Link href={`/editor/${strat.id}`}>
+                            <SidebarMenuAction className="cursor-pointer my-0.5">
+                              <Pencil />
+                            </SidebarMenuAction>
+                          </Link>
                         </SidebarMenuItem>
                       ))
                     : null}

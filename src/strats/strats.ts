@@ -19,7 +19,7 @@ export async function createStrat(data: {
   site: string;
   name: string;
   description: string;
-  drawingID: string;
+  drawingID: string | null;
 }) {
   try {
     const session = await getPayload();

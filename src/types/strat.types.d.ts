@@ -18,7 +18,7 @@ interface Strat {
   name: string;
   description: string;
   rotationIndex: number[] | null;
-  drawingID: string;
+  drawingID: string | null;
 
   assets: PlacedAsset[];
   operators: PickedOperator[];

@@ -16,6 +16,7 @@ interface SVGAssetProps {
   ctrlKeyDown?: boolean;
   menu?: React.ReactNode;
   zoom: number;
+  readonly?: boolean;
 }
 
 export default function SVGAsset({
@@ -28,6 +29,7 @@ export default function SVGAsset({
   ctrlKeyDown = false,
   menu,
   zoom,
+  readonly,
 }: Readonly<SVGAssetProps>) {
   const assetRef = useRef<SVGGElement>(null);
 
@@ -39,11 +41,11 @@ export default function SVGAsset({
       onClick={(e) => {
         e.stopPropagation();
       }}
-      className="select-none"
+      className={readonly ? undefined : "select-none"}
     >
       <g
         transform={`rotate(${rotation} ${size.width / 2} ${size.height / 2})`}
-        className="cursor-move"
+        className={readonly ? undefined : "cursor-move"}
       >
         <foreignObject
           width={size.width}
@@ -74,7 +76,7 @@ export default function SVGAsset({
           className={cn(
             "rotate-handle",
             !selected && "hidden",
-            "cursor-[url(/cursor/rotate.png),_grab]"
+            !readonly && "cursor-[url(/cursor/rotate.png),_grab]"
           )}
           onMouseDown={(e) => {
             e.stopPropagation();
@@ -90,9 +92,10 @@ export default function SVGAsset({
           className={cn(
             "resize-handle",
             !selected && "hidden",
-            ctrlKeyDown
-              ? "cursor-[url(/cursor/rotate.png),_grab]"
-              : "cursor-se-resize"
+            !readonly &&
+              (ctrlKeyDown
+                ? "cursor-[url(/cursor/rotate.png),_grab]"
+                : "cursor-se-resize")
           )}
           onMouseDown={(e) => {
             e.stopPropagation();

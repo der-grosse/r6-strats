@@ -36,9 +36,7 @@ export default function StratsPage() {
           </span>
         </p>
         <div className="flex justify-end">
-          {!config.disabledFeatures.includes("create-strat") && (
-            <CreateStratDialog />
-          )}
+          <CreateStratDialog />
         </div>
       </div>
       <Table className="mb-2">
@@ -49,7 +47,7 @@ export default function StratsPage() {
             <TableHead>Map</TableHead>
             <TableHead>Site</TableHead>
             <TableHead>Name</TableHead>
-            <TableHead>Power OPs</TableHead>
+            <TableHead>Operators</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -63,11 +61,22 @@ export default function StratsPage() {
               <TableCell>
                 <div className="flex gap-1 -my-2">
                   {strat.operators
-                    .filter((o) => o.isPowerOP)
-                    .map((op) => DEFENDERS.find((o) => o.name === op.operator))
-                    .filter(Boolean)
-                    .map((op) => (
-                      <OperatorIcon key={op!.name} op={op!} />
+                    .map((op) => ({
+                      op: DEFENDERS.find((o) => o.name === op.operator),
+                      isPowerOP: op.isPowerOP,
+                    }))
+                    .filter(({ op }) => op)
+                    .sort((a, b) => {
+                      if (a.isPowerOP && !b.isPowerOP) return -1;
+                      if (!a.isPowerOP && b.isPowerOP) return 1;
+                      return 0;
+                    })
+                    .map(({ op, isPowerOP }) => (
+                      <OperatorIcon
+                        key={op!.name}
+                        op={op!}
+                        className={isPowerOP ? undefined : "grayscale scale-75"}
+                      />
                     ))}
                 </div>
               </TableCell>

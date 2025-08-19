@@ -31,6 +31,7 @@ interface CanvasProps<A extends CanvasAsset> {
   selectedAssets: Selection[];
   onSelect: (selected: string[]) => void;
   onDeselect: (selected: string[]) => void;
+  readonly?: boolean;
 }
 
 // should be a multiple of 4 and 3 to have nicer numbers for aspect ratio
@@ -53,6 +54,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
   selectedAssets,
   onSelect,
   onDeselect,
+  readonly,
 }: Readonly<CanvasProps<A>>) {
   if (typeof window !== "undefined") {
     //@ts-ignore
@@ -71,6 +73,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
   );
 
   const [assets, setAssets] = useState<A[]>(propAssets);
+  // update assets when prop changes
   useEffect(() => {
     setAssets((assets) => {
       const newAssets = propAssets.filter(
@@ -173,6 +176,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
       assetId: string,
       handle: "resize" | "rotate" | "none"
     ) => {
+      if (readonly) return;
       const svg = svgRef.current;
       if (!svg) return;
 
@@ -228,7 +232,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
           })),
       });
     },
-    [selectedAssets]
+    [selectedAssets, readonly]
   );
 
   const handleMouseMove = useCallback(
@@ -448,6 +452,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
         if (document.activeElement !== svgRef.current) return;
         onAssetRemove(userSelectedAssets);
       },
+      active: !readonly,
     },
     {
       shortcut: ["Escape"],
@@ -455,6 +460,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
         if (document.activeElement !== svgRef.current) return;
         onDeselect(userSelectedAssets);
       },
+      active: !readonly,
     },
     {
       shortcut: {
@@ -470,6 +476,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
         );
         e.preventDefault();
       },
+      active: !readonly,
     },
   ]);
 
@@ -489,7 +496,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
           if (Date.now() - actionEndTime.current < 500) return;
           onDeselect(userSelectedAssets);
         }}
-        tabIndex={0}
+        tabIndex={readonly ? undefined : 0}
         focusable
       >
         {/* Global filter definitions */}
@@ -511,7 +518,12 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
           </filter>
         </defs>
 
-        <MapBackground map={map} viewBox={viewBox} addAsset={onAssetAdd} />
+        <MapBackground
+          map={map}
+          viewBox={viewBox}
+          addAsset={onAssetAdd}
+          readonly={readonly}
+        />
 
         {/* Render assets */}
         {assets.map((asset) => {
@@ -533,6 +545,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
               ctrlKeyDown={ctrlKeyDown}
               menu={render.menu}
               zoom={zoomFactor}
+              readonly={readonly}
             >
               {render.asset}
             </SVGAsset>

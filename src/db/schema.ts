@@ -53,7 +53,7 @@ export const strats = pgTable("strats", {
   site: text("site").notNull(),
   name: text("name").notNull(),
   description: text("description").notNull(),
-  drawingID: text("drawing_id").notNull(),
+  drawingID: text("drawing_id"),
   teamID: integer("team_id")
     .notNull()
     .references(() => team.id, { onDelete: "cascade" }),

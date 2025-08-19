@@ -16,6 +16,7 @@ import { useSocket } from "../context/SocketContext";
 import useSocketEvent from "../hooks/useSocketEvent";
 import { toast } from "sonner";
 import { useUser } from "../context/UserContext";
+import StratDisplay from "../StratDisplay";
 
 interface StratEditorProps {
   strat: Strat;
@@ -66,9 +67,11 @@ export function StratEditor({
   team,
 }: Readonly<StratEditorProps>) {
   const [strat, setStrat] = useState<Strat>(propStrat);
+  // Update local state when prop changes
   useEffect(() => {
     setStrat(propStrat);
   }, [propStrat]);
+  // Refresh local state periodically
   useEffect(() => {
     const interval = setInterval(async () => {
       const new_strat = await getStrat(strat.id);
@@ -80,8 +83,11 @@ export function StratEditor({
 
     return () => clearInterval(interval);
   }, [strat.id]);
+
   const { user } = useUser();
   const socket = useSocket();
+
+  // Subscribe to socket events
   useEffect(() => {
     socket.emit("strat-editor:subscribe", strat.id);
     return () => {
@@ -223,6 +229,7 @@ export function StratEditor({
 
   return (
     <StratEditorLayout
+      hideAssets={!!strat.drawingID}
       onAssetAdd={(asset) => {
         const placedAsset = {
           size: { width: ASSET_BASE_SIZE, height: ASSET_BASE_SIZE },
@@ -245,99 +252,103 @@ export function StratEditor({
       strat={strat}
       team={team}
     >
-      <StratEditorCanvas
-        selectedAssets={selected}
-        onDeselect={(deselected) => {
-          setSelected((selected) =>
-            selected.filter(
-              (s) => s.socketID !== socket.id || !deselected.includes(s.id)
-            )
-          );
-          if (user?.id) {
-            pushEvent({
-              type: "selection-deselected",
-              selection: deselected,
-              socketID: socket.id!,
-              userID: user.id,
-            });
-          }
-        }}
-        onSelect={(newSelected) => {
-          setSelected((selected) =>
-            selected.concat(
-              newSelected.map((id) => ({
-                id,
+      {strat.drawingID ? (
+        <StratDisplay editView hideDetails strat={strat} team={team} />
+      ) : (
+        <StratEditorCanvas
+          selectedAssets={selected}
+          onDeselect={(deselected) => {
+            setSelected((selected) =>
+              selected.filter(
+                (s) => s.socketID !== socket.id || !deselected.includes(s.id)
+              )
+            );
+            if (user?.id) {
+              pushEvent({
+                type: "selection-deselected",
+                selection: deselected,
                 socketID: socket.id!,
-                userID: user?.id ?? -1,
-              }))
-            )
-          );
-          if (user?.id)
+                userID: user.id,
+              });
+            }
+          }}
+          onSelect={(newSelected) => {
+            setSelected((selected) =>
+              selected.concat(
+                newSelected.map((id) => ({
+                  id,
+                  socketID: socket.id!,
+                  userID: user?.id ?? -1,
+                }))
+              )
+            );
+            if (user?.id)
+              pushEvent({
+                type: "selection-selected",
+                selection: newSelected,
+                socketID: socket.id!,
+                userID: user.id,
+              });
+          }}
+          map={map}
+          assets={assets}
+          onAssetAdd={(asset) => {
+            const placedAsset = {
+              size: { width: ASSET_BASE_SIZE, height: ASSET_BASE_SIZE },
+              position: { x: CANVAS_BASE_SIZE / 20, y: CANVAS_BASE_SIZE / 20 },
+              rotation: 0,
+              ...asset,
+              id: `${asset.id}-${getHightestID(assets) + 1}` as any,
+            };
+            setAssets((assets) => [...assets, placedAsset]);
+            addStratAsset(strat.id, placedAsset).catch((err) =>
+              toast.error(
+                `Your changes could not be saved! Failed to add asset: ${err.message}`
+              )
+            );
             pushEvent({
-              type: "selection-selected",
-              selection: newSelected,
-              socketID: socket.id!,
-              userID: user.id,
+              type: "asset-added",
+              asset: placedAsset,
             });
-        }}
-        map={map}
-        assets={assets}
-        onAssetAdd={(asset) => {
-          const placedAsset = {
-            size: { width: ASSET_BASE_SIZE, height: ASSET_BASE_SIZE },
-            position: { x: CANVAS_BASE_SIZE / 20, y: CANVAS_BASE_SIZE / 20 },
-            rotation: 0,
-            ...asset,
-            id: `${asset.id}-${getHightestID(assets) + 1}` as any,
-          };
-          setAssets((assets) => [...assets, placedAsset]);
-          addStratAsset(strat.id, placedAsset).catch((err) =>
-            toast.error(
-              `Your changes could not be saved! Failed to add asset: ${err.message}`
-            )
-          );
-          pushEvent({
-            type: "asset-added",
-            asset: placedAsset,
-          });
-        }}
-        onAssetChange={(assets) => {
-          setAssets((existing) => {
-            pushEvent({
-              type: "asset-updated",
-              old_assets: existing.filter((a) =>
-                assets.some((asset) => asset.id === a.id)
-              ),
-              new_assets: assets,
+          }}
+          onAssetChange={(assets) => {
+            setAssets((existing) => {
+              pushEvent({
+                type: "asset-updated",
+                old_assets: existing.filter((a) =>
+                  assets.some((asset) => asset.id === a.id)
+                ),
+                new_assets: assets,
+              });
+              return existing.map((a) => {
+                const newAsset = assets.find((asset) => asset.id === a.id);
+                if (!newAsset) return a;
+                return deepCopy(newAsset);
+              });
             });
-            return existing.map((a) => {
-              const newAsset = assets.find((asset) => asset.id === a.id);
-              if (!newAsset) return a;
-              return deepCopy(newAsset);
+            updateStratAssets(strat.id, assets).catch((err) =>
+              toast.error(
+                `Your changes could not be saved! Failed to update asset: ${err.message}`
+              )
+            );
+          }}
+          onAssetRemove={(ids) => {
+            setAssets((assets) => {
+              pushEvent({
+                type: "asset-deleted",
+                assets: assets.filter((a) => ids.includes(a.id)),
+              });
+              return assets.filter((a) => !ids.includes(a.id));
             });
-          });
-          updateStratAssets(strat.id, assets).catch((err) =>
-            toast.error(
-              `Your changes could not be saved! Failed to update asset: ${err.message}`
-            )
-          );
-        }}
-        onAssetRemove={(ids) => {
-          setAssets((assets) => {
-            pushEvent({
-              type: "asset-deleted",
-              assets: assets.filter((a) => ids.includes(a.id)),
-            });
-            return assets.filter((a) => !ids.includes(a.id));
-          });
-          deleteStratAssets(strat.id, ids).catch((err) =>
-            toast.error(
-              `Your changes could not be saved! Failed to delete asset: ${err.message}`
-            )
-          );
-        }}
-        renderAsset={renderAsset}
-      />
+            deleteStratAssets(strat.id, ids).catch((err) =>
+              toast.error(
+                `Your changes could not be saved! Failed to delete asset: ${err.message}`
+              )
+            );
+          }}
+          renderAsset={renderAsset}
+        />
+      )}
       {UI}
     </StratEditorLayout>
   );

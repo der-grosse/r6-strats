@@ -26,21 +26,21 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
+import { Info, Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { createStrat } from "@/src/strats/strats";
 import { toast } from "sonner";
 import MAPS from "@/src/static/maps";
-import OperatorPicker from "./OperatorPicker";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 const formSchema = z.object({
   map: z.string().min(1, "Map is required"),
   site: z.string().min(1, "Site is required"),
   name: z.string().optional(),
   description: z.string().optional(),
-  drawingID: z.string().min(1, "Drawing ID is required"),
+  drawingID: z.string().min(1, "Drawing ID is required").nullable(),
 });
 
 export function CreateStratDialog() {
@@ -53,7 +53,7 @@ export function CreateStratDialog() {
       site: "",
       name: "",
       description: "",
-      drawingID: "",
+      drawingID: null,
     },
   });
 
@@ -64,6 +64,7 @@ export function CreateStratDialog() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const drawingID = (() => {
+        if (!values.drawingID) return null;
         if (values.drawingID.startsWith("https://drive.google.com/open?id=")) {
           return values.drawingID.split("https://drive.google.com/open?id=")[1];
         }
@@ -203,9 +204,30 @@ export function CreateStratDialog() {
               name="drawingID"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Drawing ID</FormLabel>
+                  <FormLabel>
+                    <em>Drawing ID</em>
+                    <Tooltip delayDuration={750}>
+                      <TooltipTrigger>
+                        <Info className="size-4 " />
+                      </TooltipTrigger>
+                      <TooltipContent side="top">
+                        <p className="text-sm">
+                          When you supply a drawing ID, the strat will load from
+                          Google Drawings. If not, you can use the Beta built in
+                          strat editor.
+                          <br />
+                          You can paste the whole link to your Google Drawing
+                          Link or the extracted ID from the link.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter Google Drawing ID" {...field} />
+                    <Input
+                      placeholder="Enter Google Drawing ID"
+                      {...field}
+                      value={field.value ?? ""}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
