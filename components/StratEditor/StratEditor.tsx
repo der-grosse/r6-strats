@@ -334,11 +334,12 @@ export function StratEditor({
           }}
           onAssetRemove={(ids) => {
             setAssets((assets) => {
+              const newAssets = assets.filter((a) => !ids.includes(a.id));
               pushEvent({
                 type: "asset-deleted",
-                assets: assets.filter((a) => ids.includes(a.id)),
+                assets: newAssets,
               });
-              return assets.filter((a) => !ids.includes(a.id));
+              return [...newAssets];
             });
             deleteStratAssets(strat.id, ids).catch((err) =>
               toast.error(

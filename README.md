@@ -7,7 +7,6 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 
 ### Bugs
 
-- adding multiple gadgets and deleting with delete causes a spasm
 - No error handling / UI disable for non admins changing operators / positions in strat
 
 ### Editor

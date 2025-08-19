@@ -35,9 +35,10 @@ class KeyPressHandlerClass {
   };
 
   removeListener = (id: string) => {
-    const index = this.shortcuts.findIndex((s) => s.id === id);
-    if (index !== -1) {
+    let index = this.shortcuts.findIndex((s) => s.id === id);
+    while (index !== -1) {
       this.shortcuts.splice(index, 1);
+      index = this.shortcuts.findIndex((s) => s.id === id);
     }
     if (this.shortcuts.length === 0) {
       document.removeEventListener("keydown", this.handleKeyPress);
@@ -147,9 +148,11 @@ export const useKeys = (shortcuts: (ShortCut & { active?: boolean })[]) => {
       }
     });
     return () => {
-      unmounters.forEach((unmount) => {
-        unmount?.();
-      });
+      for (const unmount of unmounters) {
+        if (unmount) {
+          unmount();
+        }
+      }
     };
   }, [shortcuts]);
 };
