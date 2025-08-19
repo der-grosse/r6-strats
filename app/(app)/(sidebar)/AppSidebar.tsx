@@ -274,31 +274,32 @@ export function AppSidebar(props: { teamName: string }) {
                 </p>
               </TooltipContent>
             </Tooltip>
-            <Tooltip delayDuration={750}>
-              <TooltipTrigger asChild>
-                <SidebarMenuAction
-                  disabled={!isLeading}
-                  className={cn(
-                    "cursor-pointer p-2 -my-1.5 w-7",
-                    !isLeading && "pointer-events-none"
-                  )}
-                  onClick={() => {
-                    if (!isLeading) return;
-                    setActive(null);
-                    socket.emit("active-strat:change", null);
-                  }}
-                >
-                  <X className={cn(!isLeading && "text-muted-foreground")} />
-                </SidebarMenuAction>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <p className="text-sm">Clear currently open strat</p>
-                <p className="text-xs text-muted-foreground">
-                  You can only clear the current strat when you are leading the
-                  currently open strat.
-                </p>
-              </TooltipContent>
-            </Tooltip>
+            {isLeading && (
+              <Tooltip delayDuration={750}>
+                <TooltipTrigger asChild>
+                  <SidebarMenuAction
+                    className={cn(
+                      "cursor-pointer p-2 -my-1.5 w-7",
+                      !isLeading && "pointer-events-none"
+                    )}
+                    onClick={() => {
+                      if (!isLeading) return;
+                      setActive(null);
+                      socket.emit("active-strat:change", null);
+                    }}
+                  >
+                    <X className={cn(!isLeading && "text-muted-foreground")} />
+                  </SidebarMenuAction>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p className="text-sm">Clear currently open strat</p>
+                  <p className="text-xs text-muted-foreground">
+                    You can only clear the current strat when you are leading
+                    the currently open strat.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            )}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
