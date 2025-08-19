@@ -20,7 +20,7 @@ class StratsDBClass {
         operator: null,
         positionID: null,
         stratsID: stratID,
-        isPowerOP: false,
+        isPowerOp: false,
       }))
     );
 
@@ -129,7 +129,7 @@ class StratsDBClass {
           operator: op.operator,
           stratsID: updatedStrat.id,
           positionID: op.positionID,
-          isPowerOP: op.isPowerOP ?? false,
+          isPowerOp: op.isPowerOp ?? false,
         });
       }
     }
@@ -282,7 +282,7 @@ class StratsDBClass {
       operator: string | null;
       positionID: number | null;
       stratsID: number;
-      isPowerOP: boolean;
+      isPowerOp: boolean;
     }[];
   }): Strat[] {
     const parsedStrats: Strat[] = [];
@@ -334,7 +334,7 @@ class StratsDBClass {
           id: r.id,
           operator: r.operator ?? undefined,
           positionID: r.positionID ?? undefined,
-          isPowerOP: r.isPowerOP,
+          isPowerOp: r.isPowerOp,
         }));
 
       parsedStrats.push({

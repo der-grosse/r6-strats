@@ -28,5 +28,5 @@ interface PickedOperator {
   id: number;
   operator?: string;
   positionID?: number | null;
-  isPowerOP?: boolean;
+  isPowerOp?: boolean;
 }

@@ -43,7 +43,7 @@ export async function createStrat(data: {
 
     await db.insert(pickedOperators).values(
       Array.from({ length: PLAYER_COUNT }, (_, i) => ({
-        isPowerOP: false,
+        isPowerOp: false,
         operator: null,
         positionID: positions[i]?.id,
         stratsID: newStrat.id,
@@ -165,7 +165,7 @@ export async function updatePickedOperator(
   await db
     .update(pickedOperators)
     .set({
-      isPowerOP: operator.isPowerOP,
+      isPowerOp: operator.isPowerOp,
       operator: operator.operator,
       positionID: operator.positionID,
       stratsID: stratID,

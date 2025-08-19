@@ -27,7 +27,7 @@ export default function StratEditorPlayerOperatorsSidebar({
     <div className="p-2 flex flex-col gap-2">
       <Label className="text-muted-foreground">Player operators</Label>
       <Separator />
-      {operators.map(({ operator, isPowerOP, positionID, id }) => {
+      {operators.map(({ operator, isPowerOp, positionID, id }) => {
         const position = team.playerPositions.find(
           (pos) => pos.id === positionID
         );
@@ -80,21 +80,21 @@ export default function StratEditorPlayerOperatorsSidebar({
                   size="icon"
                   variant="ghost"
                   className={cn(
-                    isPowerOP ? "text-primary" : "text-muted-foreground/50"
+                    isPowerOp ? "text-primary" : "text-muted-foreground/50"
                   )}
                   onClick={() =>
                     updatePickedOperator(stratID, {
                       id,
-                      isPowerOP: !isPowerOP,
+                      isPowerOp: !isPowerOp,
                     })
                   }
                 >
-                  {isPowerOP ? <Zap /> : <ZapOff />}
+                  {isPowerOp ? <Zap /> : <ZapOff />}
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="right">
                 <p className="text-sm">
-                  {isPowerOP
+                  {isPowerOp
                     ? "Remove from power operators"
                     : "Set as power operator"}
                 </p>

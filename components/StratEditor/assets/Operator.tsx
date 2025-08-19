@@ -1,16 +1,26 @@
 import OperatorIcon from "@/components/OperatorIcon";
 import { getAssetColor } from "../Assets";
+import { cn } from "@/src/utils";
 
 export interface OperatorProps {
-  asset: Extract<PlacedAsset, { type: "operator" }>;
+  asset: Pick<
+    Extract<PlacedAsset, { type: "operator" }>,
+    "customColor" | "pickedOPID" | "iconType" | "operator"
+  >;
   operators: PickedOperator[];
   team: Team;
+  className?: string;
 }
 
 export default function Operator(props: OperatorProps) {
   const color = getAssetColor(props.asset, props.operators, props.team);
   return (
-    <div className="w-[130%] h-[130%] translate-[-12.5%] relative">
+    <div
+      className={cn(
+        "w-[130%] h-[130%] translate-[-12.5%] relative",
+        props.className
+      )}
+    >
       {props.asset.iconType !== "hidden" && (
         <OperatorIcon
           op={props.asset.operator}

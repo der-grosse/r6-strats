@@ -63,19 +63,19 @@ export default function StratsPage() {
                   {strat.operators
                     .map((op) => ({
                       op: DEFENDERS.find((o) => o.name === op.operator),
-                      isPowerOP: op.isPowerOP,
+                      isPowerOp: op.isPowerOp,
                     }))
                     .filter(({ op }) => op)
                     .sort((a, b) => {
-                      if (a.isPowerOP && !b.isPowerOP) return -1;
-                      if (!a.isPowerOP && b.isPowerOP) return 1;
+                      if (a.isPowerOp && !b.isPowerOp) return -1;
+                      if (!a.isPowerOp && b.isPowerOp) return 1;
                       return 0;
                     })
-                    .map(({ op, isPowerOP }) => (
+                    .map(({ op, isPowerOp }) => (
                       <OperatorIcon
                         key={op!.name}
                         op={op!}
-                        className={isPowerOP ? undefined : "grayscale scale-75"}
+                        className={isPowerOp ? undefined : "grayscale scale-75"}
                       />
                     ))}
                 </div>

@@ -133,5 +133,5 @@ export const pickedOperators = pgTable("picked_operators", {
   stratsID: integer("strats_id")
     .notNull()
     .references(() => strats.id, { onDelete: "cascade" }),
-  isPowerOP: boolean("is_power_op").notNull(),
+  isPowerOp: boolean("is_power_op").notNull(),
 });

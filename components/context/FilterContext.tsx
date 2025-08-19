@@ -44,7 +44,7 @@ export const FilterProvider: React.FC<{
         if (filter.bannedOPs.length > 0) {
           const hasBannedOP = strat.operators.some(
             (op) =>
-              op.isPowerOP &&
+              op.isPowerOp &&
               op.operator &&
               filter.bannedOPs.includes(op.operator)
           );
