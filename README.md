@@ -5,8 +5,14 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 
 ## TODOs
 
+### Bugs
+
+- adding multiple gadgets and deleting with delete causes a spasm
+- No error handling / UI disable for non admins changing operators / positions in strat
+
 ### Editor
 
+- add tooltip to disabled
 - zIndex of menu needs to be higher than all assets
 - variable width barricades
 - make doors, windows and walls clickable to easily add assets

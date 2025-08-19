@@ -27,7 +27,7 @@ export default function PlayerPositionPicker(props: PlayerPositionPickerProps) {
   const [open, setOpen] = useState(false);
 
   const teamMember = props.team.members.find(
-    (member) => member.id === props.positionID
+    (member) => member.positionID === props.positionID
   );
   const position = props.team.playerPositions.find(
     (pos) => pos.id === props.positionID
