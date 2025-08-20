@@ -20,6 +20,7 @@ export interface PlayerPositionPickerProps {
   onChange: (positionID: PlayerPosition["id"] | null) => void;
   team: Team;
   modal?: boolean;
+  popoverOffset?: number;
   className?: string;
 }
 
@@ -62,10 +63,14 @@ export default function PlayerPositionPicker(props: PlayerPositionPickerProps) {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0 z-100" side="right">
+      <PopoverContent
+        className="p-0 z-100"
+        side="right"
+        sideOffset={props.popoverOffset}
+      >
         <Command>
           <CommandInput placeholder="Type a command or search..." />
-          <CommandList>
+          <CommandList className="max-h-[600px]">
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
               <CommandItem

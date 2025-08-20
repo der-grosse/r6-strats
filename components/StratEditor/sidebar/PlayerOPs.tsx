@@ -49,6 +49,7 @@ export default function StratEditorPlayerOperatorsSidebar({
           >
             <PlayerPositionPicker
               className="flex-1"
+              popoverOffset={96} // adjust popover to not cover operator icon and isPowerOp button
               positionID={positionID}
               team={team}
               onChange={(positionID) => {
