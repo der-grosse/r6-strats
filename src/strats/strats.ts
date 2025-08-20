@@ -183,13 +183,15 @@ export async function updatePickedOperator(
     await db
       .delete(pickedOperators)
       .where(eq(pickedOperators.stratPositionID, stratPosition.id));
-    await db.insert(pickedOperators).values(
-      stratPosition.operators.map((operator, index) => ({
-        operator,
-        index,
-        stratPositionID: stratPosition.id,
-      }))
-    );
+    if (stratPosition.operators.length > 0) {
+      await db.insert(pickedOperators).values(
+        stratPosition.operators.map((operator, index) => ({
+          operator,
+          index,
+          stratPositionID: stratPosition.id,
+        }))
+      );
+    }
   }
 
   revalidatePath(`/editor/${stratID}`);
