@@ -84,28 +84,37 @@ export default function PlayerPositionPicker(props: PlayerPositionPickerProps) {
               </CommandItem>
             </CommandGroup>
             <CommandGroup>
-              {props.team.playerPositions
-                .toSorted((a) => (props.positionID === a.id ? -1 : 1))
-                .map((position) => (
-                  <CommandItem
-                    key={position.id}
-                    onSelect={() => {
-                      props.onChange(position.id);
-                      setOpen(false);
-                    }}
-                  >
-                    {position.positionName}
-                    <CommandShortcut>
-                      {props.positionID === position.id && (
-                        <Check className="text-muted-foreground" />
-                      )}
-                    </CommandShortcut>
-                  </CommandItem>
-                ))}
+              {props.team.playerPositions.map((position) => (
+                <CommandItem
+                  key={position.id}
+                  onSelect={() => {
+                    props.onChange(position.id);
+                    setOpen(false);
+                  }}
+                >
+                  {position.positionName}
+                  <CommandShortcut>
+                    {props.positionID === position.id && (
+                      <Check className="text-muted-foreground" />
+                    )}
+                  </CommandShortcut>
+                </CommandItem>
+              ))}
             </CommandGroup>
             <CommandGroup>
               {props.team.members
-                .toSorted((a) => (props.positionID === a.positionID ? -1 : 1))
+                .toSorted((a, b) => {
+                  if (a.positionID && b.positionID) {
+                    const indexA = props.team.playerPositions.findIndex(
+                      (pos) => pos.id === a.positionID
+                    );
+                    const indexB = props.team.playerPositions.findIndex(
+                      (pos) => pos.id === b.positionID
+                    );
+                    return indexA - indexB;
+                  }
+                  return 0;
+                })
                 .map((member) => (
                   <CommandItem
                     key={member.id}

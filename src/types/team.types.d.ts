@@ -10,6 +10,7 @@ interface PlayerPosition {
   id: number;
   playerID: number | null;
   positionName: string | null;
+  index: number;
 }
 
 interface TeamMember {

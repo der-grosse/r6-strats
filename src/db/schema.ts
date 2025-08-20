@@ -45,6 +45,7 @@ export const playerPositions = pgTable("player_positions", {
   teamID: integer("team_id")
     .notNull()
     .references(() => team.id, { onDelete: "cascade" }),
+  index: integer("index").notNull().default(0),
 });
 
 export const strats = pgTable("strats", {

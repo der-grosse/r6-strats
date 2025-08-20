@@ -23,91 +23,98 @@ export default function StratEditorPlayerOperatorsSidebar({
   strat: { operators, id: stratID },
   team,
 }: StratEditorPlayerOperatorsSidebarProps) {
+  const sortedOperators = operators
+    .map((op) => ({
+      op,
+      position: team.playerPositions.find(
+        (pos) => pos.playerID === op.positionID
+      ),
+    }))
+    .sort((a, b) => {
+      if (a.position && b.position) {
+        return a.position.index - b.position.index;
+      }
+      return 0;
+    })
+    .map(({ op }) => op);
+
   return (
     <div className="p-2 flex flex-col gap-2">
       <Label className="text-muted-foreground">Player operators</Label>
       <Separator />
-      {operators.map(({ operator, isPowerOp, positionID, id }) => {
-        const position = team.playerPositions.find(
-          (pos) => pos.id === positionID
-        );
-        const teamMember = team.members.find(
-          (member) => member.id === position?.playerID
-        );
-        return (
-          <div
-            className={cn(
-              "flex items-center gap-2",
-              operators.some(
-                (o) =>
-                  o.id !== id &&
-                  ((positionID && o.positionID === positionID) ||
-                    (operator && o.operator === operator))
-              ) && "outline-2 outline-destructive rounded-md"
+      {sortedOperators.map(({ operator, isPowerOp, positionID, id }) => (
+        <div
+          className={cn(
+            "flex items-center gap-2",
+            operators.some(
+              (o) =>
+                o.id !== id &&
+                ((positionID && o.positionID === positionID) ||
+                  (operator && o.operator === operator))
+            ) && "outline-2 outline-destructive rounded-md"
+          )}
+          key={id}
+        >
+          <PlayerPositionPicker
+            className="flex-1"
+            popoverOffset={96} // adjust popover to not cover operator icon and isPowerOp button
+            positionID={positionID}
+            team={team}
+            onChange={(positionID) => {
+              updatePickedOperator(stratID, {
+                id,
+                positionID,
+              });
+            }}
+          />
+          {/* <div className="flex-1" /> */}
+          <OperatorPicker
+            closeOnSelect
+            selected={operator ?? null}
+            onChange={(op) =>
+              updatePickedOperator(stratID, {
+                id,
+                operator: op ?? undefined,
+              })
+            }
+            trigger={({ children, ...props }) => (
+              <Button {...props} variant="ghost" size="icon">
+                {operator ? <OperatorIcon op={operator} /> : <CircleOff />}
+              </Button>
             )}
-            key={id}
-          >
-            <PlayerPositionPicker
-              className="flex-1"
-              popoverOffset={96} // adjust popover to not cover operator icon and isPowerOp button
-              positionID={positionID}
-              team={team}
-              onChange={(positionID) => {
-                updatePickedOperator(stratID, {
-                  id,
-                  positionID,
-                });
-              }}
-            />
-            {/* <div className="flex-1" /> */}
-            <OperatorPicker
-              closeOnSelect
-              selected={operator ?? null}
-              onChange={(op) =>
-                updatePickedOperator(stratID, {
-                  id,
-                  operator: op ?? undefined,
-                })
-              }
-              trigger={({ children, ...props }) => (
-                <Button {...props} variant="ghost" size="icon">
-                  {operator ? <OperatorIcon op={operator} /> : <CircleOff />}
-                </Button>
-              )}
-            />
-            <Tooltip delayDuration={500}>
-              <TooltipTrigger asChild>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className={cn(
-                    isPowerOp ? "text-primary" : "text-muted-foreground/50"
-                  )}
-                  onClick={() =>
-                    updatePickedOperator(stratID, {
-                      id,
-                      isPowerOp: !isPowerOp,
-                    })
-                  }
-                >
-                  {isPowerOp ? <Zap /> : <ZapOff />}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                <p className="text-sm">
-                  {isPowerOp
-                    ? "Remove from power operators"
-                    : "Set as power operator"}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Power operators are essential to a strat. If they get banned,
-                  the strat is not viable anymore.
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        );
-      })}
+          />
+          <Tooltip delayDuration={500}>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                variant="ghost"
+                className={cn(
+                  isPowerOp ? "text-primary" : "text-muted-foreground/50"
+                )}
+                onClick={() =>
+                  updatePickedOperator(stratID, {
+                    id,
+                    isPowerOp: !isPowerOp,
+                  })
+                }
+              >
+                {isPowerOp ? <Zap /> : <ZapOff />}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <p className="text-sm">
+                {isPowerOp
+                  ? "Remove from power operators"
+                  : "Set as power operator"}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Power operators are essential to a strat. If they get banned,
+                the strat is not viable anymore.
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      ))}
       {team.members.length < PLAYER_COUNT && (
         <>
           <Separator />

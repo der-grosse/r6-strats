@@ -70,6 +70,7 @@ export async function createTeam(input: {
           playerID: null,
           positionName: `Position ${i + 1}`,
           teamID,
+          index: i,
         }))
       );
     });
@@ -91,7 +92,7 @@ export async function getTeam() {
     .select()
     .from(playerPositions)
     .where(eq(playerPositions.teamID, user!.teamID))
-    .orderBy(playerPositions.id);
+    .orderBy(playerPositions.index);
   const membersData = await db
     .select()
     .from(users)
@@ -341,4 +342,28 @@ export async function setMemberPositionName(
   revalidatePath("/team");
   // editor
   revalidatePath("/editor");
+}
+
+export async function changePlayerPositionsIndex(
+  positions: { id: PlayerPosition["id"]; index: number }[]
+) {
+  const user = await getPayload();
+  if (!user) throw new Error("User not found");
+  if (!user.isAdmin) throw new Error("Only admins can change player positions");
+
+  await Promise.all(
+    positions.map((position) =>
+      db
+        .update(playerPositions)
+        .set({ index: position.index })
+        .where(
+          and(
+            eq(playerPositions.id, position.id),
+            eq(playerPositions.teamID, user.teamID)
+          )
+        )
+    )
+  );
+
+  revalidatePath("/");
 }

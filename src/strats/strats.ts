@@ -39,7 +39,8 @@ export async function createStrat(data: {
     const positions = await db
       .select()
       .from(playerPositions)
-      .where(eq(playerPositions.teamID, session.teamID));
+      .where(eq(playerPositions.teamID, session.teamID))
+      .orderBy(playerPositions.index);
 
     await db.insert(pickedOperators).values(
       Array.from({ length: PLAYER_COUNT }, (_, i) => ({
