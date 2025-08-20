@@ -190,7 +190,7 @@ export async function demoteFromAdmin(userID: number) {
     throw new Error("Cannot demote the last admin");
   }
 
-  await db.update(users).set({ isAdmin: true }).where(eq(users.id, userID));
+  await db.update(users).set({ isAdmin: false }).where(eq(users.id, userID));
 
   // team page
   revalidatePath("/team");
