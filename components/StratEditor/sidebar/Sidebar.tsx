@@ -22,7 +22,7 @@ import { cn } from "@/src/utils";
 import Reinforcement from "@/components/icons/reinforcement";
 import { MAX_REINFORCEMENT } from "@/src/static/general";
 import Link from "next/link";
-import StratEditorPlayerOperatorsSidebar from "./PlayerOPs";
+import StratEditorPlayerPositionsSidebar from "./StratPositions";
 import StratEditorLayoutSidebar from "./Layout";
 import { getAssetColor } from "../Assets";
 import { ColorButton } from "@/components/ColorPickerDialog";
@@ -64,9 +64,9 @@ export default function StratEditorSidebar(
           )
           .reduce(
             (acc, asset) => {
-              const cur = acc.get(asset.pickedOPID ?? -1);
+              const cur = acc.get(asset.stratPositionID ?? -1);
               if (cur) {
-                acc.set(asset.pickedOPID ?? -1, {
+                acc.set(asset.stratPositionID ?? -1, {
                   ...cur,
                   count: cur.count + 1,
                 });
@@ -74,23 +74,23 @@ export default function StratEditorSidebar(
               return acc;
             },
             new Map([
-              ...props.strat.operators.map((op) => {
+              ...props.strat.positions.map((positions) => {
                 const position =
                   props.team.playerPositions.find(
-                    (pos) => pos.id === op.positionID
+                    (pos) => pos.id === positions.positionID
                   ) ?? null;
                 const player =
                   props.team.members.find((m) => m.id === position?.playerID) ??
                   null;
                 return [
-                  op.id,
+                  positions.id,
                   {
                     position,
                     player,
                     color:
                       getAssetColor(
-                        { pickedOPID: op.id },
-                        props.strat.operators,
+                        { stratPositionID: positions.id },
+                        props.strat.positions,
                         props.team
                       ) ?? null,
                     count: 0 as number,
@@ -114,21 +114,21 @@ export default function StratEditorSidebar(
         return (
           <StratEditorOperatorsSidebar
             onAssetAdd={onAssetAdd}
-            operators={props.strat.operators}
+            stratPositions={props.strat.positions}
           />
         );
       case "operator-gadgets":
         return (
           <StratEditorGadgetsSidebar
             onAssetAdd={onAssetAdd}
-            operators={props.strat.operators}
+            stratPositions={props.strat.positions}
           />
         );
       case "meta":
         return <StratEditorMetaSidebar strat={props.strat} />;
       case "player-ops":
         return (
-          <StratEditorPlayerOperatorsSidebar
+          <StratEditorPlayerPositionsSidebar
             strat={props.strat}
             team={props.team}
           />

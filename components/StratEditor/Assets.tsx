@@ -21,7 +21,7 @@ import WoodenBarricade from "../icons/woodenBarricade";
 import { useUser } from "../context/UserContext";
 
 export default function useMountAssets(
-  { team, operators }: { team: Team; operators: PickedOperator[] },
+  { team, stratPositions }: { team: Team; stratPositions: StratPositions[] },
   {
     deleteAsset,
     updateAsset,
@@ -38,7 +38,9 @@ export default function useMountAssets(
 
   const menu = useCallback(
     (asset: PlacedAsset) => {
-      const pickedOperator = operators.find((op) => op.id === asset.pickedOPID);
+      const position = stratPositions.find(
+        (op) => op.id === asset.stratPositionID
+      );
       return (
         <div
           className={cn(
@@ -50,26 +52,26 @@ export default function useMountAssets(
           {team.members
             .filter((m) => m.positionID)
             .map((member) => {
-              const pickedOperatorOfMember = operators?.find(
+              const stratPositionOfMember = stratPositions?.find(
                 (op) => op.positionID === member.positionID
               );
-              if (!pickedOperatorOfMember) return null;
+              if (!stratPositionOfMember) return null;
               return (
                 <Tooltip delayDuration={200} key={member.id}>
                   <TooltipTrigger asChild>
                     <Button
-                      disabled={!pickedOperatorOfMember}
+                      disabled={!stratPositionOfMember}
                       size="icon"
                       variant="ghost"
                       className={cn(
-                        member.positionID === pickedOperator?.positionID &&
+                        member.positionID === position?.positionID &&
                           "bg-card dark:hover:bg-card"
                       )}
                       onMouseDown={(e) => e.stopPropagation()}
                       onClick={() => {
                         updateAsset({
                           ...asset,
-                          pickedOPID: pickedOperatorOfMember?.id,
+                          stratPositionID: stratPositionOfMember?.id,
                           customColor: undefined,
                         });
                       }}
@@ -144,7 +146,7 @@ export default function useMountAssets(
         </div>
       );
     },
-    [team, operators, deleteAsset, updateAsset]
+    [team, stratPositions, deleteAsset, updateAsset]
   );
 
   const dialog = useMemo(
@@ -155,7 +157,7 @@ export default function useMountAssets(
         onChange={(color) => {
           updateAsset({
             ...colorPickerAsset!,
-            pickedOPID: undefined,
+            stratPositionID: undefined,
             customColor: color,
           });
           setColorPickerOpen(false);
@@ -175,17 +177,31 @@ export default function useMountAssets(
       const assetElement = (() => {
         switch (asset.type) {
           case "operator":
-            return <Operator asset={asset} team={team} operators={operators} />;
+            return (
+              <Operator
+                asset={asset}
+                team={team}
+                stratPositions={stratPositions}
+              />
+            );
           case "gadget":
             return (
-              <AssetOutline asset={asset} team={team} operators={operators}>
+              <AssetOutline
+                asset={asset}
+                team={team}
+                stratPositions={stratPositions}
+              >
                 <GadgetIcon id={asset.gadget} className="h-full w-full" />
               </AssetOutline>
             );
           case "reinforcement":
             if (asset.variant === "barricade") {
               return (
-                <AssetOutline asset={asset} team={team} operators={operators}>
+                <AssetOutline
+                  asset={asset}
+                  team={team}
+                  stratPositions={stratPositions}
+                >
                   <WoodenBarricade />
                 </AssetOutline>
               );
@@ -194,13 +210,13 @@ export default function useMountAssets(
               <Reinforcement
                 height={asset.size.height}
                 width={asset.size.width}
-                color={getAssetColor(asset, operators, team)}
+                color={getAssetColor(asset, stratPositions, team)}
               />
             );
           case "rotate":
             if (asset.variant === "explosion") {
               return (
-                <Explosion color={getAssetColor(asset, operators, team)} />
+                <Explosion color={getAssetColor(asset, stratPositions, team)} />
               );
             } else {
               return (
@@ -208,7 +224,7 @@ export default function useMountAssets(
                   variant={asset.variant}
                   height={asset.size.height}
                   width={asset.size.width}
-                  color={getAssetColor(asset, operators, team)}
+                  color={getAssetColor(asset, stratPositions, team)}
                 />
               );
             }
@@ -251,7 +267,7 @@ export default function useMountAssets(
         asset: fullAsset,
       };
     },
-    [menu, team, operators]
+    [menu, team, stratPositions]
   );
 
   return { renderAsset, UI: dialog };
@@ -273,13 +289,13 @@ function getNextOperatorIconType(
 }
 
 export function getAssetColor(
-  asset: Pick<PlacedAsset, "customColor" | "pickedOPID">,
-  pickedOPs: PickedOperator[],
+  asset: Pick<PlacedAsset, "customColor" | "stratPositionID">,
+  stratPositions: StratPositions[],
   team: Team
 ): string | undefined {
   if (asset.customColor) return asset.customColor;
-  if (!asset.pickedOPID) return undefined;
-  const pickedOP = pickedOPs.find((op) => op.id === asset.pickedOPID);
+  if (!asset.stratPositionID) return undefined;
+  const pickedOP = stratPositions.find((op) => op.id === asset.stratPositionID);
   if (!pickedOP) return undefined;
   const postion = team.playerPositions.find(
     (pos) => pos.id === pickedOP.positionID

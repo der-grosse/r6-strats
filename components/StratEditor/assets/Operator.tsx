@@ -5,15 +5,15 @@ import { cn } from "@/src/utils";
 export interface OperatorProps {
   asset: Pick<
     Extract<PlacedAsset, { type: "operator" }>,
-    "customColor" | "pickedOPID" | "iconType" | "operator"
+    "customColor" | "stratPositionID" | "iconType" | "operator"
   >;
-  operators: PickedOperator[];
+  stratPositions: StratPositions[];
   team: Team;
   className?: string;
 }
 
 export default function Operator(props: OperatorProps) {
-  const color = getAssetColor(props.asset, props.operators, props.team);
+  const color = getAssetColor(props.asset, props.stratPositions, props.team);
   return (
     <div
       className={cn(

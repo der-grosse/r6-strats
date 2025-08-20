@@ -3,30 +3,12 @@ import db from "../db/db";
 import {
   pickedOperators,
   placedAssets,
+  stratPositions,
   rotationIndexes,
   strats,
 } from "../db/schema";
-import { PLAYER_COUNT } from "../static/general";
 
 class StratsDBClass {
-  async create(user: JWTPayload, strat: Strat): Promise<number> {
-    const [{ id: stratID }] = await db
-      .insert(strats)
-      .values({ ...strat, teamID: user.teamID })
-      .returning({ id: strats.id });
-
-    await db.insert(pickedOperators).values(
-      Array.from({ length: PLAYER_COUNT }, () => ({
-        operator: null,
-        positionID: null,
-        stratsID: stratID,
-        isPowerOp: false,
-      }))
-    );
-
-    return stratID;
-  }
-
   async list(user: JWTPayload): Promise<Strat[]> {
     const stratRows = await db
       .select({
@@ -55,16 +37,26 @@ class StratsDBClass {
       .from(placedAssets)
       .where(inArray(placedAssets.stratsID, stratsIDs))
       .orderBy(placedAssets.id);
+    const stratPositionsRows = await db
+      .select()
+      .from(stratPositions)
+      .where(inArray(stratPositions.stratsID, stratsIDs));
     const pickedOperatorsRows = await db
       .select()
       .from(pickedOperators)
-      .where(inArray(pickedOperators.stratsID, stratsIDs));
+      .where(
+        inArray(
+          pickedOperators.stratPositionID,
+          stratPositionsRows.map((row) => row.id)
+        )
+      );
 
     return this.parseStratRows({
       strat: stratRows,
       rotationIndexes: rotationIndexRows,
       placedAssets: placedAssetsRows,
       pickedOperators: pickedOperatorsRows,
+      stratPositions: stratPositionsRows,
     });
   }
 
@@ -84,10 +76,19 @@ class StratsDBClass {
       .select()
       .from(placedAssets)
       .where(eq(placedAssets.stratsID, id));
+    const stratPositionsRows = await db
+      .select()
+      .from(stratPositions)
+      .where(eq(stratPositions.stratsID, id));
     const pickedOperatorsRows = await db
       .select()
       .from(pickedOperators)
-      .where(eq(pickedOperators.stratsID, id))
+      .where(
+        inArray(
+          pickedOperators.stratPositionID,
+          stratPositionsRows.map((row) => row.id)
+        )
+      )
       .orderBy(pickedOperators.id);
 
     return (
@@ -96,6 +97,7 @@ class StratsDBClass {
         rotationIndexes: rotationIndexRows,
         placedAssets: placedAssetsRows,
         pickedOperators: pickedOperatorsRows,
+        stratPositions: stratPositionsRows,
       })[0] ?? null
     );
   }
@@ -120,17 +122,26 @@ class StratsDBClass {
       }
     }
 
-    if (updatedStrat.operators) {
+    if (updatedStrat.positions) {
       await db
-        .delete(pickedOperators)
-        .where(eq(pickedOperators.stratsID, updatedStrat.id));
-      for (const op of updatedStrat.operators) {
-        await db.insert(pickedOperators).values({
-          operator: op.operator,
+        .delete(stratPositions)
+        .where(eq(stratPositions.stratsID, updatedStrat.id));
+      for (const position of updatedStrat.positions) {
+        await db.insert(stratPositions).values({
+          positionID: position.positionID,
           stratsID: updatedStrat.id,
-          positionID: op.positionID,
-          isPowerOp: op.isPowerOp ?? false,
+          id: position.id,
+          isPowerPosition: position.isPowerPosition,
         });
+        if (position.operators.length) {
+          await db.insert(pickedOperators).values(
+            position.operators.map((op, i) => ({
+              stratPositionID: position.id,
+              operator: op,
+              index: i,
+            }))
+          );
+        }
       }
     }
 
@@ -151,7 +162,7 @@ class StratsDBClass {
           rotate: asset.type === "rotate" ? asset.variant : undefined,
           reinforcementVariant:
             asset.type === "reinforcement" ? asset.variant : undefined,
-          pickedOPID: asset.pickedOPID,
+          stratPositionID: asset.stratPositionID,
           width: asset.size.width,
           height: asset.size.height,
           rotation: asset.rotation,
@@ -184,7 +195,7 @@ class StratsDBClass {
         rotate: asset.type === "rotate" ? asset.variant : undefined,
         reinforcementVariant:
           asset.type === "reinforcement" ? asset.variant : undefined,
-        pickedOPID: asset.pickedOPID,
+        stratPositionID: asset.stratPositionID,
         width: asset.size.width,
         height: asset.size.height,
         rotation: asset.rotation,
@@ -214,7 +225,7 @@ class StratsDBClass {
       rotate: asset.type === "rotate" ? asset.variant : undefined,
       reinforcementVariant:
         asset.type === "reinforcement" ? asset.variant : undefined,
-      pickedOPID: asset.pickedOPID,
+      stratPositionID: asset.stratPositionID,
       width: asset.size.width,
       height: asset.size.height,
       rotation: asset.rotation,
@@ -264,7 +275,7 @@ class StratsDBClass {
       assetID: string;
       positionX: number;
       positionY: number;
-      pickedOPID: number | null;
+      stratPositionID: number | null;
       customColor: string | null;
       type: string;
       operator: string | null;
@@ -277,12 +288,17 @@ class StratsDBClass {
       height: number;
       rotation: number;
     }[];
+    stratPositions: {
+      id: number;
+      positionID?: number | null;
+      stratsID: number;
+      isPowerPosition: boolean;
+    }[];
     pickedOperators: {
       id: number;
-      operator: string | null;
-      positionID: number | null;
-      stratsID: number;
-      isPowerOp: boolean;
+      operator: string;
+      stratPositionID: number;
+      index: number;
     }[];
   }): Strat[] {
     const parsedStrats: Strat[] = [];
@@ -297,7 +313,7 @@ class StratsDBClass {
           position: { x: r.positionX, y: r.positionY },
           size: { width: r.width, height: r.height },
           rotation: r.rotation,
-          pickedOPID: r.pickedOPID,
+          stratPositionID: r.stratPositionID,
           customColor: r.customColor,
           type: r.type,
           ...(() => {
@@ -328,13 +344,16 @@ class StratsDBClass {
             }
           })(),
         })) as PlacedAsset[];
-      const operators = data.pickedOperators
+      const positions = data.stratPositions
         .filter((r) => r.stratsID === row.id)
         .map((r) => ({
           id: r.id,
-          operator: r.operator ?? undefined,
           positionID: r.positionID ?? undefined,
-          isPowerOp: r.isPowerOp,
+          isPowerPosition: r.isPowerPosition,
+          operators: data.pickedOperators
+            .filter((o) => o.stratPositionID === r.id)
+            .sort((a, b) => a.index - b.index)
+            .map((o) => o.operator),
         }));
 
       parsedStrats.push({
@@ -346,7 +365,7 @@ class StratsDBClass {
         drawingID: row.drawingID,
         rotationIndex: rotationIndexes,
         assets: placedAssets,
-        operators,
+        positions,
       });
     }
 

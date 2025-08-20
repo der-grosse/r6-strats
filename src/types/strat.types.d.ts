@@ -21,12 +21,12 @@ interface Strat {
   drawingID: string | null;
 
   assets: PlacedAsset[];
-  operators: PickedOperator[];
+  positions: StratPositions[];
 }
 
-interface PickedOperator {
+interface StratPositions {
   id: number;
-  operator?: string;
+  isPowerPosition: boolean;
   positionID?: number | null;
-  isPowerOp?: boolean;
+  operators: string[];
 }

@@ -42,13 +42,13 @@ export const FilterProvider: React.FC<{
         if (filter.map && filter.map !== strat.map) return false;
         if (filter.site && filter.site !== strat.site) return false;
         if (filter.bannedOPs.length > 0) {
-          const hasBannedOP = strat.operators.some(
-            (op) =>
-              op.isPowerOp &&
-              op.operator &&
-              filter.bannedOPs.includes(op.operator)
+          const positionUnplayable = strat.positions.some(
+            (position) =>
+              position.isPowerPosition &&
+              position.operators.length &&
+              position.operators.every((op) => filter.bannedOPs.includes(op))
           );
-          if (hasBannedOP) return false;
+          if (positionUnplayable) return false;
         }
         return true;
       }) ?? [],

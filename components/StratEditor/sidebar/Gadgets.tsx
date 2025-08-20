@@ -13,20 +13,18 @@ import { ASSET_BASE_SIZE } from "../Canvas";
 
 export interface StratEditorGadgetsSidebarProps {
   onAssetAdd: (asset: Asset & Partial<PlacedAsset>) => void;
-  operators: PickedOperator[];
+  stratPositions: StratPositions[];
 }
 
 export default function StratEditorGadgetsSidebar(
   props: Readonly<StratEditorGadgetsSidebarProps>
 ) {
-  const selectedOperators = props.operators
-    .map((op) => {
-      const operator = DEFENDERS.find((def) => def.name === op.operator);
-      if (!operator) return null!;
-      return {
-        ...operator,
-        pickedOPID: op.id,
-      };
+  const selectedOperators = props.stratPositions
+    .flatMap((position) => {
+      const operators = DEFENDERS.filter((def) =>
+        position.operators.includes(def.name)
+      );
+      return operators.map((op) => ({ ...op, stratPositionID: position.id }));
     })
     .filter(Boolean);
   const selectedPrimaryGadetIDs = selectedOperators
@@ -34,7 +32,7 @@ export default function StratEditorGadgetsSidebar(
       "gadget" in op
         ? {
             id: op.gadget,
-            pickedOPID: op.pickedOPID,
+            stratPositionID: op.stratPositionID,
             gadget: DEFENDER_PRIMARY_GADGETS.find((g) => g.id === op.gadget),
           }
         : undefined!
@@ -45,7 +43,7 @@ export default function StratEditorGadgetsSidebar(
       "secondaryGadgets" in op
         ? op.secondaryGadgets?.map((g) => ({
             id: g,
-            pickedOPID: op.pickedOPID,
+            stratPositionID: op.stratPositionID,
             gadget: DEFENDER_SECONDARY_GADGETS.find((sg) => sg.id === g),
           })) ?? []
         : []
@@ -79,7 +77,7 @@ export default function StratEditorGadgetsSidebar(
                       id: `gadget-${gadget.id}`,
                       type: "gadget",
                       gadget: gadget.id,
-                      pickedOPID: gadget.pickedOPID,
+                      stratPositionID: gadget.stratPositionID,
                       size: {
                         width: ASSET_BASE_SIZE,
                         height:
@@ -108,7 +106,7 @@ export default function StratEditorGadgetsSidebar(
                       id: `gadget-${gadget.id}`,
                       type: "gadget",
                       gadget: gadget.id,
-                      pickedOPID: gadget.pickedOPID,
+                      stratPositionID: gadget.stratPositionID,
                       size: {
                         width: ASSET_BASE_SIZE,
                         height:

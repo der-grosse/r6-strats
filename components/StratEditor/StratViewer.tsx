@@ -10,7 +10,7 @@ export interface StratViewerProps {
 
 export default function StratViewer({ team, strat }: StratViewerProps) {
   const { renderAsset, UI } = useMountAssets(
-    { team, operators: strat.operators },
+    { team, stratPositions: strat.positions },
     {
       deleteAsset(asset) {},
       updateAsset(asset) {},

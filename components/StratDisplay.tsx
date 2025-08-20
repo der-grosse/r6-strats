@@ -8,8 +8,9 @@ import { Ban, Pencil } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { useUser } from "./context/UserContext";
-import OperatorIcon from "./OperatorIcon";
 import StratViewer from "./StratEditor/StratViewer";
+import OperatorIcon from "./OperatorIcon";
+import { Fragment } from "react";
 
 export interface StratDisplayProps {
   strat: Strat | null;
@@ -23,29 +24,39 @@ export default function StratDisplay(props: StratDisplayProps) {
   const teamMember = props.team.members.find(
     (member) => member.id === user?.user?.id
   );
-  const playedOP = props.strat?.operators.find(
+  const playedOps = props.strat?.positions.find(
     (op) => op.positionID === teamMember?.positionID
-  )?.operator;
+  )?.operators;
 
   const Details = !props.hideDetails && props.strat && (
     <div className="flex flex-col gap-1 p-2 rounded bg-background">
-      {playedOP && (
+      {playedOps && (
         <div className="flex gap-2 justify-center items-center">
-          <OperatorIcon op={playedOP} />
-          <p className="text-lg font-bold text-center">{playedOP}</p>
+          {playedOps.map((op, i) => (
+            <Fragment key={i}>
+              <OperatorIcon op={op} />
+              <p className="text-lg font-bold text-center">{op}</p>
+            </Fragment>
+          ))}
         </div>
       )}
-      <div className="flex gap-1 text-sm">
-        {props.strat.map}
-        {" | "}
-        {props.strat.site}
-        {" | "}
-        {props.strat.name}
+      <div className="flex justify-center gap-1 text-sm">
+        <span className="ml-2">
+          {props.strat.map}
+          {" | "}
+          {props.strat.site}
+          {" | "}
+          {props.strat.name}
+        </span>
         <Link
           href={`/editor/${props.strat.id}`}
           className="text-muted-foreground hover:text-primary"
         >
-          <Button variant="ghost" size="icon" className="cursor-pointer -my-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="cursor-pointer -my-2 -mx-1"
+          >
             <Pencil className="h-4 w-4" />
           </Button>
         </Link>

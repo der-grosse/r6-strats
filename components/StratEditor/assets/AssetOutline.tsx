@@ -3,7 +3,7 @@ import { useMemo } from "react";
 
 export default function AssetOutline(props: {
   children?: React.ReactNode;
-  operators: PickedOperator[];
+  stratPositions: StratPositions[];
   asset: PlacedAsset;
   team: Team;
 }) {
@@ -11,8 +11,8 @@ export default function AssetOutline(props: {
     () =>
       props.asset.customColor ??
       (() => {
-        const pickedOperator = props.operators.find(
-          (op) => op.id === props.asset.pickedOPID
+        const pickedOperator = props.stratPositions.find(
+          (op) => op.id === props.asset.stratPositionID
         );
         if (!pickedOperator?.positionID) return null;
         const position = props.team.playerPositions.find(
@@ -26,7 +26,7 @@ export default function AssetOutline(props: {
         return member.defaultColor;
       })() ??
       DEFAULT_COLORS.at(-1)!,
-    [props.asset, props.operators, props.team]
+    [props.asset, props.stratPositions, props.team]
   );
 
   return (

@@ -103,6 +103,7 @@ export async function getTeam() {
       id: pos.id,
       playerID: pos.playerID,
       positionName: pos.positionName,
+      index: pos.index,
     })),
     members: membersData.map((member) => ({
       id: member.id,

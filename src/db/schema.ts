@@ -98,10 +98,13 @@ export const placedAssets = pgTable("placed_assets", {
   width: numeric("width", { mode: "number" }).notNull(),
   height: numeric("height", { mode: "number" }).notNull(),
   rotation: numeric("rotation", { mode: "number" }).notNull().default(0),
-  pickedOPID: integer("picked_op_id").references(() => pickedOperators.id, {
-    onDelete: "set null",
-    onUpdate: "cascade",
-  }),
+  stratPositionID: integer("strat_position_id").references(
+    () => stratPositions.id,
+    {
+      onDelete: "set null",
+      onUpdate: "cascade",
+    }
+  ),
   customColor: text("custom_color"),
   type: text("type").notNull(),
 
@@ -124,15 +127,29 @@ export const placedAssets = pgTable("placed_assets", {
   }),
 });
 
-export const pickedOperators = pgTable("picked_operators", {
+export const stratPositions = pgTable("strat_positions", {
   id: serial("id").primaryKey(),
-  operator: text("operator"),
-  positionID: integer("positionID").references(() => playerPositions.id, {
-    onDelete: "set null",
+  positionID: integer("position_id").references(() => playerPositions.id, {
+    onDelete: "cascade",
     onUpdate: "cascade",
   }),
   stratsID: integer("strats_id")
     .notNull()
-    .references(() => strats.id, { onDelete: "cascade" }),
-  isPowerOp: boolean("is_power_op").notNull(),
+    .references(() => strats.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
+  isPowerPosition: boolean("is_power_position").notNull().default(false),
+});
+
+export const pickedOperators = pgTable("picked_operators", {
+  id: serial("id").primaryKey(),
+  stratPositionID: integer("positionID")
+    .notNull()
+    .references(() => stratPositions.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
+  operator: text("operator").notNull(),
+  index: integer("index").notNull().default(0),
 });

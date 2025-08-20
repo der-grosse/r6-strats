@@ -190,7 +190,7 @@ export function StratEditor({
   ]);
 
   const { renderAsset, UI } = useMountAssets(
-    { team, operators: strat.operators },
+    { team, stratPositions: strat.positions },
     {
       deleteAsset(asset) {
         setAssets((assets) => assets.filter((a) => a.id !== asset.id));

@@ -19,9 +19,10 @@ import config from "@/src/static/config";
 import { useSocket } from "@/components/context/SocketContext";
 import { setActive } from "@/src/strats/strats";
 import { useRouter } from "next/navigation";
+import StackedOperatorIcon from "@/components/StackedOperatorIcon";
 
 export default function StratsPage() {
-  const { filteredStrats, isLeading } = useFilter();
+  const { filteredStrats, isLeading, filter } = useFilter();
   const router = useRouter();
   const socket = useSocket();
   return (
@@ -60,22 +61,30 @@ export default function StratsPage() {
               <TableCell>{strat.name}</TableCell>
               <TableCell>
                 <div className="flex gap-1 -my-2">
-                  {strat.operators
-                    .map((op) => ({
-                      op: DEFENDERS.find((o) => o.name === op.operator),
-                      isPowerOp: op.isPowerOp,
+                  {strat.positions
+                    .map((position) => ({
+                      ops: DEFENDERS.filter((o) =>
+                        position.operators.includes(o.name)
+                      ),
+                      isPowerPosition: position.isPowerPosition,
+                      id: position.id,
                     }))
-                    .filter(({ op }) => op)
+                    .filter(({ ops }) => ops.length)
                     .sort((a, b) => {
-                      if (a.isPowerOp && !b.isPowerOp) return -1;
-                      if (!a.isPowerOp && b.isPowerOp) return 1;
+                      if (a.isPowerPosition && !b.isPowerPosition) return -1;
+                      if (!a.isPowerPosition && b.isPowerPosition) return 1;
                       return 0;
                     })
-                    .map(({ op, isPowerOp }) => (
+                    .map(({ ops, isPowerPosition, id }) => (
                       <OperatorIcon
-                        key={op!.name}
-                        op={op!}
-                        className={isPowerOp ? undefined : "grayscale scale-75"}
+                        key={id}
+                        op={
+                          ops.find((o) => !filter.bannedOPs.includes(o.name))
+                            ?.name ?? ops[0]
+                        }
+                        className={
+                          isPowerPosition ? undefined : "grayscale scale-75"
+                        }
                       />
                     ))}
                 </div>

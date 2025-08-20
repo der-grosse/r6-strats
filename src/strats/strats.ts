@@ -1,7 +1,12 @@
 "use server";
 
 import db from "@/src/db/db";
-import { pickedOperators, playerPositions, strats } from "@/src/db/schema";
+import {
+  pickedOperators,
+  playerPositions,
+  stratPositions,
+  strats,
+} from "@/src/db/schema";
 import { getPayload } from "@/src/auth/getPayload";
 import { eq, is } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -42,12 +47,12 @@ export async function createStrat(data: {
       .where(eq(playerPositions.teamID, session.teamID))
       .orderBy(playerPositions.index);
 
-    await db.insert(pickedOperators).values(
+    await db.insert(stratPositions).values(
       Array.from({ length: PLAYER_COUNT }, (_, i) => ({
-        isPowerOp: false,
         operator: null,
         positionID: positions[i]?.id,
         stratsID: newStrat.id,
+        index: 0,
       }))
     );
 
@@ -153,7 +158,7 @@ export async function addStratAsset(stratID: Strat["id"], asset: PlacedAsset) {
 
 export async function updatePickedOperator(
   stratID: Strat["id"],
-  operator: Partial<PickedOperator> & Pick<PickedOperator, "id">
+  stratPosition: Partial<StratPositions> & Pick<StratPositions, "id">
 ) {
   const user = await getPayload();
   if (!user) throw new Error("User not found");
@@ -163,15 +168,29 @@ export async function updatePickedOperator(
   if (!strat) throw new Error("Strat not found");
   if (strat.teamID !== user.teamID)
     throw new Error("Strat must be in the same team");
-  await db
-    .update(pickedOperators)
-    .set({
-      isPowerOp: operator.isPowerOp,
-      operator: operator.operator,
-      positionID: operator.positionID,
-      stratsID: stratID,
-    })
-    .where(eq(pickedOperators.id, operator.id));
+
+  if (stratPosition.isPowerPosition !== undefined || stratPosition.positionID) {
+    await db
+      .update(stratPositions)
+      .set({
+        isPowerPosition: stratPosition.isPowerPosition,
+        positionID: stratPosition.positionID,
+      })
+      .where(eq(stratPositions.id, stratPosition.id));
+  }
+
+  if (stratPosition.operators) {
+    await db
+      .delete(pickedOperators)
+      .where(eq(pickedOperators.stratPositionID, stratPosition.id));
+    await db.insert(pickedOperators).values(
+      stratPosition.operators.map((operator, index) => ({
+        operator,
+        index,
+        stratPositionID: stratPosition.id,
+      }))
+    );
+  }
 
   revalidatePath(`/editor/${stratID}`);
   revalidatePath("/strats");

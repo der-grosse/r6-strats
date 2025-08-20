@@ -34,8 +34,6 @@ export default function TeamPlayerPositionsList(
     setOptimisticPositions(props.team.playerPositions);
   }, [props.team.playerPositions]);
 
-  const [isUpdating, setIsUpdating] = useState(false);
-
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -74,7 +72,6 @@ export default function TeamPlayerPositionsList(
       });
 
       try {
-        setIsUpdating(true);
         await changePlayerPositionsIndex(
           changedPositions.map((p) => ({
             id: p.id,
@@ -85,8 +82,6 @@ export default function TeamPlayerPositionsList(
         console.error("Error updating member positions:", error);
         // Revert optimistic update on error
         setOptimisticPositions(optimisticPositions);
-      } finally {
-        setIsUpdating(false);
       }
     }
   };

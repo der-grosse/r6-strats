@@ -8,20 +8,21 @@ import { DEFAULT_COLORS } from "@/components/ColorPickerDialog";
 
 export interface StratEditorOperatorsSidebarProps {
   onAssetAdd: (asset: Asset) => void;
-  operators: PickedOperator[];
+  stratPositions: StratPositions[];
 }
 
 export default function StratEditorOperatorsSidebar(
   props: Readonly<StratEditorOperatorsSidebarProps>
 ) {
-  const selectedOperators = props.operators
-    .map((op) => {
-      const operator = DEFENDERS.find((def) => def.name === op.operator);
-      if (!operator) return null!;
-      return {
+  const selectedOperators = props.stratPositions
+    .flatMap((position) => {
+      const operators = DEFENDERS.filter((def) =>
+        position.operators.includes(def.name)
+      );
+      return operators.map((operator) => ({
         ...operator,
-        pickedOPID: op.id,
-      };
+        stratPositionID: position.id,
+      }));
     })
     .filter(Boolean);
 
@@ -51,7 +52,7 @@ export default function StratEditorOperatorsSidebar(
                       type: "operator",
                       side: "def",
                       iconType: "bw",
-                      pickedOPID: op.pickedOPID,
+                      stratPositionID: op.stratPositionID,
                     });
                   }}
                 >

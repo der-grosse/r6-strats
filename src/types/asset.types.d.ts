@@ -9,7 +9,7 @@ type Asset = BaseAsset &
 
 interface BaseAsset {
   id: string;
-  pickedOPID?: PickedOperator["id"];
+  stratPositionID?: StratPositions["id"];
   customColor?: string;
 }
 

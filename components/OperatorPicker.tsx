@@ -23,6 +23,7 @@ export interface OperatorPickerProps<
   trigger: React.FC<{ children: React.ReactNode }>;
   modal?: boolean;
   closeOnSelect?: boolean;
+  hideOps?: string[];
 }
 
 export default function OperatorPicker<
@@ -37,6 +38,7 @@ export default function OperatorPicker<
   onChange,
   modal,
   closeOnSelect,
+  hideOps,
 }: OperatorPickerProps<Multiple, Value>) {
   const bannedOPInput = useRef<HTMLInputElement>(null);
 
@@ -81,43 +83,47 @@ export default function OperatorPicker<
               >
                 <em>Clear</em>
               </CommandItem>
-              {DEFENDERS.toSorted((a) =>
-                Array.isArray(selected)
-                  ? selected.includes(a.name)
+              {DEFENDERS.filter((def) => !hideOps?.includes(def.name))
+                .toSorted((a) =>
+                  Array.isArray(selected)
+                    ? selected.includes(a.name)
+                      ? -1
+                      : 1
+                    : selected === a.name
                     ? -1
                     : 1
-                  : selected === a.name
-                  ? -1
-                  : 1
-              ).map((op) => (
-                <CommandItem
-                  key={op.name}
-                  onSelect={() => {
-                    onChange(
-                      (multiple
-                        ? selected?.includes(op.name)
-                          ? (selected as string[]).filter((o) => o !== op.name)
-                          : [...(selected as string[]), op.name]
-                        : op.name) as Value
-                    );
-                    if (closeOnSelect) setOpen(false);
-                    else
-                      requestAnimationFrame(() => {
-                        bannedOPInput.current?.focus();
-                      });
-                  }}
-                >
-                  <OperatorIcon op={op} />
-                  {op.name}
-                  <CommandShortcut>
-                    {(Array.isArray(selected)
-                      ? selected.includes(op.name)
-                      : selected === op.name) && (
-                      <Check className="text-muted-foreground" />
-                    )}
-                  </CommandShortcut>
-                </CommandItem>
-              ))}
+                )
+                .map((op) => (
+                  <CommandItem
+                    key={op.name}
+                    onSelect={() => {
+                      onChange(
+                        (multiple
+                          ? selected?.includes(op.name)
+                            ? (selected as string[]).filter(
+                                (o) => o !== op.name
+                              )
+                            : [...(selected as string[]), op.name]
+                          : op.name) as Value
+                      );
+                      if (closeOnSelect) setOpen(false);
+                      else
+                        requestAnimationFrame(() => {
+                          bannedOPInput.current?.focus();
+                        });
+                    }}
+                  >
+                    <OperatorIcon op={op} />
+                    {op.name}
+                    <CommandShortcut>
+                      {(Array.isArray(selected)
+                        ? selected.includes(op.name)
+                        : selected === op.name) && (
+                        <Check className="text-muted-foreground" />
+                      )}
+                    </CommandShortcut>
+                  </CommandItem>
+                ))}
             </CommandGroup>
           </CommandList>
         </Command>

@@ -10,7 +10,6 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { demoteFromAdmin, promoteToAdmin, removeMember } from "@/src/auth/team";
 import {
   Edit2,
-  GripVertical,
   Lock,
   MoreVertical,
   Shield,
