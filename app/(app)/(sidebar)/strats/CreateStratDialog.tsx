@@ -38,6 +38,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { extractDrawingID } from "@/src/googleDrawings";
 
 const formSchema = z.object({
   map: z.string().min(1, "Map is required"),
@@ -67,20 +68,7 @@ export function CreateStratDialog() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const drawingID = (() => {
-        if (!values.drawingID) return null;
-        if (values.drawingID.startsWith("https://drive.google.com/open?id=")) {
-          return values.drawingID.split("https://drive.google.com/open?id=")[1];
-        }
-        if (
-          values.drawingID.startsWith("https://docs.google.com/drawings/d/")
-        ) {
-          return values.drawingID
-            .split("https://docs.google.com/drawings/d/")[1]
-            .split("/")[0];
-        }
-        return values.drawingID;
-      })();
+      const drawingID = extractDrawingID(values.drawingID);
       const result = await createStrat({
         name: "",
         description: "",

@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { extractDrawingID } from "@/src/googleDrawings";
 
 export interface StratEditorMetaSidebarProps {
   strat: Strat;
@@ -207,15 +208,18 @@ export default function StratEditorMetaSidebar(
               Cancel
             </Button>
             <Button
-              onClick={() =>
+              onClick={() => {
+                const newParsedID = props.strat.drawingID
+                  ? null
+                  : extractDrawingID(newDrawingID);
                 updateStrat({
                   id: props.strat.id,
-                  drawingID: props.strat.drawingID ? null : newDrawingID,
+                  drawingID: newParsedID,
                 }).then(() => {
                   setNewDrawingID("");
                   setConfirmGoogleDrawingOpen(false);
-                })
-              }
+                });
+              }}
             >
               {props.strat.drawingID ? "Unlink" : "Link"}
             </Button>
