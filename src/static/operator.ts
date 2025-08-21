@@ -164,6 +164,7 @@ export type Defender = {
   iconBW: string;
   gadget?: PrimaryGadget;
   secondaryGadgets?: DefenderSecondaryGadget[];
+  tertiaryGadgets?: DefenderSecondaryGadget[];
   hasPrimaryShotgun?: boolean;
   hasSecondaryShotgun?: boolean;
 };
@@ -179,6 +180,15 @@ export const DEFENDERS = [
     icon: "/ops/def/sentry.webp",
     iconBW: "/ops/def/sentry_bw.png",
     secondaryGadgets: [
+      "deployable_shield",
+      "bulletproof_camera",
+      "barbed_wire",
+      "observation_blocker",
+      "impact_grenade",
+      "c4",
+      "proximity_alarm",
+    ],
+    tertiaryGadgets: [
       "deployable_shield",
       "bulletproof_camera",
       "barbed_wire",

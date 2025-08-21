@@ -139,6 +139,7 @@ class StratsDBClass {
               stratPositionID: position.id,
               operator: op.operator,
               secondaryGadget: op.secondaryGadget,
+              tertiaryGadget: op.tertiaryGadget,
               index: i,
             }))
           );
@@ -301,6 +302,7 @@ class StratsDBClass {
       operator: string;
       stratPositionID: number;
       secondaryGadget: string | null;
+      tertiaryGadget: string | null;
       index: number;
     }[];
   }): Strat[] {
@@ -360,6 +362,7 @@ class StratsDBClass {
             .map((o) => ({
               operator: o.operator,
               secondaryGadget: o.secondaryGadget,
+              tertiaryGadget: o.tertiaryGadget,
             })),
         }));
 

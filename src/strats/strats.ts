@@ -195,6 +195,7 @@ export async function updatePickedOperator(
           index,
           stratPositionID: stratPosition.id,
           secondaryGadget: operator.secondaryGadget,
+          tertiaryGadget: operator.tertiaryGadget,
         }))
       );
     }

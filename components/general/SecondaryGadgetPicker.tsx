@@ -29,6 +29,11 @@ export interface SecondaryGadgetPickerProps {
   showGadgetOfOperators?: string[];
   popoverOffset?: number;
   onlyShowIcon?: boolean;
+  slotProps?: Partial<{
+    icon: {
+      className?: string;
+    };
+  }>;
 }
 
 export default function SecondaryGadgetPicker({
@@ -40,6 +45,7 @@ export default function SecondaryGadgetPicker({
   showGadgetOfOperators,
   popoverOffset,
   onlyShowIcon,
+  slotProps,
 }: SecondaryGadgetPickerProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -87,7 +93,10 @@ export default function SecondaryGadgetPicker({
         <Trigger>
           {selected ? (
             <>
-              <GadgetIcon id={selected} />
+              <GadgetIcon
+                id={selected}
+                className={slotProps?.icon?.className}
+              />
               {!onlyShowIcon && selectedGadget?.name}
             </>
           ) : (

@@ -35,4 +35,5 @@ interface StratPositions {
 interface PickedOperator {
   operator: string;
   secondaryGadget: string | null;
+  tertiaryGadget: string | null; // only used for operator sentry
 }

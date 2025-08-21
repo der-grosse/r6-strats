@@ -33,7 +33,7 @@ import { forwardRef, useState } from "react";
 import { useEffect } from "react";
 import Shotgun from "../assets/Shotgun";
 import SecondaryGadgetPicker from "@/components/general/SecondaryGadgetPicker";
-import { DefenderSecondaryGadget } from "@/src/static/operator";
+import { DEFENDERS, DefenderSecondaryGadget } from "@/src/static/operator";
 
 export interface StratPositionItemProps {
   stratID: Strat["id"];
@@ -262,6 +262,10 @@ function OperatorItem({
     transition,
   };
 
+  const hasTertiaryGadget =
+    "tertiaryGadgets" in
+    (DEFENDERS.find((def) => def.name === op.operator) || {});
+
   return (
     <div ref={setNodeRef} style={style} className="flex pl-3">
       <div
@@ -278,11 +282,16 @@ function OperatorItem({
         hideOps={otherOps}
         onChange={(newOp) => {
           if (!newOp) onDelete();
-          else
+          else {
+            const hasNewOpTertiary =
+              "tertiaryGadgets" in
+              (DEFENDERS.find((def) => def.name === newOp) || {});
             onChange({
               operator: newOp,
               secondaryGadget: op.secondaryGadget,
+              tertiaryGadget: hasNewOpTertiary ? op.tertiaryGadget : null,
             });
+          }
         }}
         trigger={({ children, ...props }) => (
           <Button
@@ -301,6 +310,7 @@ function OperatorItem({
           onChange({
             operator: op.operator,
             secondaryGadget: gadget,
+            tertiaryGadget: op.tertiaryGadget,
           })
         }
         selected={op.secondaryGadget as DefenderSecondaryGadget | null}
@@ -308,6 +318,11 @@ function OperatorItem({
         closeOnSelect
         onlyShowIcon
         showGadgetOfOperators={[op.operator]}
+        slotProps={{
+          icon: {
+            className: "size-6",
+          },
+        }}
         trigger={(props) => (
           <Button
             {...props}
@@ -317,6 +332,35 @@ function OperatorItem({
           />
         )}
       />
+      {hasTertiaryGadget && (
+        <SecondaryGadgetPicker
+          onChange={(gadget) =>
+            onChange({
+              operator: op.operator,
+              secondaryGadget: op.secondaryGadget,
+              tertiaryGadget: gadget,
+            })
+          }
+          selected={op.tertiaryGadget as DefenderSecondaryGadget | null}
+          popoverOffset={52}
+          closeOnSelect
+          onlyShowIcon
+          showGadgetOfOperators={[op.operator]}
+          slotProps={{
+            icon: {
+              className: "size-6",
+            },
+          }}
+          trigger={(props) => (
+            <Button
+              {...props}
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground -ml-2 gap-1"
+            />
+          )}
+        />
+      )}
       <Button
         asChild
         variant="ghost"
