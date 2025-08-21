@@ -187,6 +187,7 @@ export const DEFENDERS = [
       "c4",
       "proximity_alarm",
     ],
+    hasSecondaryShotgun: true,
   },
   {
     name: "Smoke",
@@ -323,7 +324,6 @@ export const DEFENDERS = [
     gadget: "gu_mine",
     secondaryGadgets: ["observation_blocker", "bulletproof_camera"],
     hasPrimaryShotgun: true,
-    hasSecondaryShotgun: true,
   },
   {
     name: "Ela",
@@ -405,6 +405,7 @@ export const DEFENDERS = [
     iconBW: "/ops/def/wamai_bw.png",
     gadget: "magnet",
     secondaryGadgets: ["impact_grenade", "proximity_alarm"],
+    hasSecondaryShotgun: true,
   },
   {
     name: "Oryx",
@@ -474,7 +475,6 @@ export const DEFENDERS = [
     gadget: "fenrir",
     secondaryGadgets: ["bulletproof_camera", "observation_blocker"],
     hasPrimaryShotgun: true,
-    hasSecondaryShotgun: true,
   },
   {
     name: "Tubarão",

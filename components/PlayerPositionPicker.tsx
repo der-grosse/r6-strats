@@ -47,9 +47,10 @@ export default function PlayerPositionPicker(props: PlayerPositionPickerProps) {
                 component="span"
                 color={teamMember?.defaultColor ?? DEFAULT_COLORS.at(-1)}
                 size="small"
+                className="flex-[0_0_auto]"
                 disabled
               />
-              <Label>
+              <Label className="truncate">
                 {teamMember?.name ?? <em>No player available</em>}
                 <span className="text-sm text-muted-foreground">
                   {position?.positionName}
@@ -57,7 +58,7 @@ export default function PlayerPositionPicker(props: PlayerPositionPickerProps) {
               </Label>
             </>
           ) : (
-            <span className="text-muted-foreground">
+            <span className="text-muted-foreground text-ellipsis">
               Select a player position
             </span>
           )}

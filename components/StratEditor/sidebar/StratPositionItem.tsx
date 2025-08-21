@@ -90,15 +90,15 @@ export default function StratPositionItem({
 
   return (
     <Card className="p-2 gap-0">
-      <CardHeader className="p-0">
+      <CardHeader className="p-0 w-full">
         <div
           className={cn(
-            "flex items-center gap-2 w-full",
+            "flex items-center w-full overflow-hidden",
             hasError && "outline-2 outline-destructive rounded-md"
           )}
         >
           <PlayerPositionPicker
-            className="flex-1 px-2"
+            className="flex-1 px-2 overflow-hidden truncate max-w-[calc(100%_-_var(--spacing)_*_9)]"
             popoverOffset={56} // adjust popover to not cover operator icon and isPowerOp button
             positionID={stratPosition.positionID}
             team={team}

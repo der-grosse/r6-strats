@@ -38,7 +38,7 @@ export default function useMountAssets(
 
   const menu = useCallback(
     (asset: PlacedAsset) => {
-      const position = stratPositions.find(
+      const assetStratPosition = stratPositions.find(
         (op) => op.id === asset.stratPositionID
       );
       return (
@@ -50,8 +50,15 @@ export default function useMountAssets(
           <GripVertical className="cursor-grab" />
           <div className="bg-border w-[1px] h-6" />
           {team.members
-            .filter((m) => m.positionID)
-            .map((member) => {
+            .map((m) => ({
+              member: m,
+              position: team.playerPositions.find(
+                (p) => p.id === m.positionID
+              )!,
+            }))
+            .filter((m) => m.position)
+            .sort((a, b) => a.position.index - b.position.index)
+            .map(({ member }) => {
               const stratPositionOfMember = stratPositions?.find(
                 (op) => op.positionID === member.positionID
               );
@@ -64,7 +71,7 @@ export default function useMountAssets(
                       size="icon"
                       variant="ghost"
                       className={cn(
-                        member.positionID === position?.positionID &&
+                        member.positionID === assetStratPosition?.positionID &&
                           "bg-card dark:hover:bg-card"
                       )}
                       onMouseDown={(e) => e.stopPropagation()}

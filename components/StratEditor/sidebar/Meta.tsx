@@ -116,7 +116,7 @@ export default function StratEditorMetaSidebar(
             <RefreshCw className="text-muted-foreground" />
             <Label className="text-muted-foreground">Rotation Indexes</Label>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1">
             {Array.from({ length: 6 }, (_, i) => (
               <Button
                 key={i}
@@ -125,7 +125,7 @@ export default function StratEditorMetaSidebar(
                     ? "outline"
                     : "ghost"
                 }
-                size="icon"
+                className="size-6 border border-transparent p-0"
                 onClick={() => {
                   updateStrat({
                     id: props.strat.id,

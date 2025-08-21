@@ -11,7 +11,6 @@ no known bugs :)
 
 ### Editor
 
-- alternative ops per position per strat (leave power op as power position)
 - select secondary gadgets for ops
 - add tooltip to disabled
 - zIndex of menu needs to be higher than all assets
