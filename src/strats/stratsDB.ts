@@ -137,7 +137,8 @@ class StratsDBClass {
           await db.insert(pickedOperators).values(
             position.operators.map((op, i) => ({
               stratPositionID: position.id,
-              operator: op,
+              operator: op.operator,
+              secondaryGadget: op.secondaryGadget,
               index: i,
             }))
           );
@@ -294,12 +295,12 @@ class StratsDBClass {
       stratsID: number;
       isPowerPosition: boolean;
       shouldBringShotgun: boolean;
-      secondaryGadget: string | null;
     }[];
     pickedOperators: {
       id: number;
       operator: string;
       stratPositionID: number;
+      secondaryGadget: string | null;
       index: number;
     }[];
   }): Strat[] {
@@ -353,11 +354,13 @@ class StratsDBClass {
           positionID: r.positionID ?? undefined,
           isPowerPosition: r.isPowerPosition,
           shouldBringShotgun: r.shouldBringShotgun,
-          secondaryGadget: r.secondaryGadget,
           operators: data.pickedOperators
             .filter((o) => o.stratPositionID === r.id)
             .sort((a, b) => a.index - b.index)
-            .map((o) => o.operator),
+            .map((o) => ({
+              operator: o.operator,
+              secondaryGadget: o.secondaryGadget,
+            })),
         }));
 
       parsedStrats.push({

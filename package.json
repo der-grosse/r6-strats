@@ -13,7 +13,6 @@
     "typecheck": "tsc --noEmit",
     "push-sql-schema": "drizzle-kit push --config ./drizzle.config.ts",
     "generate-jwt-key": "tsx scripts/generate-keys.ts",
-    "temp": "tsx scripts/migratePowerPositions.ts",
     "test:socket": "node scripts/test-socket.mjs"
   },
   "dependencies": {

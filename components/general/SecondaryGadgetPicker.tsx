@@ -4,7 +4,6 @@ import {
   DefenderSecondaryGadget,
 } from "@/src/static/operator";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import OperatorIcon from "./OperatorIcon";
 import { Check, ChevronRight, CircleOff } from "lucide-react";
 import {
   Command,
@@ -29,6 +28,7 @@ export interface SecondaryGadgetPickerProps {
   closeOnSelect?: boolean;
   showGadgetOfOperators?: string[];
   popoverOffset?: number;
+  onlyShowIcon?: boolean;
 }
 
 export default function SecondaryGadgetPicker({
@@ -39,9 +39,9 @@ export default function SecondaryGadgetPicker({
   closeOnSelect,
   showGadgetOfOperators,
   popoverOffset,
+  onlyShowIcon,
 }: SecondaryGadgetPickerProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [searchInput, setSearchInput] = useState("");
 
   const [open, setOpen] = useState(false);
 
@@ -88,32 +88,29 @@ export default function SecondaryGadgetPicker({
           {selected ? (
             <>
               <GadgetIcon id={selected} />
-              {selectedGadget?.name}
+              {!onlyShowIcon && selectedGadget?.name}
             </>
           ) : (
             <>
               <CircleOff />
-              Select secondary gadget
+              {!onlyShowIcon && "Select secondary gadget"}
             </>
           )}
-          <ChevronRight />
-          <div className="flex-1" />
+          {!onlyShowIcon && (
+            <>
+              <ChevronRight />
+              <div className="flex-1" />
+            </>
+          )}
         </Trigger>
       </PopoverTrigger>
       <PopoverContent
         className="p-0 z-100"
         side="right"
-        align="start"
         sideOffset={popoverOffset}
       >
         <Command key={selected}>
-          <CommandInput
-            placeholder="Search for gadgets"
-            ref={inputRef}
-            onInput={(e) =>
-              setSearchInput((e.target as HTMLInputElement).value)
-            }
-          />
+          <CommandInput placeholder="Search for gadgets" ref={inputRef} />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>

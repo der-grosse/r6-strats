@@ -13,6 +13,7 @@ import OperatorIcon from "../general/OperatorIcon";
 import { Fragment } from "react";
 import Shotgun from "../StratEditor/assets/Shotgun";
 import GadgetIcon from "../general/GadgetIcon";
+import { useFilter } from "../context/FilterContext";
 
 export interface StratDisplayProps {
   strat: Strat | null;
@@ -22,6 +23,9 @@ export interface StratDisplayProps {
 }
 
 export default function StratDisplay(props: StratDisplayProps) {
+  const {
+    filter: { bannedOPs },
+  } = useFilter();
   const user = useUser();
   const teamMember = props.team.members.find(
     (member) => member.id === user?.user?.id
@@ -30,20 +34,33 @@ export default function StratDisplay(props: StratDisplayProps) {
     (op) => op.positionID === teamMember?.positionID
   );
 
+  const availableOperators = (() => {
+    const ops = stratPosition?.operators.filter(
+      (op) => !bannedOPs.includes(op.operator)
+    );
+    if (!ops?.length) return stratPosition?.operators ?? [];
+    return ops;
+  })();
+
   const Details = !props.hideDetails && props.strat && (
     <div className="flex flex-col gap-1 p-2 rounded bg-background">
-      {stratPosition?.operators && (
+      {availableOperators.length && (
         <div className="flex gap-2 justify-center items-center">
-          {stratPosition.operators.map((op, i) => (
+          {availableOperators.map((op, i) => (
             <Fragment key={i}>
-              <OperatorIcon op={op} />
-              <p className="text-lg font-bold text-center">{op}</p>
+              <div className="relative">
+                <OperatorIcon op={op.operator} />
+                {op.secondaryGadget && (
+                  <GadgetIcon
+                    id={op.secondaryGadget}
+                    className="absolute size-6 -right-2 -bottom-2"
+                  />
+                )}
+              </div>
+              <p className="text-lg font-bold text-center">{op.operator}</p>
             </Fragment>
           ))}
-          {stratPosition.shouldBringShotgun && <Shotgun className="size-8" />}
-          {stratPosition.secondaryGadget && (
-            <GadgetIcon id={stratPosition.secondaryGadget} />
-          )}
+          {stratPosition?.shouldBringShotgun && <Shotgun className="size-8" />}
         </div>
       )}
       <div className="flex justify-center gap-1 text-sm">

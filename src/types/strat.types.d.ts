@@ -28,7 +28,11 @@ interface StratPositions {
   id: number;
   isPowerPosition: boolean;
   shouldBringShotgun: boolean;
-  secondaryGadget: string | null;
   positionID?: number | null;
-  operators: string[];
+  operators: PickedOperator[];
+}
+
+interface PickedOperator {
+  operator: string;
+  secondaryGadget: string | null;
 }

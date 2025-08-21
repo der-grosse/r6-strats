@@ -172,8 +172,7 @@ export async function updatePickedOperator(
   if (
     stratPosition.isPowerPosition !== undefined ||
     stratPosition.positionID ||
-    stratPosition.shouldBringShotgun !== undefined ||
-    stratPosition.secondaryGadget !== undefined
+    stratPosition.shouldBringShotgun !== undefined
   ) {
     await db
       .update(stratPositions)
@@ -181,7 +180,6 @@ export async function updatePickedOperator(
         isPowerPosition: stratPosition.isPowerPosition,
         positionID: stratPosition.positionID,
         shouldBringShotgun: stratPosition.shouldBringShotgun,
-        secondaryGadget: stratPosition.secondaryGadget,
       })
       .where(eq(stratPositions.id, stratPosition.id));
   }
@@ -193,9 +191,10 @@ export async function updatePickedOperator(
     if (stratPosition.operators.length > 0) {
       await db.insert(pickedOperators).values(
         stratPosition.operators.map((operator, index) => ({
-          operator,
+          operator: operator.operator,
           index,
           stratPositionID: stratPosition.id,
+          secondaryGadget: operator.secondaryGadget,
         }))
       );
     }

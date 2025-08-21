@@ -11,6 +11,7 @@ no known bugs :)
 
 ### Editor
 
+- sort strats per drag and drop and not rotation index
 - zIndex of menu needs to be higher than all assets
 - variable width barricades
 - make doors, windows and walls clickable to easily add assets
