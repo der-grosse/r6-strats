@@ -8,6 +8,7 @@ export interface SecondaryGadgetIconProps {
   id: DefenderSecondaryGadget;
   variant?: number;
   className?: string;
+  showName?: boolean;
 }
 
 export default function SecondaryGadgetIcon(props: SecondaryGadgetIconProps) {
@@ -16,11 +17,16 @@ export default function SecondaryGadgetIcon(props: SecondaryGadgetIconProps) {
   );
   const icon = gadget?.icon[props.variant ?? 0];
   return (
-    <img
-      src={icon}
-      alt={props.id}
-      className={cn("w-8 h-8 object-contain", props.className)}
-      draggable={false}
-    />
+    <>
+      <img
+        src={icon}
+        alt={props.id}
+        className={cn("w-8 h-8 object-contain", props.className)}
+        draggable={false}
+      />
+      {props.showName && (
+        <span className="text-sm">{gadget?.name ?? props.id}</span>
+      )}
+    </>
   );
 }

@@ -3,7 +3,7 @@ import { useRef, useState, useEffect, useMemo, useCallback, act } from "react";
 import SVGAsset from "./SVGAsset";
 import { useKeys } from "../hooks/useKey";
 import isKeyDown from "../hooks/isKeyDown";
-import { deepCopy } from "../deepCopy";
+import { deepCopy } from "../Objects";
 import MapBackground from "./MapBackground";
 import { Selection } from "./StratEditor";
 import { useUser } from "../context/UserContext";

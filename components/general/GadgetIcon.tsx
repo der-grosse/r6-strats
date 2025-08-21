@@ -9,6 +9,7 @@ import SecondaryGadgetIcon from "./SecondaryGadgetIcon";
 
 export interface GadgetIconProps {
   id: PrimaryGadget["id"] | DefenderSecondaryGadget | string;
+  showName?: boolean;
   variant?: number;
   className?: string;
 }
@@ -31,6 +32,7 @@ export default function GadgetIcon(props: GadgetIconProps) {
         id={props.id as PrimaryGadget["id"]}
         variant={props.variant}
         className={props.className}
+        showName={props.showName}
       />
     );
   }
@@ -39,6 +41,7 @@ export default function GadgetIcon(props: GadgetIconProps) {
       id={props.id as DefenderSecondaryGadget}
       variant={props.variant}
       className={props.className}
+      showName={props.showName}
     />
   );
 }

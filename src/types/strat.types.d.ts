@@ -27,6 +27,8 @@ interface Strat {
 interface StratPositions {
   id: number;
   isPowerPosition: boolean;
+  shouldBringShotgun: boolean;
+  secondaryGadget: string | null;
   positionID?: number | null;
   operators: string[];
 }

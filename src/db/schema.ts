@@ -140,6 +140,8 @@ export const stratPositions = pgTable("strat_positions", {
       onUpdate: "cascade",
     }),
   isPowerPosition: boolean("is_power_position").notNull().default(false),
+  shouldBringShotgun: boolean("should_bring_shotgun").notNull().default(false),
+  secondaryGadget: text("secondary_gadget"),
 });
 
 export const pickedOperators = pgTable("picked_operators", {

@@ -10,15 +10,15 @@ import { Button } from "../ui/button";
 import Operator from "./assets/Operator";
 import { cn } from "@/src/utils";
 import { useCallback, useMemo, useState } from "react";
-import ColorPickerDialog from "../ColorPickerDialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import GadgetIcon from "../GadgetIcon";
+import GadgetIcon from "../general/GadgetIcon";
 import AssetOutline from "./assets/AssetOutline";
 import Reinforcement from "../icons/reinforcement";
 import Rotation from "../icons/rotation";
 import Explosion from "./assets/Explosion";
 import WoodenBarricade from "../icons/woodenBarricade";
 import { useUser } from "../context/UserContext";
+import ColorPickerDialog from "../general/ColorPickerDialog";
 
 export default function useMountAssets(
   { team, stratPositions }: { team: Team; stratPositions: StratPositions[] },

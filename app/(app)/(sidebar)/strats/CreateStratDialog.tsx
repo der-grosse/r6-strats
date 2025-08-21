@@ -33,7 +33,11 @@ import * as z from "zod";
 import { createStrat } from "@/src/strats/strats";
 import { toast } from "sonner";
 import MAPS from "@/src/static/maps";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const formSchema = z.object({
   map: z.string().min(1, "Map is required"),

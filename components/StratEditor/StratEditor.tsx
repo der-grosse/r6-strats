@@ -11,12 +11,12 @@ import {
   updateStratAssets,
 } from "@/src/strats/strats";
 import { useKeys } from "../hooks/useKey";
-import { deepCopy } from "../deepCopy";
+import { deepCopy, deepEqual } from "../Objects";
 import { useSocket } from "../context/SocketContext";
 import useSocketEvent from "../hooks/useSocketEvent";
 import { toast } from "sonner";
 import { useUser } from "../context/UserContext";
-import StratDisplay from "../StratDisplay";
+import StratDisplay from "../StratDisplay/StratDisplay";
 
 interface StratEditorProps {
   strat: Strat;
@@ -76,9 +76,18 @@ export function StratEditor({
     const interval = setInterval(async () => {
       const new_strat = await getStrat(strat.id);
       if (!new_strat) return;
-      setStrat(new_strat);
-      setAssets(new_strat.assets);
-      console.debug(`refreshed strat ${strat.id} from server`);
+      setStrat((strat) => {
+        if (deepEqual(strat, new_strat)) return strat;
+        console.debug(`refreshed strat ${strat.id} from server`);
+        return new_strat;
+      });
+      setAssets((assets) => {
+        if (deepEqual(assets, new_strat.assets)) return assets;
+        console.debug(
+          `refreshed strat assets of strat ${strat.id} from server`
+        );
+        return new_strat.assets;
+      });
     }, 30_000);
 
     return () => clearInterval(interval);

@@ -1,4 +1,7 @@
-import { ColorButton, DEFAULT_COLORS } from "@/components/ColorPickerDialog";
+import {
+  ColorButton,
+  DEFAULT_COLORS,
+} from "@/components/general/ColorPickerDialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,

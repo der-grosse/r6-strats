@@ -11,8 +11,6 @@ no known bugs :)
 
 ### Editor
 
-- select secondary gadgets for ops
-- add tooltip to disabled
 - zIndex of menu needs to be higher than all assets
 - variable width barricades
 - make doors, windows and walls clickable to easily add assets

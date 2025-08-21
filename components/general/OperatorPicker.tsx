@@ -1,5 +1,5 @@
 import { DEFENDERS } from "@/src/static/operator";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import OperatorIcon from "./OperatorIcon";
 import { Check, ChevronRight } from "lucide-react";
 import {
@@ -10,7 +10,7 @@ import {
   CommandItem,
   CommandList,
   CommandShortcut,
-} from "./ui/command";
+} from "../ui/command";
 import { useRef, useState } from "react";
 
 export interface OperatorPickerProps<
@@ -24,6 +24,7 @@ export interface OperatorPickerProps<
   modal?: boolean;
   closeOnSelect?: boolean;
   hideOps?: string[];
+  popoverOffset?: number;
 }
 
 export default function OperatorPicker<
@@ -39,6 +40,7 @@ export default function OperatorPicker<
   modal,
   closeOnSelect,
   hideOps,
+  popoverOffset,
 }: OperatorPickerProps<Multiple, Value>) {
   const bannedOPInput = useRef<HTMLInputElement>(null);
 
@@ -65,7 +67,11 @@ export default function OperatorPicker<
           <ChevronRight className="ml-auto" />
         </Trigger>
       </PopoverTrigger>
-      <PopoverContent className="p-0 z-100" side="right">
+      <PopoverContent
+        className="p-0 z-100"
+        side="right"
+        sideOffset={popoverOffset}
+      >
         <Command key={Array.isArray(selected) ? selected.join(",") : selected}>
           <CommandInput
             placeholder="Type a command or search..."

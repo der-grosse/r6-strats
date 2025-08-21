@@ -1,4 +1,4 @@
-import ActiveStrat from "@/components/ActiveStrat";
+import ActiveStrat from "@/components/StratDisplay/ActiveStrat";
 import { getTeam } from "@/src/auth/team";
 import { getActive } from "@/src/strats/strats";
 import { Metadata } from "next";

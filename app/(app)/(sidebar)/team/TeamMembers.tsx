@@ -10,35 +10,10 @@ import {
 import { useUser } from "@/components/context/UserContext";
 import { useRef, useState } from "react";
 import {
-  removeMember,
-  promoteToAdmin,
-  demoteFromAdmin,
   changeUsername,
   changePassword,
   setMemberColor,
 } from "@/src/auth/team";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  MoreVertical,
-  Trash2,
-  Shield,
-  ShieldOff,
-  Edit2,
-  Lock,
-} from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import {
@@ -51,7 +26,7 @@ import {
 } from "@/components/ui/dialog";
 import ColorPickerDialog, {
   DEFAULT_COLORS,
-} from "@/components/ColorPickerDialog";
+} from "@/components/general/ColorPickerDialog";
 import TeamMemberList from "./TeamMemberList";
 
 export interface TeamMembersProps {

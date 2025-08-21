@@ -6,11 +6,13 @@ import {
 } from "@/src/googleDrawings";
 import { Ban, Pencil } from "lucide-react";
 import Link from "next/link";
-import { Button } from "./ui/button";
-import { useUser } from "./context/UserContext";
-import StratViewer from "./StratEditor/StratViewer";
-import OperatorIcon from "./OperatorIcon";
+import { Button } from "../ui/button";
+import { useUser } from "../context/UserContext";
+import StratViewer from "../StratEditor/StratViewer";
+import OperatorIcon from "../general/OperatorIcon";
 import { Fragment } from "react";
+import Shotgun from "../StratEditor/assets/Shotgun";
+import GadgetIcon from "../general/GadgetIcon";
 
 export interface StratDisplayProps {
   strat: Strat | null;
@@ -24,20 +26,24 @@ export default function StratDisplay(props: StratDisplayProps) {
   const teamMember = props.team.members.find(
     (member) => member.id === user?.user?.id
   );
-  const playedOps = props.strat?.positions.find(
+  const stratPosition = props.strat?.positions.find(
     (op) => op.positionID === teamMember?.positionID
-  )?.operators;
+  );
 
   const Details = !props.hideDetails && props.strat && (
     <div className="flex flex-col gap-1 p-2 rounded bg-background">
-      {playedOps && (
+      {stratPosition?.operators && (
         <div className="flex gap-2 justify-center items-center">
-          {playedOps.map((op, i) => (
+          {stratPosition.operators.map((op, i) => (
             <Fragment key={i}>
               <OperatorIcon op={op} />
               <p className="text-lg font-bold text-center">{op}</p>
             </Fragment>
           ))}
+          {stratPosition.shouldBringShotgun && <Shotgun className="size-8" />}
+          {stratPosition.secondaryGadget && (
+            <GadgetIcon id={stratPosition.secondaryGadget} />
+          )}
         </div>
       )}
       <div className="flex justify-center gap-1 text-sm">

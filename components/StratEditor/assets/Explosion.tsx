@@ -1,14 +1,14 @@
-import OperatorIcon from "@/components/OperatorIcon";
-import { getAssetColor } from "../Assets";
+import { cn } from "@/src/utils";
 
 export interface ExplosionProps {
   color?: string;
+  className?: string;
 }
 
 export default function Explosion(props: ExplosionProps) {
   return (
     <div
-      className="size-full shadow-lg rounded-[5%]"
+      className={cn("size-full shadow-lg rounded-[5%]", props.className)}
       style={{
         background: props.color ?? undefined,
       }}

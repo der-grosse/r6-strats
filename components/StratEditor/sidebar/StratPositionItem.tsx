@@ -1,6 +1,6 @@
-import OperatorIcon from "@/components/OperatorIcon";
-import OperatorPicker from "@/components/OperatorPicker";
-import PlayerPositionPicker from "@/components/PlayerPositionPicker";
+import OperatorIcon from "@/components/general/OperatorIcon";
+import OperatorPicker from "@/components/general/OperatorPicker";
+import PlayerPositionPicker from "@/components/general/PlayerPositionPicker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/tooltip";
 import { updatePickedOperator } from "@/src/strats/strats";
 import { cn } from "@/src/utils";
-import { GripVertical, Plus, X, Zap, ZapOff } from "lucide-react";
+import { BrickWall, GripVertical, Plus, X, Zap, ZapOff } from "lucide-react";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import {
@@ -29,8 +29,12 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 import { useEffect } from "react";
+import Explosion from "../assets/Explosion";
+import Shotgun from "../assets/Shotgun";
+import SecondaryGadgetPicker from "@/components/general/SecondaryGadgetPicker";
+import { DefenderSecondaryGadget } from "@/src/static/operator";
 
 export interface StratPositionItemProps {
   stratID: Strat["id"];
@@ -98,8 +102,8 @@ export default function StratPositionItem({
           )}
         >
           <PlayerPositionPicker
-            className="flex-1 px-2 overflow-hidden truncate max-w-[calc(100%_-_var(--spacing)_*_9)]"
-            popoverOffset={56} // adjust popover to not cover operator icon and isPowerOp button
+            className="flex-1 px-2 overflow-hidden truncate"
+            popoverOffset={16}
             positionID={stratPosition.positionID}
             team={team}
             onChange={(positionID) => {
@@ -110,41 +114,81 @@ export default function StratPositionItem({
             }}
           />
           {/* <div className="flex-1" /> */}
-          <Tooltip delayDuration={500}>
-            <TooltipTrigger asChild>
-              <Button
-                size="icon"
-                variant="ghost"
-                className={cn(
-                  stratPosition.isPowerPosition
-                    ? "text-primary"
-                    : "text-muted-foreground/50"
-                )}
-                onClick={() =>
-                  updatePickedOperator(stratID, {
-                    id: stratPosition.id,
-                    isPowerPosition: !stratPosition.isPowerPosition,
-                  })
-                }
-              >
-                {stratPosition.isPowerPosition ? <Zap /> : <ZapOff />}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="right">
-              <p className="text-sm">
-                {stratPosition.isPowerPosition
-                  ? "Remove from power positions"
-                  : "Set as power position"}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Power positions are essential to a strat. If this position is
-                not playable due to operator bans, the strat is not viable
-                anymore.
-              </p>
-            </TooltipContent>
-          </Tooltip>
         </div>
       </CardHeader>
+      <Separator />
+      <div className="flex">
+        <SecondaryGadgetPicker
+          onChange={(gadget) =>
+            updatePickedOperator(stratID, {
+              id: stratPosition.id,
+              secondaryGadget: gadget,
+            })
+          }
+          selected={
+            stratPosition.secondaryGadget as DefenderSecondaryGadget | null
+          }
+          closeOnSelect
+          showGadgetOfOperators={stratPosition.operators}
+          trigger={(props) => (
+            <Button
+              {...props}
+              variant="ghost"
+              className="text-muted-foreground flex-1 -ml-2 gap-1"
+            />
+          )}
+        />
+        {/* rotation duties */}
+        <Tooltip delayDuration={1000}>
+          <TooltipTrigger className="size-9">
+            <ShotgunToggle
+              shouldBringShotgun={stratPosition.shouldBringShotgun}
+              stratID={stratID}
+              stratPositionID={stratPosition.id}
+            />
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            <p className="text-sm">Shotgun for rotates</p>
+            <p className="text-xs text-muted-foreground">
+              Indicate wether this role needs to bring a shotgun to make
+              rotates, headholes or similar.
+            </p>
+          </TooltipContent>
+        </Tooltip>
+        {/* power position */}
+        <Tooltip delayDuration={1000}>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              variant="ghost"
+              className={cn(
+                stratPosition.isPowerPosition
+                  ? "text-primary"
+                  : "text-muted-foreground/50"
+              )}
+              onClick={() =>
+                updatePickedOperator(stratID, {
+                  id: stratPosition.id,
+                  isPowerPosition: !stratPosition.isPowerPosition,
+                })
+              }
+            >
+              {stratPosition.isPowerPosition ? <Zap /> : <ZapOff />}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            <p className="text-sm">
+              {stratPosition.isPowerPosition
+                ? "Remove from power positions"
+                : "Set as power position"}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Power positions are essential to a strat. If this position is not
+              playable due to operator bans, the strat is not viable anymore.
+            </p>
+          </TooltipContent>
+        </Tooltip>
+      </div>
       <Separator />
       <CardContent className="px-0 mt-1 -mb-1">
         <DndContext
@@ -252,6 +296,7 @@ function OperatorItem({
         <GripVertical className="h-4 w-4 text-gray-400 py-2 box-content" />
       </div>
       <OperatorPicker
+        popoverOffset={12}
         closeOnSelect
         selected={op}
         hideOps={otherOps}
@@ -288,3 +333,36 @@ function OperatorItem({
     </div>
   );
 }
+
+const ShotgunToggle = forwardRef<
+  HTMLButtonElement,
+  {
+    shouldBringShotgun: boolean;
+    stratID: number;
+    stratPositionID: number;
+  }
+>(({ shouldBringShotgun, stratID, stratPositionID }, ref) => {
+  return (
+    <Button
+      ref={ref}
+      size="icon"
+      variant="ghost"
+      onClick={() => {
+        updatePickedOperator(stratID, {
+          id: stratPositionID,
+          shouldBringShotgun: !shouldBringShotgun,
+        });
+      }}
+      asChild
+    >
+      <span>
+        <Shotgun
+          className={cn(
+            "size-8 -mx-1 -my-2",
+            !shouldBringShotgun && "text-muted-foreground/50"
+          )}
+        />
+      </span>
+    </Button>
+  );
+});

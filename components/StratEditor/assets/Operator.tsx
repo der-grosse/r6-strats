@@ -1,4 +1,4 @@
-import OperatorIcon from "@/components/OperatorIcon";
+import OperatorIcon from "@/components/general/OperatorIcon";
 import { getAssetColor } from "../Assets";
 import { cn } from "@/src/utils";
 

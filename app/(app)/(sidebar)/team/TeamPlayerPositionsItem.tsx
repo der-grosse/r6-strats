@@ -1,4 +1,3 @@
-import { ColorButton } from "@/components/ColorPickerDialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,6 +10,7 @@ import { setMemberPosition, setMemberPositionName } from "@/src/auth/team";
 import { ChevronRight, GripVertical } from "lucide-react";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
+import { ColorButton } from "@/components/general/ColorPickerDialog";
 
 export interface TeamPlayerPositionsItemProps {
   position: PlayerPosition;

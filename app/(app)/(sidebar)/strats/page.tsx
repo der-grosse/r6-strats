@@ -1,8 +1,7 @@
 "use client";
 import { useFilter } from "@/components/context/FilterContext";
-import { CreateStratDialog } from "@/components/CreateStratDialog";
 import { DeleteStratDialog } from "@/app/(app)/(sidebar)/strats/DeleteStratDialog";
-import OperatorIcon from "@/components/OperatorIcon";
+import OperatorIcon from "@/components/general/OperatorIcon";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -15,11 +14,10 @@ import {
 import { DEFENDERS } from "@/src/static/operator";
 import { Eye, Pencil } from "lucide-react";
 import Link from "next/link";
-import config from "@/src/static/config";
 import { useSocket } from "@/components/context/SocketContext";
 import { setActive } from "@/src/strats/strats";
 import { useRouter } from "next/navigation";
-import StackedOperatorIcon from "@/components/StackedOperatorIcon";
+import { CreateStratDialog } from "./CreateStratDialog";
 
 export default function StratsPage() {
   const { filteredStrats, isLeading, filter } = useFilter();

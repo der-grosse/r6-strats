@@ -1,6 +1,6 @@
 import useDebounced from "@/components/hooks/useDebounced";
-import MapSelector from "@/components/MapSelector";
-import SiteSelector from "@/components/SiteSelector";
+import MapSelector from "@/components/general/MapSelector";
+import SiteSelector from "@/components/general/SiteSelector";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

@@ -1,4 +1,4 @@
-import StratDisplay from "@/components/StratDisplay";
+import StratDisplay from "@/components/StratDisplay/StratDisplay";
 import { getTeam } from "@/src/auth/team";
 import { getStrat } from "@/src/strats/strats";
 import { Metadata } from "next";

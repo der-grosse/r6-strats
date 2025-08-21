@@ -25,7 +25,7 @@ import Link from "next/link";
 import StratEditorPlayerPositionsSidebar from "./StratPositions";
 import StratEditorLayoutSidebar from "./Layout";
 import { getAssetColor } from "../Assets";
-import { ColorButton } from "@/components/ColorPickerDialog";
+import { ColorButton } from "@/components/general/ColorPickerDialog";
 
 export interface StratEditorSidebarProps {
   onAssetAdd: (asset: Asset & Partial<PlacedAsset>) => void;
@@ -291,7 +291,7 @@ export default function StratEditorSidebar(
       <div
         style={{ "--sidebar-width": "min(90vw, 20rem)" } as React.CSSProperties}
         className={cn(
-          "bg-background flex-1 h-full absolute xl:relative transition-[left] duration-300 max-xl:w-(--sidebar-width)",
+          "bg-background flex-1 h-full absolute xl:relative transition-[left] duration-300 max-xl:w-(--sidebar-width) border-r border-border",
           sidebarOpen ? "max-xl:left-[100%]" : "max-xl:-left-(--sidebar-width)"
         )}
       >

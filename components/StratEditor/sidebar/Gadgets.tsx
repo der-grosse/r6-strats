@@ -7,8 +7,8 @@ import {
 import { Badge } from "../../ui/badge";
 import { ScrollArea } from "../../ui/scroll-area";
 import { Button } from "../../ui/button";
-import PrimaryGadgetIcon from "@/components/PrimaryGadgetIcon";
-import SecondaryGadgetIcon from "@/components/SecondaryGadgetIcon";
+import PrimaryGadgetIcon from "@/components/general/PrimaryGadgetIcon";
+import SecondaryGadgetIcon from "@/components/general/SecondaryGadgetIcon";
 import { ASSET_BASE_SIZE } from "../Canvas";
 
 export interface StratEditorGadgetsSidebarProps {
@@ -38,19 +38,18 @@ export default function StratEditorGadgetsSidebar(
         : undefined!
     )
     .filter(Boolean);
-  const selectedSecondaryGadgetIDs = selectedOperators
-    .flatMap((op) =>
-      "secondaryGadgets" in op
-        ? op.secondaryGadgets?.map((g) => ({
-            id: g,
-            stratPositionID: op.stratPositionID,
-            gadget: DEFENDER_SECONDARY_GADGETS.find((sg) => sg.id === g),
-          })) ?? []
-        : []
-    )
+  const selectedSecondaryGadgets = props.stratPositions
+    .filter((pos) => pos.secondaryGadget)
+    .map((position) => ({
+      gadget: DEFENDER_SECONDARY_GADGETS.find(
+        (g) => g.id === position.secondaryGadget
+      )!,
+      position,
+    }))
     // prevent duplicates
     .filter(
-      (g1, i, gadgets) => !gadgets.some((g2, j) => g1.id === g2.id && i > j)
+      (g1, i, gadgets) =>
+        !gadgets.some((g2, j) => g1.gadget.id === g2.gadget.id && i > j)
     );
 
   return (
@@ -91,12 +90,12 @@ export default function StratEditorGadgetsSidebar(
               ))}
             </>
           )}
-          {selectedSecondaryGadgetIDs.length > 0 && (
+          {selectedSecondaryGadgets.length > 0 && (
             <>
               <Badge className="sticky top-0 w-full col-span-full">
                 Selected secondary gadgets
               </Badge>
-              {selectedSecondaryGadgetIDs.map((gadget) => (
+              {selectedSecondaryGadgets.map(({ gadget, position }) => (
                 <Button
                   variant="outline"
                   key={gadget.id}
@@ -106,11 +105,10 @@ export default function StratEditorGadgetsSidebar(
                       id: `gadget-${gadget.id}`,
                       type: "gadget",
                       gadget: gadget.id,
-                      stratPositionID: gadget.stratPositionID,
+                      stratPositionID: position.id,
                       size: {
                         width: ASSET_BASE_SIZE,
-                        height:
-                          ASSET_BASE_SIZE * (gadget.gadget?.aspectRatio ?? 1),
+                        height: ASSET_BASE_SIZE * (gadget.aspectRatio ?? 1),
                       },
                     });
                   }}

@@ -38,9 +38,9 @@ import { useRouter } from "next/navigation";
 import { getGoogleDrawingsEditURL } from "@/src/googleDrawings";
 import { Button } from "@/components/ui/button";
 import { logout } from "@/src/auth/auth";
-import MapSelector from "@/components/MapSelector";
-import SiteSelector from "@/components/SiteSelector";
-import OperatorPicker from "@/components/OperatorPicker";
+import MapSelector from "@/components/general/MapSelector";
+import SiteSelector from "@/components/general/SiteSelector";
+import OperatorPicker from "@/components/general/OperatorPicker";
 import { useSocket } from "@/components/context/SocketContext";
 import { setActive } from "@/src/strats/strats";
 import {

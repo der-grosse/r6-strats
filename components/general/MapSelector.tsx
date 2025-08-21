@@ -4,23 +4,22 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "../ui/dropdown-menu";
 import MAPS from "@/src/static/maps";
 
-export interface SiteSelectorProps {
+export interface MapSelectorProps {
   map: string | null;
-  site: string | null;
-  onChange: (site: string | null) => void;
+  onChange: (map: R6Map | null) => void;
   trigger: React.FC<{ children: React.ReactNode }>;
   hideEmpty?: boolean;
 }
 
-export default function SiteSelector(props: SiteSelectorProps) {
+export default function MapSelector(props: MapSelectorProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild disabled={!props.map}>
+      <DropdownMenuTrigger asChild>
         <props.trigger>
-          {props.site ?? (props.map ? "Select site" : "Select map first")}
+          {props.map ?? "Select map"}
           <ChevronRight className="ml-auto" />
         </props.trigger>
       </DropdownMenuTrigger>
@@ -30,9 +29,9 @@ export default function SiteSelector(props: SiteSelectorProps) {
             <em>Clear</em>
           </DropdownMenuItem>
         )}
-        {MAPS.find((map) => map.name === props.map)?.sites.map((site) => (
-          <DropdownMenuItem key={site} onClick={() => props.onChange(site)}>
-            {site}
+        {MAPS.map((map) => (
+          <DropdownMenuItem key={map.name} onClick={() => props.onChange(map)}>
+            {map.name}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

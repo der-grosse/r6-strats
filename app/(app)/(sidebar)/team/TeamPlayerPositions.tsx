@@ -1,6 +1,4 @@
 "use client";
-import { ColorButton } from "@/components/ColorPickerDialog";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,17 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { setMemberPosition, setMemberPositionName } from "@/src/auth/team";
-import { ChevronRight } from "lucide-react";
-import { Fragment } from "react";
 import TeamPlayerPositionsList from "./TeamPlayerPositionsList";
 
 export interface TeamPlayerPositionsProps {

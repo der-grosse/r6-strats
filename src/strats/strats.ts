@@ -169,12 +169,19 @@ export async function updatePickedOperator(
   if (strat.teamID !== user.teamID)
     throw new Error("Strat must be in the same team");
 
-  if (stratPosition.isPowerPosition !== undefined || stratPosition.positionID) {
+  if (
+    stratPosition.isPowerPosition !== undefined ||
+    stratPosition.positionID ||
+    stratPosition.shouldBringShotgun !== undefined ||
+    stratPosition.secondaryGadget !== undefined
+  ) {
     await db
       .update(stratPositions)
       .set({
         isPowerPosition: stratPosition.isPowerPosition,
         positionID: stratPosition.positionID,
+        shouldBringShotgun: stratPosition.shouldBringShotgun,
+        secondaryGadget: stratPosition.secondaryGadget,
       })
       .where(eq(stratPositions.id, stratPosition.id));
   }

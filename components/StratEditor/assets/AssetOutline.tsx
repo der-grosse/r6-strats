@@ -1,4 +1,4 @@
-import { DEFAULT_COLORS } from "@/components/ColorPickerDialog";
+import { DEFAULT_COLORS } from "@/components/general/ColorPickerDialog";
 import { useMemo } from "react";
 
 export default function AssetOutline(props: {

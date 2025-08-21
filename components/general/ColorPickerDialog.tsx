@@ -1,11 +1,11 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { HexColorPicker } from "react-colorful";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { Check } from "lucide-react";
 import { cn } from "@/src/utils";
-import { Input } from "./ui/input";
+import { Input } from "../ui/input";
 
 export interface ColorPickerDialogProps {
   color?: string;

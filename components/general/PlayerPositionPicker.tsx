@@ -1,4 +1,4 @@
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Check, ChevronRight } from "lucide-react";
 import {
   Command,
@@ -8,12 +8,12 @@ import {
   CommandItem,
   CommandList,
   CommandShortcut,
-} from "./ui/command";
+} from "../ui/command";
 import { useState } from "react";
-import { Button } from "./ui/button";
-import { ColorButton, DEFAULT_COLORS } from "./ColorPickerDialog";
-import { Label } from "./ui/label";
+import { Button } from "../ui/button";
+import { Label } from "../ui/label";
 import { cn } from "@/src/utils";
+import { ColorButton, DEFAULT_COLORS } from "./ColorPickerDialog";
 
 export interface PlayerPositionPickerProps {
   positionID: PlayerPosition["id"] | null | undefined;

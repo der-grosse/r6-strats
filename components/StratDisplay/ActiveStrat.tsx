@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useSocket } from "../context/SocketContext";
+import useSocketEvent from "../hooks/useSocketEvent";
 import StratDisplay from "./StratDisplay";
-import { useSocket } from "./context/SocketContext";
-import useSocketEvent from "./hooks/useSocketEvent";
 
 export interface ActiveStratProps {
   defaultOpen?: Strat | null;

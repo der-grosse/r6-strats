@@ -293,6 +293,8 @@ class StratsDBClass {
       positionID?: number | null;
       stratsID: number;
       isPowerPosition: boolean;
+      shouldBringShotgun: boolean;
+      secondaryGadget: string | null;
     }[];
     pickedOperators: {
       id: number;
@@ -350,6 +352,8 @@ class StratsDBClass {
           id: r.id,
           positionID: r.positionID ?? undefined,
           isPowerPosition: r.isPowerPosition,
+          shouldBringShotgun: r.shouldBringShotgun,
+          secondaryGadget: r.secondaryGadget,
           operators: data.pickedOperators
             .filter((o) => o.stratPositionID === r.id)
             .sort((a, b) => a.index - b.index)

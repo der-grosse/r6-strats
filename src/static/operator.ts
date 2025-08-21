@@ -681,44 +681,44 @@ export type DefenderPrimaryGadget = Extract<
 
 export const DEFENDER_SECONDARY_GADGETS = [
   {
-    id: "deployable_shield",
+    id: "deployable_shield" as const,
     name: "Deployable Shield",
     icon: ["/gadgets/shield.png"],
     count: 1,
   },
   {
-    id: "bulletproof_camera",
+    id: "bulletproof_camera" as const,
     name: "Bulletproof Camera",
     icon: ["/gadgets/bp.png"],
     count: 1,
   },
   {
-    id: "barbed_wire",
+    id: "barbed_wire" as const,
     name: "Barbed Wire",
     icon: ["/gadgets/barbed_wire.png"],
     count: 2,
   },
   {
-    id: "observation_blocker",
+    id: "observation_blocker" as const,
     name: "Observation Blocker",
     icon: ["/gadgets/obs_block.png"],
     count: 3,
     aspectRatio: 0.5,
   },
   {
-    id: "impact_grenade",
+    id: "impact_grenade" as const,
     name: "Impact Grenade",
     icon: ["/gadgets/impact.png"],
     count: 2,
   },
   {
-    id: "c4",
+    id: "c4" as const,
     name: "Nitro Cell",
     icon: ["/gadgets/c4.png"],
     count: 1,
   },
   {
-    id: "proximity_alarm",
+    id: "proximity_alarm" as const,
     name: "Proximity Alarm",
     icon: ["/gadgets/proxy.png"],
     count: 2,
