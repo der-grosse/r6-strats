@@ -4,6 +4,9 @@ export interface ClientToServerSocketEvents {
   "active-strat:change": (strat: Strat | null) => void;
   "active-strat:subscribe": () => void;
   "active-strat:unsubscribe": () => void;
+  "operator-bans:change": (bans: string[]) => void;
+  "operator-bans:subscribe": () => void;
+  "operator-bans:unsubscribe": () => void;
   "strat-editor:subscribe": (stratID: number) => void;
   "strat-editor:unsubscribe": (stratID: number) => void;
   "debug:message": (message: string) => void;
@@ -12,6 +15,7 @@ export interface ClientToServerSocketEvents {
 
 export interface ServerToClientSocketEvents {
   "active-strat:changed": (strat: Strat | null) => void;
+  "operator-bans:changed": (bans: string[]) => void;
   "debug:message": (message: string) => void;
   "strat-editor:event": (event: HistoryEvent, fromSocket: string) => void;
 }

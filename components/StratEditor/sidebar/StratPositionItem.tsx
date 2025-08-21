@@ -214,7 +214,11 @@ export default function StratPositionItem({
               if (!op) return;
               updatePickedOperator(stratID, {
                 id: stratPosition.id,
-                operators: stratPosition.operators.concat(op),
+                operators: stratPosition.operators.concat({
+                  operator: op,
+                  secondaryGadget: null,
+                  tertiaryGadget: null,
+                }),
               });
               setOptimisticOps((prev) => [
                 ...prev,

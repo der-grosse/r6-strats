@@ -13,11 +13,17 @@ import {
   FILTER_COOKIE_KEY,
   LEADING_COOKIE_KEY,
 } from "./FilterContext.functions";
+import useSocketEvent from "../hooks/useSocketEvent";
+import { useSocket } from "./SocketContext";
+import { deepEqual } from "../Objects";
+import { setBannedOps } from "@/src/bannedOps/bannedOps";
 
 interface FilterContextType {
   filter: Filter;
   setFilter: React.Dispatch<React.SetStateAction<Filter>>;
   filteredStrats: Strat[];
+  bannedOps: string[];
+  setBannedOps: React.Dispatch<React.SetStateAction<string[]>>;
   isLeading: boolean;
   setIsLeading: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -29,26 +35,71 @@ export const FilterProvider: React.FC<{
   defaultFilter?: Filter;
   defaultLeading?: boolean;
   allStrats?: Strat[];
-}> = ({ allStrats, children, defaultFilter, defaultLeading }) => {
+  bannedOps?: string[];
+}> = ({
+  allStrats,
+  children,
+  defaultFilter,
+  defaultLeading,
+  bannedOps: propBannedOps,
+}) => {
+  const socket = useSocket();
+
+  const [bannedOps, setBannedOpsState] = useState<string[]>(
+    propBannedOps ?? []
+  );
   const [filter, setFilter] = useState<Filter>(defaultFilter ?? EMPTY_FILTER);
+
+  // set initial filter from cookies
+  useEffect(() => {
+    const cookieFilter = Cookie.get(FILTER_COOKIE_KEY);
+    if (cookieFilter) {
+      try {
+        const parsedFilter = JSON.parse(cookieFilter);
+        setFilter((prev) => ({ ...prev, ...parsedFilter }));
+      } catch (e) {
+        console.error("Failed to parse filter from cookies", e);
+      }
+    }
+  }, []);
+
+  // leading state
 
   const [isLeading, setIsLeading] = useState(
     defaultLeading ?? Cookie.get(LEADING_COOKIE_KEY) === "true"
   );
+
+  useSocketEvent("operator-bans:changed", (bans) => {
+    setBannedOpsState((prev) => {
+      if (deepEqual(prev, bans)) return prev;
+      return bans;
+    });
+  });
+  // push banned ops filter change to socket
+  useEffect(() => {
+    if (!isLeading) return;
+    socket.emit("operator-bans:change", bannedOps);
+    setBannedOps(bannedOps);
+  }, [bannedOps.join("|"), isLeading]);
+  // subscribe to operator bans socket
+  useEffect(() => {
+    socket.emit("operator-bans:subscribe");
+    return () => {
+      socket.emit("operator-bans:unsubscribe");
+    };
+  }, []);
 
   const filteredStrats = useMemo(
     () =>
       allStrats?.filter((strat) => {
         if (filter.map && filter.map !== strat.map) return false;
         if (filter.site && filter.site !== strat.site) return false;
-        if (filter.bannedOPs.length > 0) {
+        if (bannedOps.length > 0) {
           const positionUnplayable = strat.positions.some(
             (position) =>
               position.isPowerPosition &&
               position.operators.length &&
-              position.operators.every((op) =>
-                filter.bannedOPs.includes(op.operator)
-              )
+              position.operators.every((op) => bannedOps.includes(op.operator))
           );
           if (positionUnplayable) return false;
         }
@@ -73,6 +124,8 @@ export const FilterProvider: React.FC<{
         filteredStrats,
         isLeading,
         setIsLeading,
+        bannedOps,
+        setBannedOps: setBannedOpsState,
       }}
     >
       {children}

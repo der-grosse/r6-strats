@@ -20,7 +20,7 @@ import { useRouter } from "next/navigation";
 import { CreateStratDialog } from "./CreateStratDialog";
 
 export default function StratsPage() {
-  const { filteredStrats, isLeading, filter } = useFilter();
+  const { filteredStrats, isLeading, bannedOps } = useFilter();
   const router = useRouter();
   const socket = useSocket();
   return (
@@ -77,8 +77,8 @@ export default function StratsPage() {
                       <OperatorIcon
                         key={id}
                         op={
-                          ops.find((o) => !filter.bannedOPs.includes(o.name))
-                            ?.name ?? ops[0]
+                          ops.find((o) => !bannedOps.includes(o.name))?.name ??
+                          ops[0]
                         }
                         className={
                           isPowerPosition ? undefined : "grayscale scale-75"

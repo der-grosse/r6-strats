@@ -54,8 +54,15 @@ import { cn } from "@/src/utils";
 export function AppSidebar(props: { teamName: string }) {
   const router = useRouter();
   const socket = useSocket();
-  const { filter, setFilter, filteredStrats, isLeading, setIsLeading } =
-    useFilter();
+  const {
+    filter,
+    setFilter,
+    bannedOps,
+    setBannedOps,
+    filteredStrats,
+    isLeading,
+    setIsLeading,
+  } = useFilter();
 
   return (
     <Sidebar variant="inset">
@@ -174,17 +181,25 @@ export function AppSidebar(props: { teamName: string }) {
                   </SidebarMenuItem>
                   {/* banned OPs selector */}
                   <SidebarMenuItem>
-                    <OperatorPicker
-                      multiple
-                      selected={filter.bannedOPs}
-                      onChange={(bannedOPs) => {
-                        setFilter({
-                          ...filter,
-                          bannedOPs,
-                        });
-                      }}
-                      trigger={SidebarMenuButton}
-                    />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span>
+                          <OperatorPicker
+                            disabled={!isLeading}
+                            multiple
+                            selected={bannedOps}
+                            onChange={(bannedOps) => setBannedOps(bannedOps)}
+                            trigger={SidebarMenuButton}
+                          />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        <p className="text-sm">Select operators to ban</p>
+                        <p className="text-xs text-muted-foreground">
+                          Can only be selected while leading active strat
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
                   </SidebarMenuItem>
                 </SidebarMenu>
                 <SidebarSeparator />

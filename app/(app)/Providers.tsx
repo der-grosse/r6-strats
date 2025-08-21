@@ -13,6 +13,7 @@ export interface ProvidersProps {
   jwt?: string;
   defaultLeading?: boolean;
   allStrats: Strat[];
+  bannedOps: string[];
 }
 
 export default function Providers(props: Readonly<ProvidersProps>) {
@@ -23,6 +24,7 @@ export default function Providers(props: Readonly<ProvidersProps>) {
           defaultFilter={props.cookieFilter}
           defaultLeading={props.defaultLeading}
           allStrats={props.allStrats}
+          bannedOps={props.bannedOps}
         >
           <DragProvider>
             <ResizeProvider>{props.children}</ResizeProvider>

@@ -25,6 +25,7 @@ export interface OperatorPickerProps<
   closeOnSelect?: boolean;
   hideOps?: string[];
   popoverOffset?: number;
+  disabled?: boolean;
 }
 
 export default function OperatorPicker<
@@ -41,6 +42,7 @@ export default function OperatorPicker<
   closeOnSelect,
   hideOps,
   popoverOffset,
+  disabled,
 }: OperatorPickerProps<Multiple, Value>) {
   const bannedOPInput = useRef<HTMLInputElement>(null);
 
@@ -48,7 +50,7 @@ export default function OperatorPicker<
 
   return (
     <Popover modal={modal} open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+      <PopoverTrigger asChild disabled={disabled}>
         <Trigger>
           {Array.isArray(selected) ? (
             selected.length ? (

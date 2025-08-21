@@ -23,9 +23,7 @@ export interface StratDisplayProps {
 }
 
 export default function StratDisplay(props: StratDisplayProps) {
-  const {
-    filter: { bannedOPs },
-  } = useFilter();
+  const { bannedOps } = useFilter();
   const user = useUser();
   const teamMember = props.team.members.find(
     (member) => member.id === user?.user?.id
@@ -36,7 +34,7 @@ export default function StratDisplay(props: StratDisplayProps) {
 
   const availableOperators = (() => {
     const ops = stratPosition?.operators.filter(
-      (op) => !bannedOPs.includes(op.operator)
+      (op) => !bannedOps.includes(op.operator)
     );
     if (!ops?.length) return stratPosition?.operators ?? [];
     return ops;
@@ -54,6 +52,12 @@ export default function StratDisplay(props: StratDisplayProps) {
                   <GadgetIcon
                     id={op.secondaryGadget}
                     className="absolute size-6 -right-2 -bottom-2"
+                  />
+                )}
+                {op.tertiaryGadget && (
+                  <GadgetIcon
+                    id={op.tertiaryGadget}
+                    className="absolute size-6 -left-2 -bottom-2"
                   />
                 )}
               </div>

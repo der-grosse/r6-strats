@@ -87,6 +87,17 @@ export const activeStrat = pgTable(
   (table) => [primaryKey({ columns: [table.teamID, table.stratID] })]
 );
 
+export const bannedOps = pgTable(
+  "banned_ops",
+  {
+    teamID: integer("team_id")
+      .notNull()
+      .references(() => team.id, { onDelete: "cascade" }),
+    operator: text("operator").notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.teamID, table.operator] })]
+);
+
 export const placedAssets = pgTable("placed_assets", {
   id: serial("id").primaryKey(),
   stratsID: integer("strats_id")

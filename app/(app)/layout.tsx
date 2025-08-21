@@ -5,6 +5,7 @@ import {
 } from "@/components/context/FilterContext.functions";
 import Providers from "./Providers";
 import { getAllStrats } from "@/src/strats/strats";
+import { getBannedOps } from "@/src/bannedOps/bannedOps";
 
 export default async function ProvidersLayout({
   children,
@@ -16,12 +17,14 @@ export default async function ProvidersLayout({
   const jwt = cookiesStore.get("jwt")?.value;
   const leading = cookiesStore.get(LEADING_COOKIE_KEY)?.value === "true";
   const allStrats = await getAllStrats();
+  const bannedOps = await getBannedOps();
   return (
     <Providers
       cookieFilter={filter}
       jwt={jwt}
       defaultLeading={leading}
       allStrats={allStrats}
+      bannedOps={bannedOps}
     >
       {children}
     </Providers>
