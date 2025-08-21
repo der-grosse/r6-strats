@@ -17,7 +17,7 @@ export default function StratEditorOperatorsSidebar(
   const selectedOperators = props.stratPositions
     .flatMap((position) => {
       const operators = DEFENDERS.filter((def) =>
-        position.operators.includes(def.name)
+        position.operators.some((op) => op.operator === def.name)
       );
       return operators.map((operator) => ({
         ...operator,

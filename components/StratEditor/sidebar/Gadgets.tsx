@@ -22,7 +22,7 @@ export default function StratEditorGadgetsSidebar(
   const selectedOperators = props.stratPositions
     .flatMap((position) => {
       const operators = DEFENDERS.filter((def) =>
-        position.operators.includes(def.name)
+        position.operators.some((op) => op.operator === def.name)
       );
       return operators.map((op) => ({ ...op, stratPositionID: position.id }));
     })
@@ -39,13 +39,24 @@ export default function StratEditorGadgetsSidebar(
     )
     .filter(Boolean);
   const selectedSecondaryGadgets = props.stratPositions
-    .filter((pos) => pos.secondaryGadget)
-    .map((position) => ({
-      gadget: DEFENDER_SECONDARY_GADGETS.find(
-        (g) => g.id === position.secondaryGadget
-      )!,
-      position,
-    }))
+    .map((position) => {
+      const gadgetIDs = position.operators.flatMap((op) => [
+        op.secondaryGadget,
+        ...("tertiaryGadgets" in op ? [op.tertiaryGadget] : []),
+      ]);
+      return {
+        gadgets: DEFENDER_SECONDARY_GADGETS.filter((g) =>
+          gadgetIDs.includes(g.id)
+        )!,
+        position,
+      };
+    })
+    .flatMap(({ gadgets, position }) =>
+      gadgets.map((gadget) => ({
+        gadget,
+        position,
+      }))
+    )
     // prevent duplicates
     .filter(
       (g1, i, gadgets) =>

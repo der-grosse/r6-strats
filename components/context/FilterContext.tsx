@@ -46,7 +46,9 @@ export const FilterProvider: React.FC<{
             (position) =>
               position.isPowerPosition &&
               position.operators.length &&
-              position.operators.every((op) => filter.bannedOPs.includes(op))
+              position.operators.every((op) =>
+                filter.bannedOPs.includes(op.operator)
+              )
           );
           if (positionUnplayable) return false;
         }

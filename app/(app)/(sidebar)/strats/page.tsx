@@ -62,7 +62,7 @@ export default function StratsPage() {
                   {strat.positions
                     .map((position) => ({
                       ops: DEFENDERS.filter((o) =>
-                        position.operators.includes(o.name)
+                        position.operators.some((op) => op.operator === o.name)
                       ),
                       isPowerPosition: position.isPowerPosition,
                       id: position.id,
