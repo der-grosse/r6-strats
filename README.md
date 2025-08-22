@@ -11,7 +11,6 @@ no known bugs :)
 
 ### Editor
 
-- sort strats per drag and drop and not rotation index
 - zIndex of menu needs to be higher than all assets
 - variable width barricades
 - make doors, windows and walls clickable to easily add assets
@@ -36,7 +35,6 @@ no known bugs :)
 
 ### Strat View
 
-- show operator to pick with secondary gadget and if you should pick shotgun
 - add settings to toggle what setup is shown (only yours, other setup grayed out, ...)
 - show description of strat
 - highlight strats that have invalid configurations for shotgun ops or secondary gadgets -> maybe happened due to season update
