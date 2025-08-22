@@ -59,8 +59,10 @@ export const strats = pgTable("strats", {
     .notNull()
     .references(() => team.id, { onDelete: "cascade" }),
   archived: integer("archived").notNull().default(0),
+  mapIndex: integer("map_index").notNull().default(0),
 });
 
+// ! DEPRECATED
 export const rotationIndexes = pgTable(
   "rotation_indexes",
   {

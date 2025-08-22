@@ -17,7 +17,7 @@ interface Strat {
   site: string;
   name: string;
   description: string;
-  rotationIndex: number[] | null;
+  mapIndex: number;
   drawingID: string | null;
 
   assets: PlacedAsset[];

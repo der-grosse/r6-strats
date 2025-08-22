@@ -114,34 +114,6 @@ export default function StratEditorMetaSidebar(
           />
           <Separator />
           <div className="flex items-center gap-2">
-            <RefreshCw className="text-muted-foreground" />
-            <Label className="text-muted-foreground">Rotation Indexes</Label>
-          </div>
-          <div className="flex flex-wrap items-center gap-1">
-            {Array.from({ length: 6 }, (_, i) => (
-              <Button
-                key={i}
-                variant={
-                  props.strat.rotationIndex?.includes(i + 1)
-                    ? "outline"
-                    : "ghost"
-                }
-                className="size-6 border border-transparent p-0"
-                onClick={() => {
-                  updateStrat({
-                    id: props.strat.id,
-                    rotationIndex: props.strat.rotationIndex?.includes(i + 1)
-                      ? props.strat.rotationIndex?.filter((x) => x !== i + 1)
-                      : [...(props.strat.rotationIndex || []), i + 1].sort(),
-                  });
-                }}
-              >
-                {i + 1}
-              </Button>
-            ))}
-          </div>
-          <Separator />
-          <div className="flex items-center gap-2">
             <Settings2 className="text-muted-foreground" />
             <Label className="text-muted-foreground">Actions</Label>
           </div>

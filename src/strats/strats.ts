@@ -8,7 +8,7 @@ import {
   strats,
 } from "@/src/db/schema";
 import { getPayload } from "@/src/auth/getPayload";
-import { eq, is } from "drizzle-orm";
+import { and, eq, is, max } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import StratsDB from "./stratsDB";
 import ActiveStratDB from "./activeStrat";
@@ -29,6 +29,17 @@ export async function createStrat(data: {
 
     const { map, site, name, description, drawingID } = data;
 
+    const [{ lastMapIndex }] = await db
+      .select({ lastMapIndex: max(strats.mapIndex) })
+      .from(strats)
+      .where(
+        and(
+          eq(strats.teamID, session.teamID),
+          eq(strats.archived, 0),
+          eq(strats.map, map)
+        )
+      );
+
     const [newStrat] = await db
       .insert(strats)
       .values({
@@ -38,6 +49,7 @@ export async function createStrat(data: {
         description,
         drawingID,
         teamID: session.teamID,
+        mapIndex: lastMapIndex ? lastMapIndex + 1 : 1,
       })
       .returning();
 
@@ -204,5 +216,18 @@ export async function updatePickedOperator(
   revalidatePath(`/editor/${stratID}`);
   revalidatePath("/strats");
   revalidatePath(`/strat/${stratID}`);
+  revalidatePath("/", "layout");
+}
+
+export async function updateMapIndexes(
+  map: string,
+  stratID: number,
+  oldIndex: number,
+  newIndex: number
+) {
+  const user = await getPayload();
+  await StratsDB.updateMapIndexes(user!, map, stratID, oldIndex, newIndex);
+
+  revalidatePath("/strats");
   revalidatePath("/", "layout");
 }

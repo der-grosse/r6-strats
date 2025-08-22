@@ -1,10 +1,9 @@
-import { and, eq, inArray, is, min, sql } from "drizzle-orm";
+import { and, eq, gt, gte, inArray, is, lt, lte, min, sql } from "drizzle-orm";
 import db from "../db/db";
 import {
   pickedOperators,
   placedAssets,
   stratPositions,
-  rotationIndexes,
   strats,
 } from "../db/schema";
 
@@ -18,20 +17,14 @@ class StratsDBClass {
         name: strats.name,
         description: strats.description,
         drawingID: strats.drawingID,
-        rotationIndex: min(rotationIndexes.rotationIndex).as("rotation_index"),
+        mapIndex: strats.mapIndex,
       })
       .from(strats)
-      .leftJoin(rotationIndexes, eq(strats.id, rotationIndexes.stratsID))
       .where(and(eq(strats.teamID, user.teamID), eq(strats.archived, 0)))
-      .groupBy(strats.id)
-      .orderBy(strats.map, sql`rotation_index asc nulls last`, strats.site);
+      .orderBy(strats.map, strats.mapIndex);
 
     const stratsIDs = stratRows.map((strat) => strat.id);
 
-    const rotationIndexRows = await db
-      .select()
-      .from(rotationIndexes)
-      .where(inArray(rotationIndexes.stratsID, stratsIDs));
     const placedAssetsRows = await db
       .select()
       .from(placedAssets)
@@ -53,7 +46,6 @@ class StratsDBClass {
 
     return this.parseStratRows({
       strat: stratRows,
-      rotationIndexes: rotationIndexRows,
       placedAssets: placedAssetsRows,
       pickedOperators: pickedOperatorsRows,
       stratPositions: stratPositionsRows,
@@ -68,10 +60,6 @@ class StratsDBClass {
 
     if (stratRows.length === 0) return null;
 
-    const rotationIndexRows = await db
-      .select()
-      .from(rotationIndexes)
-      .where(eq(rotationIndexes.stratsID, id));
     const placedAssetsRows = await db
       .select()
       .from(placedAssets)
@@ -94,7 +82,6 @@ class StratsDBClass {
     return (
       this.parseStratRows({
         strat: stratRows,
-        rotationIndexes: rotationIndexRows,
         placedAssets: placedAssetsRows,
         pickedOperators: pickedOperatorsRows,
         stratPositions: stratPositionsRows,
@@ -110,17 +97,6 @@ class StratsDBClass {
     if (!strat) return Promise.reject(new Error("Strat not found"));
     const newStrat = { ...strat, ...updatedStrat };
     await db.update(strats).set(newStrat).where(eq(strats.id, updatedStrat.id));
-
-    if (updatedStrat.rotationIndex) {
-      await db
-        .delete(rotationIndexes)
-        .where(eq(rotationIndexes.stratsID, updatedStrat.id));
-      for (const rotationIndex of updatedStrat.rotationIndex) {
-        await db
-          .insert(rotationIndexes)
-          .values({ rotationIndex, stratsID: updatedStrat.id });
-      }
-    }
 
     if (updatedStrat.positions) {
       await db
@@ -258,6 +234,52 @@ class StratsDBClass {
       .where(and(eq(strats.id, id), eq(strats.teamID, user.teamID)));
   }
 
+  async updateMapIndexes(
+    user: JWTPayload,
+    map: string,
+    stratID: number,
+    oldIndex: number,
+    newIndex: number
+  ) {
+    // Update all strats within the bounds
+    if (newIndex < oldIndex) {
+      await db
+        .update(strats)
+        .set({ mapIndex: sql`map_index + 1` })
+        .where(
+          and(
+            eq(strats.map, map),
+            lt(strats.mapIndex, oldIndex),
+            gte(strats.mapIndex, newIndex),
+            eq(strats.teamID, user.teamID)
+          )
+        );
+    } else {
+      await db
+        .update(strats)
+        .set({ mapIndex: sql`map_index - 1` })
+        .where(
+          and(
+            eq(strats.map, map),
+            lte(strats.mapIndex, newIndex),
+            gt(strats.mapIndex, oldIndex),
+            eq(strats.teamID, user.teamID)
+          )
+        );
+    }
+
+    await db
+      .update(strats)
+      .set({ mapIndex: newIndex })
+      .where(
+        and(
+          eq(strats.map, map),
+          eq(strats.id, stratID),
+          eq(strats.teamID, user.teamID)
+        )
+      );
+  }
+
   private parseStratRows(data: {
     strat: {
       id: number;
@@ -266,10 +288,7 @@ class StratsDBClass {
       name: string;
       description: string;
       drawingID: string | null;
-    }[];
-    rotationIndexes: {
-      rotationIndex: number;
-      stratsID: number;
+      mapIndex: number;
     }[];
     placedAssets: {
       id: number;
@@ -308,9 +327,6 @@ class StratsDBClass {
   }): Strat[] {
     const parsedStrats: Strat[] = [];
     for (const row of data.strat) {
-      const rotationIndexes = data.rotationIndexes
-        .filter((r) => r.stratsID === row.id)
-        .map((r) => r.rotationIndex);
       const placedAssets = data.placedAssets
         .filter((r) => r.stratsID === row.id)
         .map((r) => ({
@@ -373,7 +389,7 @@ class StratsDBClass {
         name: row.name,
         description: row.description,
         drawingID: row.drawingID,
-        rotationIndex: rotationIndexes,
+        mapIndex: row.mapIndex,
         assets: placedAssets,
         positions,
       });
