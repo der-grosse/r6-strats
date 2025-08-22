@@ -50,6 +50,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/src/utils";
+import SidebarStrats from "./SidebarStrats";
 
 export function AppSidebar(props: { teamName: string }) {
   const router = useRouter();
@@ -206,47 +207,23 @@ export function AppSidebar(props: { teamName: string }) {
                 <SidebarGroupLabel>Filtered Strats</SidebarGroupLabel>
                 {/* filtered strats result */}
                 <SidebarMenu>
-                  {filter.map
-                    ? filteredStrats.map((strat) => (
-                        <SidebarMenuItem key={strat.id}>
-                          <SidebarMenuButton
-                            className="inline h-auto"
-                            onClick={async () => {
-                              if (isLeading) {
-                                await setActive(strat.id);
-                                socket.emit("active-strat:change", strat);
-                                if (window.location.pathname !== "/") {
-                                  router.push("/");
-                                }
-                              } else {
-                                router.push(`/strat/${strat.id}`);
-                              }
-                            }}
-                          >
-                            {filter.site ? (
-                              strat.name
-                            ) : (
-                              <>
-                                <span>{strat.site}</span>
-                                {strat.name && (
-                                  <>
-                                    <span className="mx-1">|</span>
-                                    <span className="text-muted-foreground">
-                                      {strat.name}
-                                    </span>
-                                  </>
-                                )}
-                              </>
-                            )}
-                          </SidebarMenuButton>
-                          <Link href={`/editor/${strat.id}`}>
-                            <SidebarMenuAction className="cursor-pointer my-0.5">
-                              <Pencil />
-                            </SidebarMenuAction>
-                          </Link>
-                        </SidebarMenuItem>
-                      ))
-                    : null}
+                  {filter.map ? (
+                    <SidebarStrats
+                      strats={filteredStrats}
+                      onSelect={async (strat) => {
+                        if (isLeading) {
+                          await setActive(strat.id);
+                          socket.emit("active-strat:change", strat);
+                          if (window.location.pathname !== "/") {
+                            router.push("/");
+                          }
+                        } else {
+                          router.push(`/strat/${strat.id}`);
+                        }
+                      }}
+                      showSite={!filter.site}
+                    />
+                  ) : null}
                   {filter.map && filteredStrats.length === 0 && (
                     <SidebarMenuItem className="text-muted-foreground">
                       <SidebarMenuButton disabled>

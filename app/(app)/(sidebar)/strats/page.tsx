@@ -155,24 +155,22 @@ function MapStrat({
   };
 
   return (
-    <>
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-        onDragStart={() => onDragChange(true)}
-        onDragCancel={() => onDragChange(false)}
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+      onDragStart={() => onDragChange(true)}
+      onDragCancel={() => onDragChange(false)}
+    >
+      <SortableContext
+        items={optimisticStrats.map((item) => item.id)}
+        strategy={verticalListSortingStrategy}
       >
-        <SortableContext
-          items={optimisticStrats.map((item) => item.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          {optimisticStrats.map((strat) => (
-            <StratItem key={strat.id} strat={strat} disabled={disabled} />
-          ))}
-        </SortableContext>
-      </DndContext>
-    </>
+        {optimisticStrats.map((strat) => (
+          <StratItem key={strat.id} strat={strat} disabled={disabled} />
+        ))}
+      </SortableContext>
+    </DndContext>
   );
 }
 
