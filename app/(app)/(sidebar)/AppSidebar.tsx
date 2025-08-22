@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sidebar";
 import {
   ChevronDown,
+  CircleSlash,
   Crown,
   Database,
   Edit,
@@ -66,8 +67,8 @@ export function AppSidebar(props: { teamName: string }) {
   } = useFilter();
 
   return (
-    <Sidebar variant="inset">
-      <SidebarHeader>
+    <Sidebar variant="inset" className="pr-0">
+      <SidebarHeader className="pl-0">
         <div className="ml-1 -mr-1 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground">
             <img
@@ -91,7 +92,7 @@ export function AppSidebar(props: { teamName: string }) {
       </SidebarHeader>
       <SidebarContent>
         <Collapsible defaultOpen className="group/pages">
-          <SidebarGroup>
+          <SidebarGroup className="pl-0">
             <SidebarGroupLabel asChild>
               <CollapsibleTrigger className="cursor-pointer">
                 <Link2 className="mr-2" />
@@ -132,7 +133,7 @@ export function AppSidebar(props: { teamName: string }) {
           </SidebarGroup>
         </Collapsible>
         <Collapsible defaultOpen className="group/strats">
-          <SidebarGroup>
+          <SidebarGroup className="pl-0">
             <SidebarGroupLabel asChild>
               <CollapsibleTrigger className="cursor-pointer">
                 <MapPinned className="mr-2" />
@@ -203,8 +204,10 @@ export function AppSidebar(props: { teamName: string }) {
                     </Tooltip>
                   </SidebarMenuItem>
                 </SidebarMenu>
-                <SidebarSeparator />
-                <SidebarGroupLabel>Filtered Strats</SidebarGroupLabel>
+                <div className="pr-2">
+                  <SidebarSeparator />
+                </div>
+                {/* <SidebarGroupLabel>Filtered Strats</SidebarGroupLabel> */}
                 {/* filtered strats result */}
                 <SidebarMenu>
                   {filter.map ? (
@@ -234,7 +237,8 @@ export function AppSidebar(props: { teamName: string }) {
                   {!filter.map && (
                     <SidebarMenuItem className="text-muted-foreground">
                       <SidebarMenuButton disabled>
-                        No filter selected
+                        <CircleSlash />
+                        No map selected
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   )}
