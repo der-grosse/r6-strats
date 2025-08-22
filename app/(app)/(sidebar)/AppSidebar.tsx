@@ -207,7 +207,6 @@ export function AppSidebar(props: { teamName: string }) {
                 <div className="pr-2">
                   <SidebarSeparator />
                 </div>
-                {/* <SidebarGroupLabel>Filtered Strats</SidebarGroupLabel> */}
                 {/* filtered strats result */}
                 <SidebarMenu>
                   {filter.map ? (
