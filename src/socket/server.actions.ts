@@ -25,7 +25,7 @@ export async function createSocketActions(
   });
 
   socket.on("active-strat:change", async (strat) => {
-    socket.to("active-strat").emit("active-strat:changed", strat);
+    io.in("active-strat").emit("active-strat:changed", strat);
   });
 
   socket.on("operator-bans:subscribe", () => {
