@@ -197,12 +197,14 @@ function StratItem({ strat, disabled }: { strat: Strat; disabled: boolean }) {
       className={cn({ "opacity-25": disabled })}
     >
       <TableCell>
-        <div
-          {...attributes}
-          {...listeners}
-          className="cursor-grab hover:cursor-grabbing"
-        >
-          <GripVertical className="h-4 w-4 text-gray-400 py-2 box-content" />
+        <div>
+          <div
+            {...attributes}
+            {...listeners}
+            className="cursor-grab hover:cursor-grabbing"
+          >
+            <GripVertical className="h-4 w-4 text-gray-400" />
+          </div>
         </div>
       </TableCell>
       <TableCell>{strat.map}</TableCell>
