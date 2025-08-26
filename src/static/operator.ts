@@ -220,7 +220,7 @@ export const DEFENDERS = [
     icon: "/ops/def/castle.webp",
     iconBW: "/ops/def/castle_bw.png",
     gadget: "armor_panel",
-    secondaryGadgets: ["bulletproof_camera", "barbed_wire"],
+    secondaryGadgets: ["bulletproof_camera", "proximity_alarm"],
     hasPrimaryShotgun: true,
     hasSecondaryShotgun: true,
   },
