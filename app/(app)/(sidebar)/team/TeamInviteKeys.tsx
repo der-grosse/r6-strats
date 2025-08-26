@@ -15,15 +15,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Copy, Trash2 } from "lucide-react";
+import { Copy, Eye, EyeOff, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { createInviteKey, deleteInviteKey } from "@/src/auth/inviteKeys";
+import { useState } from "react";
 
 export interface TeamInviteKeysProps {
   inviteKeys: InviteKey[];
 }
 
 export default function TeamInviteKeys(props: TeamInviteKeysProps) {
+  const [visibleKeys, setVisibleKeys] = useState<string[]>([]);
+
   const handleCreateInviteKey = async () => {
     try {
       const key = await createInviteKey();
@@ -90,7 +93,31 @@ export default function TeamInviteKeys(props: TeamInviteKeysProps) {
                 })
                 .map((key) => (
                   <TableRow key={key.inviteKey}>
-                    <TableCell className="font-mono">{key.inviteKey}</TableCell>
+                    <TableCell className="font-mono w-2/3">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="-my-2 align-sub"
+                        onClick={() => {
+                          if (visibleKeys.includes(key.inviteKey)) {
+                            setVisibleKeys(
+                              visibleKeys.filter((k) => k !== key.inviteKey)
+                            );
+                          } else {
+                            setVisibleKeys([...visibleKeys, key.inviteKey]);
+                          }
+                        }}
+                      >
+                        {visibleKeys.includes(key.inviteKey) ? (
+                          <EyeOff />
+                        ) : (
+                          <Eye />
+                        )}
+                      </Button>
+                      {visibleKeys.includes(key.inviteKey)
+                        ? key.inviteKey
+                        : "*****-*****-*****-*****"}
+                    </TableCell>
                     <TableCell>
                       {key.usedAt ? (
                         new Date(key.usedAt).toLocaleDateString("de-DE", {

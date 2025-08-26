@@ -30,16 +30,18 @@ export default function TeamMemberList(props: TeamMemberListProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {props.members.map((member) => (
-          <TeamMemberItem
-            key={member.id}
-            user={user}
-            member={member}
-            onChangeColor={props.onChangeColor.bind(null, member)}
-            onChangePassword={props.onChangePassword}
-            onChangeUsername={props.onChangeUsername.bind(null, member)}
-          />
-        ))}
+        {props.members
+          .toSorted((a, b) => (a.createdAt < b.createdAt ? -1 : 1))
+          .map((member) => (
+            <TeamMemberItem
+              key={member.id}
+              user={user}
+              member={member}
+              onChangeColor={props.onChangeColor.bind(null, member)}
+              onChangePassword={props.onChangePassword}
+              onChangeUsername={props.onChangeUsername.bind(null, member)}
+            />
+          ))}
       </TableBody>
     </Table>
   );
