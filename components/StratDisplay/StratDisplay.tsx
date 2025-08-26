@@ -42,7 +42,7 @@ export default function StratDisplay(props: StratDisplayProps) {
 
   const Details = !props.hideDetails && props.strat && (
     <div className="flex flex-col gap-1 p-2 rounded bg-background">
-      {availableOperators.length && (
+      {availableOperators.length > 0 && (
         <div className="flex gap-2 justify-center items-center">
           {availableOperators.map((op, i) => (
             <Fragment key={i}>
