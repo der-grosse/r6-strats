@@ -61,7 +61,7 @@ export function AppSidebar(props: { teamName: string }) {
     setFilter,
     bannedOps,
     setBannedOps,
-    filteredStrats,
+    playableStrats: filteredStrats,
     isLeading,
     setIsLeading,
   } = useFilter();

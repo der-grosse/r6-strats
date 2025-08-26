@@ -48,21 +48,21 @@ const TABLE_SIZES = {
 };
 
 export default function StratsPage() {
-  const { filteredStrats } = useFilter();
+  const { availableStrats } = useFilter();
   const [mapDragging, setMapDragging] = useState<string | null>(null);
 
   const stratsByMap = useMemo(
     () =>
       Object.entries(
-        filteredStrats.reduce((acc, strat) => {
-          if (!acc[strat.map]) {
-            acc[strat.map] = [];
+        availableStrats.reduce((acc, strat) => {
+          if (!acc[strat.strat.map]) {
+            acc[strat.strat.map] = [];
           }
-          acc[strat.map].push(strat);
+          acc[strat.strat.map].push(strat);
           return acc;
-        }, {} as Record<string, typeof filteredStrats>)
+        }, {} as Record<string, typeof availableStrats>)
       ),
-    [filteredStrats]
+    [availableStrats]
   );
 
   return (
@@ -73,7 +73,7 @@ export default function StratsPage() {
           All Strats
           <br />
           <span className="text-xs leading-none">
-            (total {filteredStrats.length})
+            (total {availableStrats.length})
           </span>
         </p>
         <div className="flex justify-end">
@@ -126,7 +126,7 @@ function MapStrat({
   onDragChange,
   disabled,
 }: {
-  strats: Strat[];
+  strats: { strat: Strat; playable: boolean }[];
   map: string;
   onDragChange: (dragging: boolean) => void;
   disabled: boolean;
@@ -151,10 +151,10 @@ function MapStrat({
 
     if (active.id !== over?.id) {
       const oldIndex = optimisticStrats.findIndex(
-        (item) => item.id === active.id
+        (item) => item.strat.id === active.id
       );
       const newIndex = optimisticStrats.findIndex(
-        (item) => item.id === over?.id
+        (item) => item.strat.id === over?.id
       );
 
       // Optimistically update the UI
@@ -185,14 +185,14 @@ function MapStrat({
       onDragCancel={() => onDragChange(false)}
     >
       <SortableContext
-        items={optimisticStrats.map((item) => item.id)}
+        items={optimisticStrats.map((item) => item.strat.id)}
         strategy={verticalListSortingStrategy}
       >
         {optimisticStrats.map((strat, i) => (
           <StratItem
-            key={strat.id}
-            strat={strat}
-            disabled={disabled}
+            key={strat.strat.id}
+            strat={strat.strat}
+            disabled={disabled || !strat.playable}
             highlightMap={i === 0 && !filter.map}
           />
         ))}
