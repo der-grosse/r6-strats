@@ -14,5 +14,9 @@ export async function GET(request: Request) {
   }
 
   // Handle the authenticated request
-  return Response.json(user);
+  return Response.json({
+    name: user.name,
+    isAdmin: user.isAdmin,
+    teamID: user.teamID,
+  });
 }
