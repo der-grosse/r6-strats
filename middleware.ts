@@ -3,6 +3,10 @@ import type { NextRequest } from "next/server";
 import { verifyJWT } from "./src/auth/jwt";
 
 export async function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith("/api")) {
+    return NextResponse.next();
+  }
+
   const token = request.cookies.get("jwt");
   const payload = token ? await verifyJWT(token.value) : null;
 

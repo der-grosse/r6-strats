@@ -1,16 +1,7 @@
 "use client";
 import { useFilter } from "@/components/context/FilterContext";
-import { DeleteStratDialog } from "@/app/(app)/(sidebar)/strats/DeleteStratDialog";
 import OperatorIcon from "@/components/general/OperatorIcon";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { DEFENDERS } from "@/src/static/operator";
 import { Eye, GripVertical, Pencil } from "lucide-react";
 import Link from "next/link";
@@ -37,6 +28,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { cn } from "@/src/utils";
+import { DeleteStratDialog } from "./DeleteStratDialog";
 
 const TABLE_SIZES = {
   handle: "5%",

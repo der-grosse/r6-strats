@@ -9,7 +9,9 @@ You can access the tool youself at [r6-strats.com](https://r6-strats.com).
 
 no known bugs :)
 
-### Editor
+### Strat Attributes Editor
+
+### Drag and Drop Strat Editor
 
 - zIndex of menu needs to be higher than all assets
 - variable width barricades
@@ -21,7 +23,6 @@ no known bugs :)
 - edit attributes of multiple assets at once
 - make asset ordering consistent
 - bring to front / send to back for selected elements
-- sidebar width changes based on tab
 - add toggle for floors of map
 - add new map blueprints
   - clubhouse 1f windows missing / wrong asset
@@ -29,7 +30,7 @@ no known bugs :)
 - operator icons with small rectangle shapes clip outside
 - zoom slider
 - scroll bars when zoomed in
-- make notes / upload screenshots for specific assets
+- make notes / upload screenshots for specific assets (maybe image links instead of file upload)
 - add bombsite indicator
 - arrow keys for fine adjustment of selected elements
 
@@ -46,4 +47,5 @@ no known bugs :)
 
 ### Misc
 
+- try and reconnect socket and show error on disconnect
 - add default strats

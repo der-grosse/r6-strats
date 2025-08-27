@@ -1,3 +1,4 @@
+"use client";
 import { DEFENDERS } from "@/src/static/operator";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import OperatorIcon from "./OperatorIcon";

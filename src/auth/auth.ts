@@ -31,7 +31,6 @@ export async function resetJWT(payload?: JWTPayload) {
   const cookie = await cookies();
   cookie.set("jwt", await generateJWT(payload), {
     httpOnly: true,
-    maxAge: 60 * 60 * 24 * 30, // 1 month
   });
 }
 

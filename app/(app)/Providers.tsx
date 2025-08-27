@@ -3,6 +3,7 @@ import { FilterProvider } from "@/components/context/FilterContext";
 import { Filter } from "@/components/context/FilterContext.functions";
 import { SocketProvider } from "@/components/context/SocketContext";
 import { UserProvider } from "@/components/context/UserContext";
+import { SlotProvider } from "@/components/layout/SlotProvider";
 import { DragProvider } from "@/components/ui/draggable-context";
 import { ResizeProvider } from "@/components/ui/resize-context";
 import { Toaster } from "@/components/ui/sonner";
@@ -26,10 +27,12 @@ export default function Providers(props: Readonly<ProvidersProps>) {
           allStrats={props.allStrats}
           bannedOps={props.bannedOps}
         >
-          <DragProvider>
-            <ResizeProvider>{props.children}</ResizeProvider>
-          </DragProvider>
-          <Toaster />
+          <SlotProvider>
+            <DragProvider>
+              <ResizeProvider>{props.children}</ResizeProvider>
+            </DragProvider>
+            <Toaster />
+          </SlotProvider>
         </FilterProvider>
       </SocketProvider>
     </UserProvider>
