@@ -4,6 +4,7 @@ import {
   ClientToServerSocketEvents,
   ServerToClientSocketEvents,
 } from "./types";
+import { toast } from "sonner";
 
 export type SocketClient = Socket<
   ServerToClientSocketEvents,
@@ -34,12 +35,18 @@ export function getSocketClient(user: JWTPayload): SocketClient {
 
     socketInstance.on("connect_error", (err) => {
       console.error("Socket.IO connection error:", err);
+      toast.error("Connection failed");
+    });
+
+    socketInstance.on("disconnect", (err) => {
+      console.error("Socket.IO disconnected:", err);
+      toast.error("Connection lost", {
+        description: "Trying to reconnect...",
+      });
     });
 
     // Add to window for debugging purposes
-    if (typeof window !== "undefined") {
-      (window as any).socketClient = socketInstance;
-    }
+    (window as any).socketClient = socketInstance;
   }
 
   return socketInstance;
