@@ -92,6 +92,15 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
   const assetsRef = useRef<A[]>(propAssets);
   assetsRef.current = assets;
 
+  const sortedAssets = useMemo(() => {
+    return [
+      ...assets.filter((a) => !userSelectedAssets.includes(a.id)),
+      ...(userSelectedAssets
+        .map((s) => assets.find((a) => a.id === s))
+        .filter(Boolean) as A[]),
+    ];
+  }, [assets, userSelectedAssets]);
+
   const svgRef = useRef<SVGSVGElement>(null);
 
   const [viewBox, setViewBox] = useState({
@@ -526,7 +535,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
         />
 
         {/* Render assets */}
-        {assets.map((asset) => {
+        {sortedAssets.map((asset) => {
           const render = renderAsset(
             asset,
             selectedAssets

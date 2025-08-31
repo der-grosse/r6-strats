@@ -13,7 +13,6 @@ no known bugs :)
 
 ### Drag and Drop Strat Editor
 
-- zIndex of menu needs to be higher than all assets
 - variable width barricades
 - make doors, windows and walls clickable to easily add assets
 - add selector for current player in sidebar -> this player gets assigned all new added assets
