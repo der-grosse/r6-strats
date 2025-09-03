@@ -4,7 +4,6 @@ import { useUser } from "./UserContext";
 import { getSocketClient, SocketClient } from "@/src/socket/client";
 import { toast } from "sonner";
 import { Unplug } from "lucide-react";
-import useDelayed from "../hooks/useDelayed";
 
 type SocketContextType = SocketClient;
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -15,17 +14,13 @@ export const SocketProvider: React.FC<{
   const { user } = useUser();
   const socket = useMemo(() => (user ? getSocketClient(user) : null), [user]);
 
-  const [connected, setConnected] = useState(false);
-  const { value: delayedConnected, skipDebounce } = useDelayed(connected, {
-    defaultValue: true,
-  });
+  const [connected, setConnected] = useState<boolean | undefined>(undefined);
 
   // set handlers for socket disconnect
   useEffect(() => {
     if (!socket) return;
     if (socket.connected) {
       setConnected(true);
-      skipDebounce(true);
     }
 
     socket.on("connect_error", (err) => {
@@ -45,7 +40,7 @@ export const SocketProvider: React.FC<{
 
   return (
     <SocketContext.Provider value={socket!}>
-      {!delayedConnected && (
+      {connected === false && (
         <div className="fixed top-4 right-4 z-50 flex items-center gap-2 rounded-md bg-red-600/90 px-3 py-2 text-md font-medium text-white shadow-lg backdrop-blur-sm">
           <Unplug />
           <h6>Disconnected</h6>
