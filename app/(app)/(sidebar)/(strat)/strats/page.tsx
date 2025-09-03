@@ -247,9 +247,9 @@ function StratItem({
       >
         {strat.positions
           .map((position) => ({
-            ops: DEFENDERS.filter((o) =>
-              position.operators.some((op) => op.operator === o.name)
-            ),
+            ops: position.operators
+              .map((op) => DEFENDERS.find((def) => def.name === op.operator)!)
+              .filter(Boolean),
             isPowerPosition: position.isPowerPosition,
             id: position.id,
           }))
