@@ -24,10 +24,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import ColorPickerDialog, {
-  DEFAULT_COLORS,
-} from "@/components/general/ColorPickerDialog";
+import ColorPickerDialog from "@/components/general/ColorPickerDialog";
 import TeamMemberList from "./TeamMemberList";
+import { DEFAULT_COLORS } from "@/src/static/colors";
 
 export interface TeamMembersProps {
   team: Team;

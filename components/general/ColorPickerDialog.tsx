@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { Check } from "lucide-react";
 import { cn } from "@/src/utils";
 import { Input } from "../ui/input";
+import { DEFAULT_COLORS } from "@/src/static/colors";
 
 export interface ColorPickerDialogProps {
   color?: string;
@@ -13,25 +14,6 @@ export interface ColorPickerDialogProps {
   onClose?: () => void;
   open?: boolean;
 }
-
-export const DEFAULT_COLORS = [
-  "#db2777",
-  "#dc2626",
-  "#ea580c",
-  "#d97706",
-  "#facc15",
-  "#84cc16",
-  "#2dd4bf",
-  "#06b6d4",
-  "#3b82f6",
-  "#6d28d9",
-  "#e879f9",
-  "#fda4af",
-  "#262626",
-  "#525252",
-  "#d4d4d4",
-  "#fafafa",
-];
 
 export default function ColorPickerDialog(props: ColorPickerDialogProps) {
   const [currentCustomColor, setCurrentCustomColor] = useState(

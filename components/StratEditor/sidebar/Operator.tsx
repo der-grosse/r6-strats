@@ -4,7 +4,7 @@ import { Badge } from "../../ui/badge";
 import { ScrollArea } from "../../ui/scroll-area";
 import { Button } from "../../ui/button";
 import OperatorIcon from "../../general/OperatorIcon";
-import { DEFAULT_COLORS } from "@/components/general/ColorPickerDialog";
+import { DEFAULT_COLORS } from "@/src/static/colors";
 
 export interface StratEditorOperatorsSidebarProps {
   onAssetAdd: (asset: Asset) => void;

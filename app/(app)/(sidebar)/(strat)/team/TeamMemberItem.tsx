@@ -1,7 +1,4 @@
-import {
-  ColorButton,
-  DEFAULT_COLORS,
-} from "@/components/general/ColorPickerDialog";
+import { ColorButton } from "@/components/general/ColorPickerDialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,6 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { demoteFromAdmin, promoteToAdmin, removeMember } from "@/src/auth/team";
+import { DEFAULT_COLORS } from "@/src/static/colors";
 import {
   Edit2,
   Lock,

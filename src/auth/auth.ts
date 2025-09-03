@@ -6,6 +6,7 @@ import * as bcrypt from "bcrypt-ts";
 import { cookies } from "next/headers";
 import { generateJWT } from "./jwt";
 import { getPayload } from "./getPayload";
+import { DEFAULT_COLORS } from "../static/colors";
 
 export async function hashPassword(password: string) {
   const salt = await bcrypt.genSalt(10);
@@ -67,6 +68,7 @@ export async function register(
       createdAt: new Date().toISOString(),
       teamID: invite.teamID,
       isAdmin: false,
+      defaultColor: DEFAULT_COLORS.at(-1),
     })
     .returning({ id: users.id });
   await db
