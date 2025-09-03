@@ -23,9 +23,9 @@ app.prepare().then(() => {
     },
   });
 
-  const teamIO = io.of(/^\/team-(\d+)$/);
+  io.of(/^\/team-(\d+)$/);
+  createSocketServer(io);
 
-  createSocketServer(teamIO);
   httpServer
     .once("error", (err) => {
       console.error(err);
