@@ -500,6 +500,14 @@ export const DEFENDERS = [
     gadget: "skopos",
     secondaryGadgets: ["impact_grenade", "proximity_alarm"],
   },
+  {
+    name: "Denari",
+    icon: "/ops/def/denari.webp",
+    iconBW: "/ops/def/denari_bw.png",
+    gadget: "trip",
+    secondaryGadgets: ["observation_blocker", "deployable_shield"],
+    hasSecondaryShotgun: true,
+  },
 ] as const;
 
 export const DEFENDER_PRIMARY_GADGETS = [
@@ -675,6 +683,12 @@ export const DEFENDER_PRIMARY_GADGETS = [
     name: "Skopós",
     icon: ["/gadgets/skopi.png"],
     count: 1,
+  },
+  {
+    id: "trip",
+    name: "T.R.I.P.-Connector",
+    icon: ["/MISSING.png"],
+    count: 7,
   },
 ] satisfies readonly {
   id: DefenderPrimaryGadget;
