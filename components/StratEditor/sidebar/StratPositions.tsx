@@ -20,7 +20,7 @@ export default function StratEditorPlayerPositionsSidebar({
         .map((data) => ({
           data,
           position: team.playerPositions.find(
-            (pos) => pos.playerID === data.positionID
+            (pos) => pos.id === data.positionID
           ),
         }))
         .sort((a, b) => {

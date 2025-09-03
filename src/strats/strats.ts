@@ -183,7 +183,7 @@ export async function updatePickedOperator(
 
   if (
     stratPosition.isPowerPosition !== undefined ||
-    stratPosition.positionID ||
+    stratPosition.positionID !== undefined ||
     stratPosition.shouldBringShotgun !== undefined
   ) {
     await db
