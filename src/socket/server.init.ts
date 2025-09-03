@@ -1,4 +1,4 @@
-import { type Server, type Socket } from "socket.io";
+import { type Namespace, type Server, type Socket } from "socket.io";
 import * as cookie from "cookie";
 import { verifyJWT } from "../auth/jwt";
 import { createSocketActions } from "./server.actions";
@@ -8,8 +8,8 @@ import {
 } from "./types";
 
 const activeConnections = new Map<string, JWTPayload>();
-export async function createSocketServer(io: Server) {
-  io.on("connection", async (socket) => {
+export async function createSocketServer(io: Server, namespaceIO: Namespace) {
+  namespaceIO.on("connection", async (socket) => {
     const namespace = socket.nsp.name;
     const teamID = parseInt(namespace.split("-")[1]);
     if (isNaN(teamID)) {
