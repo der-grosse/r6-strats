@@ -1,4 +1,5 @@
 import { verifyJWT } from "@/src/auth/jwt";
+import { getTeam } from "@/src/auth/team";
 
 export async function GET(request: Request) {
   const jwt = request.headers.get("Authorization")?.split(" ")[1];
@@ -13,10 +14,22 @@ export async function GET(request: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
+  const team = await getTeam(user.teamID);
+
   // Handle the authenticated request
   return Response.json({
+    id: user.id,
     name: user.name,
     isAdmin: user.isAdmin,
     teamID: user.teamID,
+    team: {
+      name: team.name,
+      members: team.members.map((member) => ({
+        id: member.id,
+        name: member.name,
+        ubisoftID: member.ubisoftID,
+        isAdmin: member.isAdmin,
+      })),
+    },
   });
 }

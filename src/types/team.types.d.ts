@@ -20,6 +20,7 @@ interface TeamMember {
   defaultColor: string | null;
   createdAt: string;
   positionID: number | null;
+  ubisoftID: string | null;
 }
 
 interface JWTPayload {

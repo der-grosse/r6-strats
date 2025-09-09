@@ -59,6 +59,7 @@ export async function generateJWT(user: JWTPayload) {
   })
     .setProtectedHeader({ alg: "RS256" })
     .setIssuedAt()
+    .setExpirationTime("300d")
     .sign(privateKey);
   return token;
 }

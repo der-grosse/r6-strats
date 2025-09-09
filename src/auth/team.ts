@@ -82,21 +82,23 @@ export async function createTeam(input: {
   }
 }
 
-export async function getTeam() {
-  const user = await getPayload();
-  const [teamData] = await db
-    .select()
-    .from(team)
-    .where(eq(team.id, user!.teamID));
+export async function getTeam(optTeamID?: number) {
+  let teamID = optTeamID;
+  if (!teamID) {
+    const user = await getPayload();
+    teamID = user?.teamID;
+  }
+  if (!teamID) throw new Error("No team ID provided and user not logged in");
+  const [teamData] = await db.select().from(team).where(eq(team.id, teamID));
   const positionData = await db
     .select()
     .from(playerPositions)
-    .where(eq(playerPositions.teamID, user!.teamID))
+    .where(eq(playerPositions.teamID, teamID))
     .orderBy(playerPositions.index);
   const membersData = await db
     .select()
     .from(users)
-    .where(eq(users.teamID, user!.teamID));
+    .where(eq(users.teamID, teamID));
   return {
     ...teamData,
     playerPositions: positionData.map((pos) => ({
@@ -113,6 +115,7 @@ export async function getTeam() {
       isAdmin: member.isAdmin,
       positionID:
         positionData.find((pos) => pos.playerID === member.id)?.id || null,
+      ubisoftID: member.ubisoftID,
     })),
   } as Team;
 }
@@ -246,6 +249,22 @@ export async function changeUsername(newUsername: string) {
     .where(eq(users.id, user!.id));
 
   await resetJWT();
+
+  return true;
+}
+
+export async function changeUbisoftID(newUbisoftID: string) {
+  const user = await getPayload();
+  const [targetUser] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, user!.id));
+  if (!targetUser) throw new Error("User not found");
+
+  await db
+    .update(users)
+    .set({ ubisoftID: newUbisoftID })
+    .where(eq(users.id, user!.id));
 
   return true;
 }

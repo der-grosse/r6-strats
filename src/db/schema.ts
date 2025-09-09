@@ -33,6 +33,7 @@ export const users = pgTable("users", {
     .references(() => team.id),
   isAdmin: boolean("is_admin").notNull().default(false),
   defaultColor: text("default_color"),
+  ubisoftID: text("ubisoft_id"),
 });
 
 export const playerPositions = pgTable("player_positions", {
