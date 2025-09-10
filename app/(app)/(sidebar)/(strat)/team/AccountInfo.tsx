@@ -26,6 +26,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
+  changeEmail,
   changePassword,
   changeUbisoftID,
   changeUsername,
@@ -42,6 +43,7 @@ export default function AccountInfo(props: { team: Pick<Team, "members"> }) {
     [props.team, payload]
   );
   const [newUsername, setNewUsername] = useState(user?.name ?? "");
+  const [newEmail, setNewEmail] = useState(user?.email ?? "");
   const [ubisoftID, setUbisoftID] = useState(user?.ubisoftID ?? "");
   const [ubisoftIDValid, setUbisoftIDValid] = useState<boolean | null>(null);
 
@@ -53,6 +55,20 @@ export default function AccountInfo(props: { team: Pick<Team, "members"> }) {
       } catch (err) {
         toast.error(
           err instanceof Error ? err.message : "Failed to change username"
+        );
+      }
+    }
+  );
+
+  const { saveNow: saveEmail } = useSaveDebounced(
+    newEmail,
+    async (newEmail) => {
+      if (newEmail && !isEmailValid(newEmail)) return;
+      try {
+        await changeEmail(newEmail);
+      } catch (err) {
+        toast.error(
+          err instanceof Error ? err.message : "Failed to change email"
         );
       }
     }
@@ -116,6 +132,20 @@ export default function AccountInfo(props: { team: Pick<Team, "members"> }) {
             }}
             onBlur={() => saveUsername()}
             placeholder="Username"
+          />
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="email-input">Email</Label>
+          <Input
+            id="email-input"
+            value={newEmail}
+            onChange={(e) => setNewEmail(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") saveEmail();
+            }}
+            onBlur={() => saveEmail()}
+            placeholder="Email"
+            aria-invalid={!!newEmail && !isEmailValid(newEmail)}
           />
         </div>
         <div className="space-y-1">
@@ -225,4 +255,9 @@ export default function AccountInfo(props: { team: Pick<Team, "members"> }) {
       </CardContent>
     </Card>
   );
+}
+
+function isEmailValid(email: string) {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(email);
 }

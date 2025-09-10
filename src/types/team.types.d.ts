@@ -17,6 +17,7 @@ interface TeamMember {
   isAdmin: boolean;
   id: number;
   name: string;
+  email: string | null;
   defaultColor: string | null;
   createdAt: string;
   positionID: number | null;

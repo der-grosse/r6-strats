@@ -64,6 +64,15 @@ export default function Login() {
           Create a team or join existing team
         </Link>
       </p>
+      <p className="text-sm text-muted-foreground -mt-3">
+        Forgot your password?{" "}
+        <Link
+          href="/auth/reset-password"
+          className="text-primary hover:text-primary/90 hover:underline"
+        >
+          Reset it here
+        </Link>
+      </p>
       <p className="text-lg text-destructive min-h-[2rem]">
         {error && (
           <>

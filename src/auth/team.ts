@@ -253,6 +253,24 @@ export async function changeUsername(newUsername: string) {
   return true;
 }
 
+export async function changeEmail(newEmail: string) {
+  const user = await getPayload();
+  const [targetUser] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, user!.id));
+  if (!targetUser) throw new Error("User not found");
+  if (targetUser.email === newEmail) return true;
+
+  const [existingUser] = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, newEmail));
+  if (existingUser) throw new Error("Email already taken");
+  await db.update(users).set({ email: newEmail }).where(eq(users.id, user!.id));
+  return true;
+}
+
 export async function changeUbisoftID(
   newUbisoftID: string,
   memberID?: TeamMember["id"]

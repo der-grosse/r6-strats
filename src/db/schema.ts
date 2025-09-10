@@ -26,6 +26,7 @@ export const teamInvites = pgTable("team_invites", {
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
+  email: text("email"),
   password: text("password").notNull(),
   createdAt: text("created_at").notNull(),
   teamID: integer("team_id")
@@ -34,6 +35,17 @@ export const users = pgTable("users", {
   isAdmin: boolean("is_admin").notNull().default(false),
   defaultColor: text("default_color"),
   ubisoftID: text("ubisoft_id"),
+});
+
+export const passwordResetTokens = pgTable("password_reset_tokens", {
+  token: text("token").primaryKey().notNull(),
+  userID: integer("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  expiresAt: text("expires_at").notNull(),
+  invalidTokenInsertionCounts: integer("invalid_token_insertion_counts")
+    .notNull()
+    .default(0),
 });
 
 export const playerPositions = pgTable("player_positions", {

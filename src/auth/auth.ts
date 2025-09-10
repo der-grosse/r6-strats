@@ -1,12 +1,14 @@
 "use server";
 import { eq } from "drizzle-orm";
 import db from "../db/db";
-import { teamInvites, users } from "../db/schema";
+import { passwordResetTokens, teamInvites, users } from "../db/schema";
 import * as bcrypt from "bcrypt-ts";
 import { cookies } from "next/headers";
 import { generateJWT } from "./jwt";
 import { getPayload } from "./getPayload";
 import { DEFAULT_COLORS } from "../static/colors";
+import { generate } from "random-words";
+import { sendResetEmail } from "../mail/mail";
 
 export async function hashPassword(password: string) {
   const salt = await bcrypt.genSalt(10);
@@ -93,4 +95,78 @@ export async function checkPassword(password: string) {
   if (!user) throw new Error("User not found");
   const valid = await bcrypt.compare(password, user.password);
   return valid;
+}
+
+export async function requestResetPassword(email: string) {
+  const [user] = await db.select().from(users).where(eq(users.email, email));
+  if (!user) return true;
+
+  const token = generate({ exactly: 5, join: "-" });
+  const expiresAt = new Date(Date.now() + 3600 * 1000).toISOString();
+
+  await db.insert(passwordResetTokens).values({
+    token,
+    userID: user.id,
+    expiresAt,
+  });
+
+  // Send email with reset link
+  await sendResetEmail(email, token);
+
+  return true;
+}
+
+const MAX_TOKEN_TRIES = 10;
+export async function resetPassword(
+  email: string,
+  token: string,
+  newPassword: string
+) {
+  // check if email exists
+  const [user] = await db.select().from(users).where(eq(users.email, email));
+  if (!user) return true;
+
+  // check if token is valid
+  const [resetToken] = await db
+    .select()
+    .from(passwordResetTokens)
+    .where(eq(passwordResetTokens.token, token))
+    .limit(1);
+
+  if (!resetToken) {
+    // if no valid token, check if someone might try to brute force the token and delete token after MAX_TOKEN_TRIES
+    const [validToken] = await db
+      .select()
+      .from(passwordResetTokens)
+      .where(eq(passwordResetTokens.userID, user.id))
+      .limit(1);
+    if (validToken) {
+      const invalidTokenInsertionCounts =
+        validToken.invalidTokenInsertionCounts + 1;
+      if (invalidTokenInsertionCounts >= MAX_TOKEN_TRIES) {
+        console.warn(
+          "Deleting password reset token due to max tries exceeded for userID:",
+          user.id
+        );
+        await db
+          .delete(passwordResetTokens)
+          .where(eq(passwordResetTokens.token, validToken.token));
+      }
+    }
+    throw new Error("Invalid or expired reset token");
+  }
+  if (resetToken.expiresAt < new Date().toISOString())
+    throw new Error("Invalid or expired reset token");
+
+  const hashedPassword = await hashPassword(newPassword);
+  await db
+    .update(users)
+    .set({ password: hashedPassword })
+    .where(eq(users.id, resetToken.userID));
+
+  await db
+    .delete(passwordResetTokens)
+    .where(eq(passwordResetTokens.token, resetToken.token));
+
+  return true;
 }
