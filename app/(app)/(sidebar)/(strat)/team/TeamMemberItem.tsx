@@ -104,7 +104,10 @@ export default function TeamMemberItem({
                     onClick={() => changeUbisoftID("", member.id)}
                     className="text-destructive"
                   >
-                    <Ubisoft className="mr-2 h-4 w-4" />
+                    <div className="relative mr-2">
+                      <Trash2 className="h-4 w-4" />
+                      <Ubisoft className="absolute -right-1 -bottom-1 h-3 w-3" />
+                    </div>
                     Remove Ubisoft ID
                   </DropdownMenuItem>
                 )}
