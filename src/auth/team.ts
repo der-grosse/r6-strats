@@ -83,9 +83,9 @@ export async function createTeam(input: {
 }
 
 export async function getTeam(optTeamID?: number) {
+  const user = await getPayload();
   let teamID = optTeamID;
   if (!teamID) {
-    const user = await getPayload();
     teamID = user?.teamID;
   }
   if (!teamID) throw new Error("No team ID provided and user not logged in");
@@ -110,6 +110,7 @@ export async function getTeam(optTeamID?: number) {
     members: membersData.map((member) => ({
       id: member.id,
       name: member.name,
+      email: user?.id === member.id ? member.email : null,
       defaultColor: member.defaultColor,
       createdAt: member.createdAt,
       isAdmin: member.isAdmin,
