@@ -42,10 +42,6 @@ no known bugs :)
 
 ### User Management
 
-- Add Email to user
-- Reset password
-
 ### Misc
 
-- try and reconnect socket and show error on disconnect
 - add default strats
