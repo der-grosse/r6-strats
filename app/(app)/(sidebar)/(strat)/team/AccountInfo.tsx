@@ -1,0 +1,228 @@
+"use client";
+import { useUser } from "@/components/context/UserContext";
+import useSaveDebounced from "@/components/hooks/useSaveDebounced";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  changePassword,
+  changeUbisoftID,
+  changeUsername,
+} from "@/src/auth/team";
+import { checkUbisoftID } from "@/src/ubisoft/ubi";
+import { Check, RotateCcwKey, X } from "lucide-react";
+import { useMemo, useState } from "react";
+import { toast } from "sonner";
+
+export default function AccountInfo(props: { team: Pick<Team, "members"> }) {
+  const { user: payload } = useUser();
+  const user = useMemo(
+    () => props.team.members.find((m) => m.id === payload?.id),
+    [props.team, payload]
+  );
+  const [newUsername, setNewUsername] = useState(user?.name ?? "");
+  const [ubisoftID, setUbisoftID] = useState(user?.ubisoftID ?? "");
+  const [ubisoftIDValid, setUbisoftIDValid] = useState<boolean | null>(null);
+
+  const { saveNow: saveUsername } = useSaveDebounced(
+    newUsername,
+    async (newUsername) => {
+      try {
+        await changeUsername(newUsername);
+      } catch (err) {
+        toast.error(
+          err instanceof Error ? err.message : "Failed to change username"
+        );
+      }
+    }
+  );
+
+  const { saveNow: saveUbisoftID } = useSaveDebounced(
+    ubisoftID,
+    async (ubisoftID) => {
+      try {
+        await changeUbisoftID(ubisoftID);
+        const isValid = await checkUbisoftID(ubisoftID);
+        setUbisoftIDValid(isValid);
+      } catch (err) {
+        toast.error(
+          err instanceof Error ? err.message : "Failed to change Ubisoft ID"
+        );
+      }
+    }
+  );
+
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+
+  const handleChangePassword = async () => {
+    try {
+      const res = await changePassword(oldPassword, newPassword);
+      if (res) {
+        toast.error(res);
+      } else {
+        setOldPassword("");
+        setNewPassword("");
+        setConfirmNewPassword("");
+        setChangePasswordOpen(false);
+        toast.success("Password changed successfully");
+      }
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to change password"
+      );
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Account Info</CardTitle>
+        <CardDescription>Manage your account data</CardDescription>
+      </CardHeader>
+
+      <CardContent className="space-y-4">
+        <div className="space-y-1">
+          <Label htmlFor="username-input">Username</Label>
+          <Input
+            id="username-input"
+            value={newUsername}
+            onChange={(e) => setNewUsername(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") saveUsername();
+            }}
+            onBlur={() => saveUsername()}
+            placeholder="Username"
+          />
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="ubisoft-id-input">Ubisoft ID</Label>
+          <div className="relative">
+            <Input
+              id="ubisoft-id-input"
+              value={ubisoftID}
+              onChange={(e) => setUbisoftID(e.target.value.slice(0, 50))}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") saveUbisoftID();
+              }}
+              onBlur={() => saveUbisoftID()}
+              placeholder="Ubisoft ID"
+            />
+            {ubisoftID && ubisoftIDValid !== null && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                    {ubisoftIDValid ? (
+                      <Check className="text-green-500" />
+                    ) : (
+                      <X className="text-red-500" />
+                    )}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <span>
+                    {ubisoftIDValid
+                      ? "Valid Ubisoft ID"
+                      : "Invalid Ubisoft ID (User could have no profile picture)"}
+                  </span>
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
+        </div>
+        <Dialog open={changePasswordOpen} onOpenChange={setChangePasswordOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" onClick={() => {}}>
+              <RotateCcwKey />
+              Change Password
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Change Password</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="space-y-1">
+                <Label htmlFor="old-password-input">Old Password</Label>
+                <Input
+                  id="old-password-input"
+                  type="password"
+                  value={oldPassword}
+                  onChange={(e) => setOldPassword(e.target.value)}
+                  placeholder="Old Password"
+                  autoFocus
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="new-password-input">New Password</Label>
+                <Input
+                  id="new-password-input"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="New Password"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="confirm-new-password-input">
+                  Confirm New Password
+                </Label>
+                <Input
+                  id="confirm-new-password-input"
+                  type="password"
+                  value={confirmNewPassword}
+                  onChange={(e) => setConfirmNewPassword(e.target.value)}
+                  placeholder="Confirm New Password"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button
+                  variant="outline"
+                  onClick={() => setChangePasswordOpen(false)}
+                >
+                  <X /> Cancel
+                </Button>
+              </DialogClose>
+              <Button
+                variant="outline"
+                onClick={handleChangePassword}
+                disabled={
+                  newPassword !== confirmNewPassword ||
+                  !newPassword ||
+                  !oldPassword
+                }
+              >
+                <Check /> Confirm
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </CardContent>
+    </Card>
+  );
+}

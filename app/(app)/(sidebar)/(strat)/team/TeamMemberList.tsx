@@ -11,13 +11,11 @@ import { useUser } from "@/components/context/UserContext";
 export interface TeamMemberListProps {
   members: TeamMember[];
   onChangeColor: (member: TeamMember) => void;
-  onChangeUsername: (member: TeamMember) => void;
-  onChangePassword: () => void;
+  onChangeUbisoftID?: (member: TeamMember) => void;
 }
 
 export default function TeamMemberList(props: TeamMemberListProps) {
   const { user } = useUser();
-
   return (
     <Table>
       <TableHeader>
@@ -26,7 +24,7 @@ export default function TeamMemberList(props: TeamMemberListProps) {
           <TableHead>Username</TableHead>
           <TableHead>Role</TableHead>
           <TableHead>Joined at</TableHead>
-          <TableHead>Actions</TableHead>
+          {user?.isAdmin && <TableHead>Actions</TableHead>}
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -35,11 +33,13 @@ export default function TeamMemberList(props: TeamMemberListProps) {
           .map((member) => (
             <TeamMemberItem
               key={member.id}
-              user={user}
               member={member}
               onChangeColor={props.onChangeColor.bind(null, member)}
-              onChangePassword={props.onChangePassword}
-              onChangeUsername={props.onChangeUsername.bind(null, member)}
+              onChangeUbisoftID={
+                props.onChangeUbisoftID
+                  ? props.onChangeUbisoftID.bind(null, member)
+                  : undefined
+              }
             />
           ))}
       </TableBody>

@@ -1,39 +1,43 @@
+import { useUser } from "@/components/context/UserContext";
 import { ColorButton } from "@/components/general/ColorPickerDialog";
+import UbisoftAvatar from "@/components/general/UbisoftAvatar";
+import Ubisoft from "@/components/icons/ubisoft";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { demoteFromAdmin, promoteToAdmin, removeMember } from "@/src/auth/team";
-import { DEFAULT_COLORS } from "@/src/static/colors";
 import {
-  Edit2,
-  Lock,
-  MoreVertical,
-  Shield,
-  ShieldOff,
-  Trash2,
-} from "lucide-react";
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  changeUbisoftID,
+  demoteFromAdmin,
+  promoteToAdmin,
+  removeMember,
+} from "@/src/auth/team";
+import { DEFAULT_COLORS } from "@/src/static/colors";
+import { MoreVertical, Shield, ShieldOff, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 export interface TeamMemberItemProps {
-  user: JWTPayload | null;
   member: TeamMember;
   onChangeColor: () => void;
-  onChangeUsername: () => void;
-  onChangePassword: () => void;
+  onChangeUbisoftID?: () => void;
 }
 
 export default function TeamMemberItem({
   member,
   onChangeColor,
-  user,
-  onChangeUsername,
-  onChangePassword,
+  onChangeUbisoftID,
 }: TeamMemberItemProps) {
+  const { user } = useUser();
   return (
     <TableRow key={member.id}>
       <TableCell className="w-[50px]">
@@ -44,13 +48,30 @@ export default function TeamMemberItem({
             onChangeColor();
           }}
           disabled={member.id !== user?.id && !user?.isAdmin}
+          className="align-middle m-auto"
         />
       </TableCell>
       <TableCell>
-        {member.name}
-        {user?.id === member.id && (
-          <span className="ml-2 text-muted-foreground text-sm">(You)</span>
-        )}
+        <div className="flex items-center h-full align-middle">
+          {member.ubisoftID && (
+            <Tooltip>
+              <TooltipTrigger className="mr-2 size-8">
+                <UbisoftAvatar
+                  ubisoftID={member.ubisoftID}
+                  className="size-8"
+                  showUbisoftIndex
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <span>Ubisoft ID provided: {member.ubisoftID}</span>
+              </TooltipContent>
+            </Tooltip>
+          )}
+          {member.name}
+          {user?.id === member.id && (
+            <span className="ml-2 text-muted-foreground text-sm">(You)</span>
+          )}
+        </div>
       </TableCell>
       <TableCell>{member.isAdmin ? "Admin" : "Member"}</TableCell>
       <TableCell>
@@ -60,40 +81,34 @@ export default function TeamMemberItem({
           day: "2-digit",
         })}
       </TableCell>
-      <TableCell>
-        <DropdownMenu modal>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              disabled={user?.id !== member.id && !user?.isAdmin}
-            >
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" side="right">
-            {member.id === user?.id && (
-              <>
-                <DropdownMenuItem
-                  onClick={() => {
-                    onChangeUsername();
-                  }}
+      {user?.isAdmin && (
+        <TableCell>
+          {member.id !== user?.id ? (
+            <DropdownMenu modal>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  disabled={user?.id !== member.id && !user?.isAdmin}
                 >
-                  <Edit2 className="mr-2 h-4 w-4" />
-                  Change Username
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" side="right">
+                <DropdownMenuItem onClick={onChangeUbisoftID}>
+                  <Ubisoft className="mr-2 h-4 w-4" />
+                  {member.ubisoftID ? "Update Ubisoft ID" : "Add Ubisoft ID"}
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    onChangePassword();
-                  }}
-                >
-                  <Lock className="mr-2 h-4 w-4" />
-                  Change Password
-                </DropdownMenuItem>
-              </>
-            )}
-            {user?.isAdmin && member.id !== user?.id && (
-              <>
+                {member.ubisoftID && (
+                  <DropdownMenuItem
+                    onClick={() => changeUbisoftID("", member.id)}
+                    className="text-destructive"
+                  >
+                    <Ubisoft className="mr-2 h-4 w-4" />
+                    Remove Ubisoft ID
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
                 {!member.isAdmin ? (
                   <DropdownMenuItem
                     onClick={() => handlePromoteToAdmin(member.id)}
@@ -109,20 +124,29 @@ export default function TeamMemberItem({
                     Demote from Admin
                   </DropdownMenuItem>
                 )}
-              </>
-            )}
-            {user?.isAdmin && !member.isAdmin && (
-              <DropdownMenuItem
-                onClick={() => handleRemoveUser(member.id)}
-                className="text-destructive"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Remove User
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </TableCell>
+                {!member.isAdmin && (
+                  <DropdownMenuItem
+                    onClick={() => handleRemoveUser(member.id)}
+                    className="text-destructive"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Remove User
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            // Placeholder to keep the cell height
+            <Button
+              variant="ghost"
+              size="icon"
+              className="invisible pointer-events-none"
+            >
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          )}
+        </TableCell>
+      )}
     </TableRow>
   );
 }

@@ -12,27 +12,30 @@ import { updateTeamName } from "@/src/auth/team";
 import { Edit2, Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import useSaveDebounced from "@/components/hooks/useSaveDebounced";
 
 export interface TeamInfoProps {
   team: Team;
 }
 
 export default function TeamInfo(props: TeamInfoProps) {
-  const [isEditingTeamName, setIsEditingTeamName] = useState(false);
   const teamNameInputRef = useRef<HTMLInputElement | null>(null);
-  const [newTeamName, setNewTeamName] = useState("");
+  const [newTeamName, setNewTeamName] = useState(props.team.name);
 
-  const handleUpdateTeamName = async () => {
-    try {
-      await updateTeamName(newTeamName);
-      setIsEditingTeamName(false);
-      toast.success("Team name updated successfully");
-    } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to update team name"
-      );
+  const { saveNow: saveTeamName } = useSaveDebounced(
+    newTeamName,
+    async (newTeamName) => {
+      try {
+        await updateTeamName(newTeamName);
+        toast.success("Team name updated successfully");
+      } catch (err) {
+        toast.error(
+          err instanceof Error ? err.message : "Failed to update team name"
+        );
+      }
     }
-  };
+  );
 
   return (
     <Card>
@@ -40,58 +43,42 @@ export default function TeamInfo(props: TeamInfoProps) {
         <CardTitle>Team Settings</CardTitle>
         <CardDescription>Manage your team settings</CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="flex items-center gap-4">
-          {isEditingTeamName ? (
-            <>
-              <Input
-                ref={teamNameInputRef}
-                value={newTeamName}
-                onChange={(e) => setNewTeamName(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleUpdateTeamName();
-                  }
-                }}
-                placeholder="Enter new team name"
-                className="max-w-sm"
-              />
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleUpdateTeamName}
-              >
-                <Check className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  setIsEditingTeamName(false);
-                  setNewTeamName("");
-                }}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </>
-          ) : (
-            <>
-              <div className="text-lg font-semibold">{props.team.name}</div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  setIsEditingTeamName(true);
-                  setNewTeamName(props.team.name);
-                  setTimeout(() => {
-                    teamNameInputRef.current?.focus();
-                  }, 0);
-                }}
-              >
-                <Edit2 className="h-4 w-4" />
-              </Button>
-            </>
-          )}
+      <CardContent className="space-y-4">
+        <div className="space-y-1">
+          <Label htmlFor="teamname-input">Team Name</Label>
+          <Input
+            id="teamname-input"
+            ref={teamNameInputRef}
+            value={newTeamName}
+            onChange={(e) => setNewTeamName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                saveTeamName();
+              }
+            }}
+            onBlur={() => saveTeamName()}
+            placeholder="Team Name"
+          />
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="created-at-info">Created at</Label>
+          <span id="created-at-info" className="text-sm text-muted-foreground">
+            {new Date(props.team.createdAt).toLocaleDateString("de-DE", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+            })}
+          </span>
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="team-member-count">Team member count</Label>
+          <span
+            id="team-member-count"
+            className="text-sm text-muted-foreground"
+          >
+            {props.team.members.length} member
+            {props.team.members.length !== 1 ? "s" : ""}
+          </span>
         </div>
       </CardContent>
     </Card>

@@ -85,3 +85,12 @@ export async function logout() {
   (await cookies()).delete("jwt");
   return true;
 }
+
+export async function checkPassword(password: string) {
+  const userid = (await getPayload())?.id;
+  if (!userid) throw new Error("User not found");
+  const [user] = await db.select().from(users).where(eq(users.id, userid));
+  if (!user) throw new Error("User not found");
+  const valid = await bcrypt.compare(password, user.password);
+  return valid;
+}

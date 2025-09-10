@@ -4,7 +4,7 @@ import db from "../db/db";
 import { playerPositions, team, users } from "../db/schema";
 import { getPayload } from "./getPayload";
 import { revalidatePath } from "next/cache";
-import { hashPassword, resetJWT } from "./auth";
+import { checkPassword, hashPassword, resetJWT } from "./auth";
 import { PLAYER_COUNT } from "../static/general";
 
 export async function createTeam(input: {
@@ -253,24 +253,38 @@ export async function changeUsername(newUsername: string) {
   return true;
 }
 
-export async function changeUbisoftID(newUbisoftID: string) {
+export async function changeUbisoftID(
+  newUbisoftID: string,
+  memberID?: TeamMember["id"]
+) {
   const user = await getPayload();
+  const targetUserID = memberID || user?.id!;
   const [targetUser] = await db
     .select()
     .from(users)
-    .where(eq(users.id, user!.id));
+    .where(eq(users.id, targetUserID));
   if (!targetUser) throw new Error("User not found");
+  if (targetUserID !== user?.id && !user?.isAdmin) {
+    throw new Error("Only admins can change other users' Ubisoft ID");
+  }
 
   await db
     .update(users)
     .set({ ubisoftID: newUbisoftID })
-    .where(eq(users.id, user!.id));
+    .where(eq(users.id, targetUserID));
+
+  revalidatePath("/team");
+  revalidatePath("/");
 
   return true;
 }
 
-export async function changePassword(newPassword: string) {
+export async function changePassword(oldPassword: string, newPassword: string) {
   const user = await getPayload();
+  const valid = await checkPassword(oldPassword);
+  if (!valid) return "Old password is incorrect";
+  if (oldPassword === newPassword)
+    return "New password must be different from old password";
   const [targetUser] = await db
     .select()
     .from(users)
@@ -281,7 +295,7 @@ export async function changePassword(newPassword: string) {
     .update(users)
     .set({ password: hashedPassword })
     .where(eq(users.id, user!.id));
-  return true;
+  return null;
 }
 
 export async function setMemberColor(color: string, userID?: TeamMember["id"]) {

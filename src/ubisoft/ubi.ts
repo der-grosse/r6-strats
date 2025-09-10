@@ -1,0 +1,30 @@
+export const DEFAULT_UBI_AVATAR =
+  "data:image/png;base64,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";
+
+export async function checkUbisoftID(id: string): Promise<boolean> {
+  const url = getUbisoftAvatarUrl(id);
+  if (!url) return false;
+  const res = await fetch(url).catch(() => null);
+  if (!res || !res.ok) return false;
+  const contentType = res.headers.get("Content-Type");
+  if (!contentType || !contentType.startsWith("image/")) return false;
+  // parse body image to base64 to check if it is the default avatar for invalid users
+  const blob = await res.blob();
+  const reader = new FileReader();
+  reader.readAsDataURL(blob);
+  const base64data = await new Promise<string | ArrayBuffer | null>(
+    (resolve) => {
+      reader.onloadend = () => {
+        const base64data = reader.result;
+        resolve(base64data);
+      };
+    }
+  );
+  if (base64data === DEFAULT_UBI_AVATAR || base64data === null) return false;
+  return true;
+}
+
+export function getUbisoftAvatarUrl(id: string) {
+  if (!id || id.length !== 36) return null;
+  return `https://avatars.ubisoft.com/${id}/default_146_146.png`;
+}

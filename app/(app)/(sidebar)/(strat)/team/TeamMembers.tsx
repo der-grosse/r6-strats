@@ -1,5 +1,4 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,72 +6,55 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useUser } from "@/components/context/UserContext";
-import { useRef, useState } from "react";
-import {
-  changeUsername,
-  changePassword,
-  setMemberColor,
-} from "@/src/auth/team";
-import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
+import { Fragment, useState } from "react";
+import { changeUbisoftID, setMemberColor } from "@/src/auth/team";
+import ColorPickerDialog from "@/components/general/ColorPickerDialog";
+import TeamMemberList from "./TeamMemberList";
+import { DEFAULT_COLORS } from "@/src/static/colors";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import ColorPickerDialog from "@/components/general/ColorPickerDialog";
-import TeamMemberList from "./TeamMemberList";
-import { DEFAULT_COLORS } from "@/src/static/colors";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Check, X } from "lucide-react";
+import UbisoftAvatar from "@/components/general/UbisoftAvatar";
+import useSaveDebounced from "@/components/hooks/useSaveDebounced";
+import { checkUbisoftID } from "@/src/ubisoft/ubi";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export interface TeamMembersProps {
   team: Team;
 }
 
 export default function TeamMembers(props: TeamMembersProps) {
-  const { user } = useUser();
-  const [isChangeUsernameOpen, setIsChangeUsernameOpen] = useState(false);
-  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
-  const [newUsername, setNewUsername] = useState("");
-  const newUsernameRef = useRef<HTMLInputElement | null>(null);
-  const [newPassword, setNewPassword] = useState("");
-  const newPasswordRef = useRef<HTMLInputElement | null>(null);
-
   const [userColorChangeOpen, setUserColorChangeOpen] = useState(false);
   const [userColorID, setUserColorID] = useState<number | null>(null);
 
-  const handleChangeUsername = async () => {
-    try {
-      await changeUsername(newUsername);
-      setIsChangeUsernameOpen(false);
-      setNewUsername("");
-      toast.success("Username changed successfully");
-      window.location.reload();
-    } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to change username"
-      );
-    }
-  };
-
-  const handleChangePassword = async () => {
-    try {
-      await changePassword(newPassword);
-      setIsChangePasswordOpen(false);
-      setNewPassword("");
-      toast.success("Password changed successfully");
-    } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to change password"
-      );
-    }
-  };
+  const [changeUbisoftIDOpen, setChangeUbisoftIDOpen] = useState(false);
+  const [changeUbisoftIDUser, setChangeUbisoftIDUser] =
+    useState<TeamMember | null>(null);
+  const [newUbisoftID, setNewUbisoftID] = useState("");
+  const [newUbisoftIDValid, setNewUbisoftIDValid] = useState<boolean | null>(
+    null
+  );
+  useSaveDebounced(newUbisoftID, async (ubisoftID) => {
+    setNewUbisoftIDValid(null);
+    const valid = await checkUbisoftID(ubisoftID);
+    setNewUbisoftIDValid(valid);
+  });
 
   return (
-    <>
+    <Fragment>
       <Card>
         <CardHeader>
           <CardTitle>Team Members</CardTitle>
@@ -87,19 +69,10 @@ export default function TeamMembers(props: TeamMembersProps) {
               setUserColorID(member.id);
               setUserColorChangeOpen(true);
             }}
-            onChangePassword={() => {
-              setIsChangePasswordOpen(true);
-              setNewPassword("");
-              requestAnimationFrame(() => {
-                newPasswordRef.current?.focus();
-              });
-            }}
-            onChangeUsername={(member) => {
-              setIsChangeUsernameOpen(true);
-              setNewUsername(member.name);
-              requestAnimationFrame(() => {
-                newUsernameRef.current?.focus();
-              });
+            onChangeUbisoftID={(member) => {
+              setChangeUbisoftIDUser(member);
+              setChangeUbisoftIDOpen(true);
+              setNewUbisoftID(member.ubisoftID ?? "");
             }}
           />
         </CardContent>
@@ -119,82 +92,87 @@ export default function TeamMembers(props: TeamMembersProps) {
         }}
       />
 
-      <Dialog
-        open={isChangeUsernameOpen}
-        onOpenChange={(open) => {
-          setIsChangeUsernameOpen(open);
-          if (!open)
-            setTimeout(() => (document.body.style.pointerEvents = ""), 500);
-        }}
-      >
-        <DialogContent className="w-auto">
-          <DialogHeader>
-            <DialogTitle>Change Username</DialogTitle>
-            <DialogDescription>
-              Enter your new username below.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Input
-              ref={newUsernameRef}
-              value={newUsername}
-              onChange={(e) => setNewUsername(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleChangeUsername();
-              }}
-              placeholder="New username"
-            />
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsChangeUsernameOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleChangeUsername}>Save</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog
-        open={isChangePasswordOpen}
-        onOpenChange={(open) => {
-          setIsChangePasswordOpen(open);
-          if (!open)
-            setTimeout(() => (document.body.style.pointerEvents = ""), 500);
-        }}
-      >
+      <Dialog open={changeUbisoftIDOpen} onOpenChange={setChangeUbisoftIDOpen}>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Change Password</DialogTitle>
-            <DialogDescription>
-              Enter your new password below.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
+          <DialogTitle>
+            {changeUbisoftIDUser?.ubisoftID ? "Change" : "Add"} Ubisoft ID
+          </DialogTitle>
+          <DialogDescription>
+            {changeUbisoftIDUser?.ubisoftID
+              ? "Change the Ubisoft ID associated with this account."
+              : "Add a Ubisoft ID to associate with this account."}
+          </DialogDescription>
+          <div className="space-y-1">
+            <Label htmlFor="member-ubisoft-id-input">Username</Label>
             <Input
-              ref={newPasswordRef}
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleChangePassword();
+              id="member-ubisoft-id-input"
+              value={newUbisoftID}
+              onChange={(e) => {
+                setNewUbisoftID(e.target.value);
+                setNewUbisoftIDValid(null);
               }}
-              placeholder="New password"
+              placeholder="Ubisoft ID"
             />
+          </div>
+          <div className="flex justify-center items-center gap-4">
+            <div className="border border-dashed border-border rounded-md mt-2">
+              <UbisoftAvatar ubisoftID={newUbisoftID} className="size-16" />
+            </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  {newUbisoftID && newUbisoftIDValid === null && (
+                    <Skeleton className="size-5 mt-2" />
+                  )}
+                  {newUbisoftID && newUbisoftIDValid === true && (
+                    <Check className="text-green-400 size-5 mt-2" />
+                  )}
+                  {newUbisoftID && newUbisoftIDValid === false && (
+                    <X className="text-destructive size-5 mt-2" />
+                  )}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <span>
+                  {newUbisoftID &&
+                    newUbisoftIDValid === null &&
+                    "Checking Ubisoft profile..."}
+                  {newUbisoftID &&
+                    newUbisoftIDValid === true &&
+                    "Ubisoft profile found"}
+                  {newUbisoftID &&
+                    newUbisoftIDValid === false &&
+                    "Ubisoft profile not found (User could have no profile picture)"}
+                </span>
+              </TooltipContent>
+            </Tooltip>
           </div>
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={() => setIsChangePasswordOpen(false)}
+              onClick={() => setChangeUbisoftIDOpen(false)}
             >
-              Cancel
+              <X /> Cancel
             </Button>
-            <Button onClick={handleChangePassword}>Save</Button>
+            <Button
+              variant="outline"
+              onClick={async () => {
+                if (changeUbisoftIDUser) {
+                  await changeUbisoftID(newUbisoftID, changeUbisoftIDUser.id);
+                  setChangeUbisoftIDOpen(false);
+                }
+              }}
+              disabled={
+                !changeUbisoftIDUser ||
+                changeUbisoftIDUser.ubisoftID === newUbisoftID ||
+                !newUbisoftID.trim()
+              }
+            >
+              <Check /> Save
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </Fragment>
   );
 }
