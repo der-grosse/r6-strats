@@ -43,6 +43,7 @@ export default function AccountInfo(props: { team: Pick<Team, "members"> }) {
     [props.team, payload]
   );
   const [newUsername, setNewUsername] = useState(user?.name ?? "");
+  const [usernameInvalid, setUsernameInvalid] = useState(false);
   const [newEmail, setNewEmail] = useState(user?.email ?? "");
   const [ubisoftID, setUbisoftID] = useState(user?.ubisoftID ?? "");
   const [ubisoftIDValid, setUbisoftIDValid] = useState<boolean | null>(null);
@@ -53,6 +54,7 @@ export default function AccountInfo(props: { team: Pick<Team, "members"> }) {
       try {
         await changeUsername(newUsername);
       } catch (err) {
+        setUsernameInvalid(true);
         toast.error(
           err instanceof Error ? err.message : "Failed to change username"
         );
@@ -126,12 +128,20 @@ export default function AccountInfo(props: { team: Pick<Team, "members"> }) {
           <Input
             id="username-input"
             value={newUsername}
-            onChange={(e) => setNewUsername(e.target.value)}
+            onChange={(e) => {
+              setUsernameInvalid(false);
+              setNewUsername(e.target.value);
+            }}
             onKeyDown={(e) => {
               if (e.key === "Enter") saveUsername();
             }}
             onBlur={() => saveUsername()}
             placeholder="Username"
+            className={
+              usernameInvalid
+                ? "!border-destructive !bg-destructive/25"
+                : undefined
+            }
           />
         </div>
         <div className="space-y-1">

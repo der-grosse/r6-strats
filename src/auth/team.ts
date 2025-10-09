@@ -240,6 +240,11 @@ export async function changeUsername(newUsername: string) {
     .select()
     .from(users)
     .where(eq(users.name, newUsername));
+
+  if (existingUser.id === user!.id) {
+    return true; // No change needed
+  }
+
   if (existingUser) throw new Error("Username already taken");
 
   if (targetUser.name === newUsername) return true;

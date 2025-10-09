@@ -61,6 +61,13 @@ export async function register(
     .from(teamInvites)
     .where(eq(teamInvites.inviteKey, invite_key));
   if (!invite || invite.usedAt) throw new Error("Invalid invite key");
+
+  const [existingUser] = await db
+    .select()
+    .from(users)
+    .where(eq(users.name, name));
+  if (existingUser) throw new Error("Username already taken");
+
   const hash = await hashPassword(password);
   const [{ id }] = await db
     .insert(users)
