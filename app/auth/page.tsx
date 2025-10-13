@@ -2,29 +2,46 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { login } from "@/src/auth/auth";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { CircleX } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function Login() {
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+
   return (
     <form
       className="h-screen flex flex-col items-center justify-center w-full gap-4"
       onSubmit={async (e) => {
         e.preventDefault();
         setError(false);
+        setLoading(true);
 
         const user = await login(username, password);
+
+        if (!mounted.current) return;
 
         setError(!user);
 
         if (user) {
           router.push("/");
+        } else {
+          setLoading(false);
         }
       }}
     >
@@ -52,8 +69,13 @@ export default function Login() {
         value={password}
         onInput={(e) => setPassword((e.target as HTMLInputElement).value)}
       />
-      <Button type="submit" variant="default" className="w-full max-w-[20rem]">
-        Login
+      <Button
+        type="submit"
+        variant="default"
+        className="w-full max-w-[20rem]"
+        disabled={loading}
+      >
+        {loading ? <Spinner /> : "Login"}
       </Button>
       <p className="text-sm text-muted-foreground">
         Don't have an account?{" "}
