@@ -687,7 +687,7 @@ export const DEFENDER_PRIMARY_GADGETS = [
   {
     id: "trip",
     name: "T.R.I.P.-Connector",
-    icon: ["/MISSING.png"],
+    icon: ["/gadgets/denari.png"],
     count: 7,
   },
 ] satisfies readonly {
