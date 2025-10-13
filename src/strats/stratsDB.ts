@@ -96,6 +96,7 @@ class StratsDBClass {
     const strat = this.get(user, updatedStrat.id);
     if (!strat) return Promise.reject(new Error("Strat not found"));
     const newStrat = { ...strat, ...updatedStrat };
+    delete newStrat.mapIndex;
     await db.update(strats).set(newStrat).where(eq(strats.id, updatedStrat.id));
 
     if (updatedStrat.positions) {
@@ -228,10 +229,19 @@ class StratsDBClass {
   }
 
   async archive(user: JWTPayload, id: Strat["id"]): Promise<void> {
+    const strat = await db
+      .select()
+      .from(strats)
+      .where(and(eq(strats.id, id), eq(strats.teamID, user.teamID)));
+    if (strat.length === 0) throw new Error("Strat not found");
+    if (strat[0].archived === 1) return;
+
     await db
       .update(strats)
       .set({ archived: 1 })
       .where(and(eq(strats.id, id), eq(strats.teamID, user.teamID)));
+
+    await this.fixMapIndexes(user, strat[0].map);
   }
 
   async updateMapIndexes(
@@ -241,6 +251,16 @@ class StratsDBClass {
     oldIndex: number,
     newIndex: number
   ) {
+    if (newIndex === oldIndex) return;
+
+    // ensure the strat exists and belongs to the user
+    const strat = await db
+      .select()
+      .from(strats)
+      .where(and(eq(strats.id, stratID), eq(strats.teamID, user.teamID)));
+    if (strat.length === 0) throw new Error("Strat not found");
+    if (strat[0].map !== map) throw new Error("Strat map does not match");
+
     // Update all strats within the bounds
     if (newIndex < oldIndex) {
       await db
@@ -278,6 +298,32 @@ class StratsDBClass {
           eq(strats.teamID, user.teamID)
         )
       );
+
+    await this.fixMapIndexes(user, map);
+  }
+
+  private async fixMapIndexes(user: JWTPayload, map: string) {
+    const stratRows = await db
+      .select({ id: strats.id, mapIndex: strats.mapIndex })
+      .from(strats)
+      .where(
+        and(
+          eq(strats.teamID, user.teamID),
+          eq(strats.map, map),
+          eq(strats.archived, 0)
+        )
+      )
+      .orderBy(strats.mapIndex);
+
+    for (let i = 0; i < stratRows.length; i++) {
+      const strat = stratRows[i];
+      if (strat.mapIndex !== i) {
+        await db
+          .update(strats)
+          .set({ mapIndex: i })
+          .where(and(eq(strats.id, strat.id), eq(strats.teamID, user.teamID)));
+      }
+    }
   }
 
   private parseStratRows(data: {

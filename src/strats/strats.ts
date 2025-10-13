@@ -49,7 +49,7 @@ export async function createStrat(data: {
         description,
         drawingID,
         teamID: session.teamID,
-        mapIndex: lastMapIndex ? lastMapIndex + 1 : 1,
+        mapIndex: lastMapIndex ? lastMapIndex + 1 : 0,
       })
       .returning();
 
