@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Login",
+  title: "R6 Strats Login",
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
