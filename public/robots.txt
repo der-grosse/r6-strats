@@ -1,0 +1,6 @@
+User-agent: *
+# Disallow everything by default
+Disallow: /
+
+# Allow all auth routes
+Allow: /auth
