@@ -19,7 +19,10 @@ export const teamInvites = pgTable("team_invites", {
   teamID: integer("team_id")
     .notNull()
     .references(() => team.id, { onDelete: "cascade" }),
-  usedBy: integer("used_by").references(() => users.id),
+  usedBy: integer("used_by").references(() => users.id, {
+    onDelete: "set null",
+    onUpdate: "cascade",
+  }),
   usedAt: text("used_at"),
 });
 
