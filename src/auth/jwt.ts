@@ -42,7 +42,8 @@ export async function verifyJWT(token: string) {
       algorithms: ["RS256"],
     });
     return decoded.payload;
-  } catch (_) {
+  } catch (err) {
+    console.info("JWT verification failed:", err);
     return null;
   }
 }
@@ -59,7 +60,9 @@ export async function generateJWT(user: JWTPayload) {
   })
     .setProtectedHeader({ alg: "RS256" })
     .setIssuedAt()
-    .setExpirationTime("300d")
+    .setExpirationTime(
+      new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+    )
     .sign(privateKey);
   return token;
 }
