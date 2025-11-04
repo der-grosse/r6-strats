@@ -4,6 +4,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "R6 Strats",
+  description:
+    "Plan and organize your Rainbow Six Siege strategies - R6 Strat Organizer Tool",
   icons: {
     icon: favicon.src,
   },

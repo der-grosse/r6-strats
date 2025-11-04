@@ -34,6 +34,7 @@ export async function resetJWT(payload?: JWTPayload) {
   const cookie = await cookies();
   cookie.set("jwt", await generateJWT(payload), {
     httpOnly: true,
+    expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
   });
 }
 
