@@ -1,7 +1,9 @@
-import StratDisplay from "@/components/StratDisplay/StratDisplay";
+import { getStratViewModifierFromCookies } from "@/components/StratDisplay/stratDisplay.functions";
+import { cookies } from "next/headers";
 import { getTeam } from "@/src/auth/team";
 import { getStrat } from "@/src/strats/strats";
 import { Metadata } from "next";
+import StratDisplay from "@/components/StratDisplay/StratDisplay";
 
 export async function generateMetadata({
   params,
@@ -26,6 +28,8 @@ export default async function Page({
   const id = Number(params[0]);
   const strat = await getStrat(id);
   const team = await getTeam();
+  const cookieStore = await cookies();
+  const initialViewModifier = getStratViewModifierFromCookies(cookieStore);
 
   const editView = params[1] === "edit";
 
@@ -41,5 +45,12 @@ export default async function Page({
     );
   }
 
-  return <StratDisplay strat={strat} editView={editView} team={team} />;
+  return (
+    <StratDisplay
+      strat={strat}
+      editView={editView}
+      team={team}
+      initialViewModifier={initialViewModifier}
+    />
+  );
 }

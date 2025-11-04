@@ -1,3 +1,5 @@
+"use client";
+
 import { useMemo } from "react";
 import useMountAssets from "./Assets";
 import StratEditorCanvas from "./Canvas";
@@ -6,9 +8,14 @@ import MAPS from "@/src/static/maps";
 export interface StratViewerProps {
   strat: Strat;
   team: Team;
+  assetModifier?: (assets: PlacedAsset[]) => PlacedAsset[];
 }
 
-export default function StratViewer({ team, strat }: StratViewerProps) {
+export default function StratViewer({
+  team,
+  strat,
+  assetModifier,
+}: StratViewerProps) {
   const { renderAsset, UI } = useMountAssets(
     { team, stratPositions: strat.positions },
     {
@@ -22,10 +29,17 @@ export default function StratViewer({ team, strat }: StratViewerProps) {
     [strat.map]
   );
 
+  const assets = useMemo(() => {
+    if (assetModifier) {
+      return assetModifier(strat.assets);
+    }
+    return strat.assets;
+  }, [strat.assets, assetModifier]);
+
   return (
     <StratEditorCanvas
       map={map}
-      assets={strat.assets}
+      assets={assets}
       renderAsset={renderAsset}
       selectedAssets={[]}
       onDeselect={() => {}}

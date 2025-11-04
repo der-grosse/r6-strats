@@ -1,7 +1,9 @@
 import ActiveStrat from "@/components/StratDisplay/ActiveStrat";
+import { getStratViewModifierFromCookies } from "@/components/StratDisplay/stratDisplay.functions";
 import { getTeam } from "@/src/auth/team";
 import { getActive } from "@/src/strats/strats";
 import { Metadata } from "next";
+import { cookies } from "next/headers";
 
 export async function generateMetadata(): Promise<Metadata> {
   const active = await getActive();
@@ -17,6 +19,14 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Home() {
   const active = await getActive();
   const team = await getTeam();
+  const cookieStore = await cookies();
+  const initialViewModifier = getStratViewModifierFromCookies(cookieStore);
 
-  return <ActiveStrat defaultOpen={active} team={team} />;
+  return (
+    <ActiveStrat
+      defaultOpen={active}
+      team={team}
+      initialViewModifier={initialViewModifier}
+    />
+  );
 }

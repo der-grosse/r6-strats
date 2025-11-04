@@ -7,6 +7,7 @@ import StratDisplay from "./StratDisplay";
 export interface ActiveStratProps {
   defaultOpen?: Strat | null;
   team: Team;
+  initialViewModifier?: "none" | "hideForeign" | "grayscaleForeign";
 }
 
 export default function ActiveStrat(props: ActiveStratProps) {
@@ -26,5 +27,11 @@ export default function ActiveStrat(props: ActiveStratProps) {
       document.title = `Current strat | ${strat.name} | ${strat.map} - ${strat.site}`;
   });
 
-  return <StratDisplay strat={strat} team={props.team} />;
+  return (
+    <StratDisplay
+      strat={strat}
+      team={props.team}
+      initialViewModifier={props.initialViewModifier}
+    />
+  );
 }

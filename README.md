@@ -36,7 +36,6 @@ no known bugs :)
 
 ### Strat View
 
-- add settings to toggle what setup is shown (only yours, other setup grayed out, ...)
 - show description of strat
 - highlight strats that have invalid configurations for shotgun ops or secondary gadgets -> maybe happened due to season update
 

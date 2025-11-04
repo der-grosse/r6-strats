@@ -10,19 +10,27 @@ import { Button } from "../ui/button";
 import { useUser } from "../context/UserContext";
 import StratViewer from "../StratEditor/StratViewer";
 import OperatorIcon from "../general/OperatorIcon";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
+import Cookie from "js-cookie";
 import Shotgun from "../StratEditor/assets/Shotgun";
 import GadgetIcon from "../general/GadgetIcon";
 import { useFilter } from "../context/FilterContext";
-import { getAssetColor } from "../StratEditor/Assets";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { cn } from "@/src/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 export interface StratDisplayProps {
   strat: Strat | null;
   team: Team;
   editView?: boolean;
   hideDetails?: boolean;
+  initialViewModifier?: "none" | "hideForeign" | "grayscaleForeign";
 }
 
 export default function StratDisplay(props: StratDisplayProps) {
@@ -68,9 +76,68 @@ export default function StratDisplay(props: StratDisplayProps) {
     .filter((pos) => pos.op !== undefined)
     .sort((a, b) => a.index - b.index);
 
+  const [viewModifier, setViewModifier] = useState<
+    "none" | "hideForeign" | "grayscaleForeign"
+  >(() => {
+    // Prefer server-provided initial value when available to avoid
+    // hydration mismatches. Fallback to client cookie if not provided.
+    try {
+      if (
+        props.initialViewModifier === "none" ||
+        props.initialViewModifier === "hideForeign" ||
+        props.initialViewModifier === "grayscaleForeign"
+      ) {
+        return props.initialViewModifier;
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    try {
+      const cookie = Cookie.get("strat_view_modifier");
+      if (
+        cookie === "none" ||
+        cookie === "hideForeign" ||
+        cookie === "grayscaleForeign"
+      ) {
+        return cookie as "none" | "hideForeign" | "grayscaleForeign";
+      }
+    } catch (e) {
+      // ignore cookie read errors and fallback to default
+    }
+    return "none";
+  });
+
+  useEffect(() => {
+    Cookie.set("strat_view_modifier", viewModifier, { expires: 365 });
+  }, [viewModifier]);
+
   const Details = !props.hideDetails && props.strat && (
-    <div className="grid grid-cols-[1fr_auto_1fr] w-full gap-4">
-      <div />
+    <div className="grid grid-cols-[1fr_auto_1fr] w-full gap-4 items-end">
+      <div className="p-2">
+        {!props.strat.drawingID && (
+          <Select
+            value={viewModifier}
+            onValueChange={(value) => {
+              const v = value as "none" | "hideForeign" | "grayscaleForeign";
+              setViewModifier(v);
+            }}
+          >
+            <SelectTrigger className="min-w-[180px]">
+              <SelectValue placeholder="Strat view modifier" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">
+                <em>No view modifier</em>
+              </SelectItem>
+              <SelectItem value="hideForeign">Hide setup of others</SelectItem>
+              <SelectItem value="grayscaleForeign">
+                Grayscale setup of others
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        )}
+      </div>
       <div className="flex flex-col gap-1 px-2 rounded bg-background">
         {availableOperators.length > 0 && (
           <div className="flex gap-2 justify-center items-center">
@@ -177,7 +244,27 @@ export default function StratDisplay(props: StratDisplayProps) {
         <>
           <div className="flex-1 relative h-screen overflow-hidden py-0 block">
             <div className="relative h-full w-full flex items-center justify-center">
-              <StratViewer strat={props.strat} team={props.team} />
+              <StratViewer
+                strat={props.strat}
+                team={props.team}
+                assetModifier={
+                  viewModifier === "hideForeign"
+                    ? (assets) =>
+                        assets.filter(
+                          (asset) => asset.stratPositionID === stratPosition?.id
+                        )
+                    : viewModifier === "grayscaleForeign"
+                    ? (assets) =>
+                        assets.map((asset) => ({
+                          ...asset,
+                          ...(asset.stratPositionID !== stratPosition?.id && {
+                            stratPositionID: undefined,
+                            customColor: undefined,
+                          }),
+                        }))
+                    : undefined
+                }
+              />
             </div>
           </div>
           {Details}
