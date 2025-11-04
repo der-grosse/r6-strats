@@ -41,11 +41,11 @@ export default function SVGAsset({
       onClick={(e) => {
         e.stopPropagation();
       }}
-      className={cn(readonly && "select-none")}
+      className={cn(!readonly && "select-none")}
     >
       <g
         transform={`rotate(${rotation} ${size.width / 2} ${size.height / 2})`}
-        className={cn(readonly && "cursor-move")}
+        className={cn(!readonly && "cursor-move")}
       >
         <foreignObject
           width={size.width}

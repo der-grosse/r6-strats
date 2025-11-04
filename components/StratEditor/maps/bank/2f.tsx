@@ -307,6 +307,16 @@ export default function Bank2F(props: MapFloorClickableProps) {
           data-type="hatch"
           onClick={onClickHandler}
         />
+        <rect
+          x="1030.64"
+          y="1945.64"
+          width="78.7199999999998"
+          height="77.7199999999998"
+          fill="transparent"
+          stroke="none"
+          data-type="hatch"
+          onClick={onClickHandler}
+        />
         {/* hatches end */}
       </g>
     </svg>
