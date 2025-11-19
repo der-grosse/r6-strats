@@ -105,6 +105,20 @@ const MAPS: R6Map[] = [
     ],
   },
   {
+    name: "Fortress",
+    sites: ["2F Games", "2F Bathroom", "1F Cafeteria", "1F Sitting"],
+    floors: [
+      {
+        floor: "1F",
+        src: "/map_blueprints/fortress/1f.png",
+      },
+      {
+        floor: "2F",
+        src: "/map_blueprints/fortress/2f.png",
+      },
+    ],
+  },
+  {
     name: "Kafe",
     sites: ["3F Cocktail", "1F Kitchen", "2F Reading", "2F Mining"],
     floors: [
