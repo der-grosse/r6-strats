@@ -12,6 +12,7 @@ You can use the tool for free at [r6-strats.com](https://r6-strats.com).
 ### Strat Attributes Editor
 
 - strat position change position when selecting different positions
+- Make current google drawing integration more generic to work with other editors
 
 ### Drag and Drop Strat Editor
 
@@ -53,5 +54,6 @@ You can use the tool for free at [r6-strats.com](https://r6-strats.com).
 
 ### Misc
 
+- add landing page
 - add default strats
 - add link sharing for active strat
