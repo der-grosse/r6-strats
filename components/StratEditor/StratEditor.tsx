@@ -12,8 +12,8 @@ import {
 } from "@/src/strats/strats";
 import { useKeys } from "../hooks/useKey";
 import { deepCopy, deepEqual } from "../Objects";
-import { useSocket } from "../context/SocketContext";
-import useSocketEvent from "../hooks/useSocketEvent";
+// import { useSocket } from "../context/SocketContext";
+// import useSocketEvent from "../hooks/useSocketEvent";
 import { toast } from "sonner";
 import { useUser } from "../context/UserContext";
 import StratDisplay from "../StratDisplay/StratDisplay";
@@ -94,15 +94,15 @@ export function StratEditor({
   }, [strat.id]);
 
   const { user } = useUser();
-  const socket = useSocket();
+  // const socket = useSocket();
 
   // Subscribe to socket events
-  useEffect(() => {
-    socket.emit("strat-editor:subscribe", strat.id);
-    return () => {
-      socket.emit("strat-editor:unsubscribe", strat.id);
-    };
-  }, [strat.id]);
+  // useEffect(() => {
+  //   socket.emit("strat-editor:subscribe", strat.id);
+  //   return () => {
+  //     socket.emit("strat-editor:unsubscribe", strat.id);
+  //   };
+  // }, [strat.id]);
 
   const [assets, setAssets] = useState<PlacedAsset[]>(strat.assets);
   const getHightestID = useCallback(
@@ -139,22 +139,22 @@ export function StratEditor({
       historyIndex.current -= 1;
     }
 
-    if (!fromRemote) {
-      socket.emit("strat-editor:event", strat.id, event);
-    }
+    // if (!fromRemote) {
+    //   socket.emit("strat-editor:event", strat.id, event);
+    // }
   }, []);
 
-  useSocketEvent("strat-editor:event", (event, fromSocket) => {
-    if (fromSocket === socket.id) return;
-    redoEvent(strat.id, event, setAssets, setSelected, true);
-  });
+  // useSocketEvent("strat-editor:event", (event, fromSocket) => {
+  //   if (fromSocket === socket.id) return;
+  //   redoEvent(strat.id, event, setAssets, setSelected, true);
+  // });
 
   const redo = useCallback(() => {
     if (historyIndex.current < history.current.length - 1) {
       historyIndex.current += 1;
       const event = history.current[historyIndex.current];
       redoEvent(strat.id, event, setAssets, setSelected);
-      socket.emit("strat-editor:event", strat.id, event);
+      // socket.emit("strat-editor:event", strat.id, event);
     }
   }, [
     setAssets,
@@ -170,7 +170,7 @@ export function StratEditor({
       historyIndex.current -= 1;
       undoEvent(strat.id, event, setAssets, setSelected);
       for (const invertedEvent of invertEvent(event)) {
-        socket.emit("strat-editor:event", strat.id, invertedEvent);
+        // socket.emit("strat-editor:event", strat.id, invertedEvent);
       }
     }
   }, [
@@ -268,15 +268,13 @@ export function StratEditor({
           selectedAssets={selected}
           onDeselect={(deselected) => {
             setSelected((selected) =>
-              selected.filter(
-                (s) => s.socketID !== socket.id || !deselected.includes(s.id)
-              )
+              selected.filter((s) => !deselected.includes(s.id))
             );
             if (user?.id) {
               pushEvent({
                 type: "selection-deselected",
                 selection: deselected,
-                socketID: socket.id!,
+                socketID: "",
                 userID: user.id,
               });
             }
@@ -286,7 +284,7 @@ export function StratEditor({
               selected.concat(
                 newSelected.map((id) => ({
                   id,
-                  socketID: socket.id!,
+                  socketID: "",
                   userID: user?.id ?? -1,
                 }))
               )
@@ -295,7 +293,7 @@ export function StratEditor({
               pushEvent({
                 type: "selection-selected",
                 selection: newSelected,
-                socketID: socket.id!,
+                socketID: "",
                 userID: user.id,
               });
           }}

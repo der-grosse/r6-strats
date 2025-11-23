@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "tsx index.ts",
+    "convex": "convex dev",
     "build-server": "esbuild index.ts --bundle --outfile=dist/index.js --platform=node --external:./node_modules/*",
     "build-next": "next build",
     "build": "npm run build-server && npm run build-next",
@@ -36,6 +37,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "convex": "^1.29.3",
     "cookie": "^1.0.2",
     "cookies-next": "^5.1.0",
     "dotenv": "^16.5.0",

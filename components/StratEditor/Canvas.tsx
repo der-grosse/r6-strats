@@ -1,13 +1,12 @@
 "use client";
-import { useRef, useState, useEffect, useMemo, useCallback, act } from "react";
+import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import SVGAsset from "./SVGAsset";
 import { useKeys } from "../hooks/useKey";
 import isKeyDown from "../hooks/isKeyDown";
 import { deepCopy } from "../Objects";
 import MapBackground from "./MapBackground";
 import { Selection } from "./StratEditor";
-import { useUser } from "../context/UserContext";
-import { useSocket } from "../context/SocketContext";
+// import { useSocket } from "../context/SocketContext";
 
 interface CanvasAsset {
   id: string;
@@ -64,13 +63,17 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
     };
   }
 
-  const socket = useSocket();
+  // const socket = useSocket();
 
   const userSelectedAssets = useMemo(
-    () =>
-      selectedAssets.filter((s) => s.socketID === socket.id).map((s) => s.id),
-    [selectedAssets, socket]
+    () => selectedAssets.map((s) => s.id),
+    [selectedAssets]
   );
+  // const userSelectedAssets = useMemo(
+  //   () =>
+  //     selectedAssets.filter((s) => s.socketID === socket.id).map((s) => s.id),
+  //   [selectedAssets, socket]
+  // );
 
   const [assets, setAssets] = useState<A[]>(propAssets);
   // update assets when prop changes

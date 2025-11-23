@@ -5,11 +5,10 @@ import { Button } from "@/components/ui/button";
 import { DEFENDERS } from "@/src/static/operator";
 import { Eye, GripVertical, Pencil } from "lucide-react";
 import Link from "next/link";
-import { useSocket } from "@/components/context/SocketContext";
-import { setActive, updateMapIndexes } from "@/src/strats/strats";
+import { updateMapIndexes } from "@/src/strats/strats";
 import { useRouter } from "next/navigation";
 import { CreateStratDialog } from "./CreateStratDialog";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import {
@@ -29,6 +28,8 @@ import {
 } from "@dnd-kit/sortable";
 import { cn } from "@/src/utils";
 import { DeleteStratDialog } from "./DeleteStratDialog";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 const TABLE_SIZES = {
   handle: "5%",
@@ -46,13 +47,16 @@ export default function AllStratsClient({ team }: { team: Team }) {
   const stratsByMap = useMemo(
     () =>
       Object.entries(
-        availableStrats.reduce((acc, strat) => {
-          if (!acc[strat.strat.map]) {
-            acc[strat.strat.map] = [];
-          }
-          acc[strat.strat.map].push(strat);
-          return acc;
-        }, {} as Record<string, typeof availableStrats>)
+        availableStrats.reduce(
+          (acc, strat) => {
+            if (!acc[strat.strat.map]) {
+              acc[strat.strat.map] = [];
+            }
+            acc[strat.strat.map].push(strat);
+            return acc;
+          },
+          {} as Record<string, typeof availableStrats>
+        )
       ),
     [availableStrats]
   );
@@ -210,7 +214,8 @@ function StratItem({
 }) {
   const { isLeading, bannedOps } = useFilter();
   const router = useRouter();
-  const socket = useSocket();
+
+  const setActiveStrat = useMutation(api.activeStrat.set);
 
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: strat.id });
@@ -285,8 +290,7 @@ function StratItem({
               className="cursor-pointer"
               onClick={async () => {
                 if (isLeading) {
-                  await setActive(strat.id);
-                  socket.emit("active-strat:change", strat);
+                  await setActiveStrat({ stratID: strat.id });
                   router.push("/");
                 }
               }}

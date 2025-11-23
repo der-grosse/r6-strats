@@ -1,4 +1,5 @@
 "use client";
+import { ConvexClientProvider } from "@/components/context/ConvexClientProvider";
 import { FilterProvider } from "@/components/context/FilterContext";
 import { Filter } from "@/components/context/FilterContext.functions";
 import { SocketProvider } from "@/components/context/SocketContext";
@@ -6,7 +7,9 @@ import { UserProvider } from "@/components/context/UserContext";
 import { SlotProvider } from "@/components/layout/SlotProvider";
 import { DragProvider } from "@/components/ui/draggable-context";
 import { ResizeProvider } from "@/components/ui/resize-context";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Toaster } from "@/components/ui/sonner";
+import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -19,22 +22,39 @@ export interface ProvidersProps {
 
 export default function Providers(props: Readonly<ProvidersProps>) {
   return (
-    <UserProvider jwt={props.jwt}>
-      <SocketProvider>
-        <FilterProvider
-          defaultFilter={props.cookieFilter}
-          defaultLeading={props.defaultLeading}
-          allStrats={props.allStrats}
-          bannedOps={props.bannedOps}
-        >
-          <SlotProvider>
-            <DragProvider>
-              <ResizeProvider>{props.children}</ResizeProvider>
-            </DragProvider>
-            <Toaster />
-          </SlotProvider>
-        </FilterProvider>
-      </SocketProvider>
-    </UserProvider>
+    <ConvexClientProvider>
+      <Authenticated>
+        <UserProvider jwt={props.jwt}>
+          {/* <SocketProvider> */}
+          <FilterProvider
+            defaultFilter={props.cookieFilter}
+            defaultLeading={props.defaultLeading}
+            allStrats={props.allStrats}
+            bannedOps={props.bannedOps}
+          >
+            <SlotProvider>
+              <DragProvider>
+                <ResizeProvider>{props.children}</ResizeProvider>
+              </DragProvider>
+              <Toaster />
+            </SlotProvider>
+          </FilterProvider>
+          {/* </SocketProvider> */}
+        </UserProvider>
+      </Authenticated>
+      <Unauthenticated>
+        <div className="m-4">
+          <h2 className="mb-2 text-2xl font-bold">You are not logged in</h2>
+          <p className="text-md">
+            Please log in to access the application features.
+          </p>
+        </div>
+      </Unauthenticated>
+      <AuthLoading>
+        <div className="m-4">
+          <Skeleton className="w-full h-full" />
+        </div>
+      </AuthLoading>
+    </ConvexClientProvider>
   );
 }

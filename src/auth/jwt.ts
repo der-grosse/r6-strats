@@ -58,7 +58,10 @@ export async function generateJWT(user: JWTPayload) {
     teamID: user.teamID,
     isAdmin: user.isAdmin,
   })
-    .setProtectedHeader({ alg: "RS256" })
+    .setSubject(user.id.toString())
+    .setProtectedHeader({ alg: "RS256", kid: "r6-strats-key-1" })
+    .setAudience("r6-strats")
+    .setIssuer("https://r6-strats.com")
     .setIssuedAt()
     .setExpirationTime(
       new Date(new Date().setFullYear(new Date().getFullYear() + 1))

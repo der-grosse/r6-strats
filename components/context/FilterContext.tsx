@@ -13,8 +13,8 @@ import {
   FILTER_COOKIE_KEY,
   LEADING_COOKIE_KEY,
 } from "./FilterContext.functions";
-import useSocketEvent from "../hooks/useSocketEvent";
-import { useSocket } from "./SocketContext";
+// import useSocketEvent from "../hooks/useSocketEvent";
+// import { useSocket } from "./SocketContext";
 import { deepEqual } from "../Objects";
 import { setBannedOps } from "@/src/bannedOps/bannedOps";
 
@@ -44,7 +44,7 @@ export const FilterProvider: React.FC<{
   defaultLeading,
   bannedOps: propBannedOps,
 }) => {
-  const socket = useSocket();
+  // const socket = useSocket();
 
   const [bannedOps, setBannedOpsState] = useState<string[]>(
     propBannedOps ?? []
@@ -70,23 +70,23 @@ export const FilterProvider: React.FC<{
     defaultLeading ?? Cookie.get(LEADING_COOKIE_KEY) === "true"
   );
 
-  useSocketEvent("operator-bans:changed", (bans) => {
-    setBannedOpsState((prev) => {
-      if (deepEqual(prev, bans)) return prev;
-      return bans;
-    });
-  });
+  // useSocketEvent("operator-bans:changed", (bans) => {
+  //   setBannedOpsState((prev) => {
+  //     if (deepEqual(prev, bans)) return prev;
+  //     return bans;
+  //   });
+  // });
   // push banned ops filter change to socket
   useEffect(() => {
     if (!isLeading) return;
-    socket.emit("operator-bans:change", bannedOps);
+    // socket.emit("operator-bans:change", bannedOps);
     setBannedOps(bannedOps);
   }, [bannedOps.join("|"), isLeading]);
   // subscribe to operator bans socket
   useEffect(() => {
-    socket.emit("operator-bans:subscribe");
+    // socket.emit("operator-bans:subscribe");
     return () => {
-      socket.emit("operator-bans:unsubscribe");
+      // socket.emit("operator-bans:unsubscribe");
     };
   }, []);
 
