@@ -1,0 +1,13 @@
+{
+  "keys": [
+    {
+      "kty": "RSA",
+      "alg": "RS256",
+      "key_ops": ["verify"],
+      "kid": "r6-strats-key-1",
+      "use": "sig",
+      "n": "mbnN6Am75YafSkJhs7di4cempvOXBaqGbX7Vmo_vn0esM8UCed5XX3_KS_K5DyoFPyLWfmMK8XaLi6RoixxQPoNWS9ISKkSaUhPMpvgKAAvb4izHGUx6AMcF06X79i-jPklSBnI-M2Y7soaPNMCoLo4GJzs22B-KDbMzpNrcsk2rO6e_ZnB5UHTnamjHFiOcSQm3vcICeL-02_zPt5MU_EenJFuCj2zQMslI6YqBQk634YeUV7Yk0pGeJXQMLjmfG46LI7vRSd5hTc9hre_32fOAR1dGhCh7Xsq8SVFi67-X960uYABG3mPl3u6LxWiP8oMWRwIbuPmTe6yVJUWzSw",
+      "e": "AQAB"
+    }
+  ]
+}

@@ -44,3 +44,5 @@ next-env.d.ts
 _backup/*
 postgres_data/*
 dist/*
+# convex
+convex/_generated

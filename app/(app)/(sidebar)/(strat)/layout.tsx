@@ -34,9 +34,9 @@ import {
 import SidebarStrats from "./SidebarStrats";
 import { useRouter } from "next/navigation";
 import { useFilter } from "@/components/context/FilterContext";
-import { setActive } from "@/src/strats/strats";
-import { useSocket } from "@/components/context/SocketContext";
 import { cn } from "@/src/utils";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export default function StratsLayout({
   children,
@@ -44,7 +44,7 @@ export default function StratsLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const socket = useSocket();
+  const setActiveStrat = useMutation(api.activeStrat.set);
   const {
     filter,
     setFilter,
@@ -141,8 +141,7 @@ export default function StratsLayout({
                       strats={filteredStrats}
                       onSelect={async (strat) => {
                         if (isLeading) {
-                          await setActive(strat.id);
-                          socket.emit("active-strat:change", strat);
+                          await setActiveStrat({ stratID: strat.id });
                           if (window.location.pathname !== "/") {
                             router.push("/");
                           }
@@ -205,8 +204,7 @@ export default function StratsLayout({
                     )}
                     onClick={() => {
                       if (!isLeading) return;
-                      setActive(null);
-                      socket.emit("active-strat:change", null);
+                      setActiveStrat({ stratID: null });
                     }}
                   >
                     <X className={cn(!isLeading && "text-muted-foreground")} />

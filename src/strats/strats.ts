@@ -97,7 +97,8 @@ export async function archiveStrat(stratId: number) {
 
 export async function getAllStrats() {
   const user = await getPayload();
-  return StratsDB.list(user!);
+  if (!user) throw new Error("User not found");
+  return StratsDB.list(user);
 }
 
 export async function getStrat(id: number) {
