@@ -1,46 +1,57 @@
-# Rainbow Six Siege Strat Editor
+# Rainbow Six Siege Strat Organizer and Editor
 
-This is a web application to create and share strategies for Rainbow Six Siege. You can assign operators, set gadget positions, what should be reinforced and more. The strats can be shared with your team and filtered by for your currrent map, site and banend operators.
-You can access the tool youself at [r6-strats.com](https://r6-strats.com).
+This is a web application to create and share strategies for Rainbow Six Siege. It is specifically designed to be used by the IGL during a match to display the currently played strat to the entire team. You can assign operators, set gadget positions, what should be reinforced and more. The strats can be shared with your team and filtered by for your currrent map, site and banend operators.
+You can use the tool for free at [r6-strats.com](https://r6-strats.com).
 
-## TODOs
+## Planned Features
 
 ### Bugs
 
-no known bugs :)
+- editor saving and collaboration bugs
 
 ### Strat Attributes Editor
 
+- strat position change position when selecting different positions
+
 ### Drag and Drop Strat Editor
 
-- click and drag for selecting mulptiple elements at once
-- CTRL+d to duplicate selected elements
-- CTRL-C and CTRL-V to copy and paste selected elements
-- edit attributes of multiple assets at once
+#### Saving and Collaboration
+
+- fix saving
+- fix collaboration issues -> use convex?
+
+#### Selection and Manipulation
+
+- scrubbing for selecting mulptiple elements at once
+- CTRL+D to duplicate selected elements
+- CTRL+C and CTRL+V to copy and paste selected elements
+- edit attributes of all selected multiple assets at once
 - make asset ordering consistent
-- bring to front / send to back for selected elements
-- Text Asset
+  - bring to front / send to back for selected elements
+- arrow keys for fine adjustment of selected elements
+
+#### Feature Additions
+
+- Textbox Asset
+- Arrow Asset
+- Embed images -> via external link
 - variable width barricades
-- make doors, windows and walls clickable to easily add assets
+- change between rotation and reinforcement for walls in asset menu
+- change between barricade, castle in asset menu
 - add selector for current player in sidebar -> this player gets assigned all new added assets
-- add toggle for floors of map
 - add new map blueprints
   - clubhouse 1f windows missing / wrong asset
-- somehow add alternatives for strat
+- add different stages for round -> fallback positions or strat alternatives
+- add bombsite indicator
+
+#### Map View
+
+- add toggle for floors of map
 - operator icons with small rectangle shapes clip outside
 - zoom slider
 - scroll bars when zoomed in
-- make notes / upload screenshots for specific assets (maybe image links instead of file upload)
-- add bombsite indicator
-- arrow keys for fine adjustment of selected elements
-
-### Strat View
-
-- show description of strat
-- highlight strats that have invalid configurations for shotgun ops or secondary gadgets -> maybe happened due to season update
-
-### User Management
 
 ### Misc
 
 - add default strats
+- add link sharing for active strat
