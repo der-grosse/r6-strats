@@ -1,4 +1,4 @@
-import { DEFAULT_COLORS } from "@/src/static/colors";
+import { DEFAULT_COLORS } from "@/lib/static/colors";
 import { useMemo } from "react";
 
 export default function AssetOutline(props: {

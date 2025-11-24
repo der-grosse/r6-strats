@@ -14,7 +14,7 @@ import {
   LEADING_COOKIE_KEY,
 } from "./FilterContext.functions";
 import { deepEqual } from "../Objects";
-import { setBannedOps } from "@/src/bannedOps/bannedOps";
+import { setBannedOps } from "@/lib/bannedOps/bannedOps";
 
 interface FilterContextType {
   filter: Filter;

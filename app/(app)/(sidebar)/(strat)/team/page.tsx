@@ -1,6 +1,6 @@
-import { getPayload } from "@/src/auth/getPayload";
-import { getInviteKeys } from "@/src/auth/inviteKeys";
-import { getTeam } from "@/src/auth/team";
+import { getPayload } from "@/lib/auth/getPayload";
+import { getInviteKeys } from "@/lib/auth/inviteKeys";
+import { getTeam } from "@/lib/auth/team";
 import { Metadata } from "next";
 import TeamInfo from "./TeamInfo";
 import TeamMembers from "./TeamMembers";

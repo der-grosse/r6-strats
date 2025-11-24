@@ -1,5 +1,5 @@
-import { verifyJWT } from "@/src/auth/jwt";
-import { getTeam } from "@/src/auth/team";
+import { verifyJWT } from "@/lib/auth/jwt";
+import { getTeam } from "@/lib/auth/team";
 
 export async function GET(request: Request) {
   const jwt = request.headers.get("Authorization")?.split(" ")[1];

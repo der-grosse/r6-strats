@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { login } from "@/src/auth/auth";
+import { login } from "@/lib/auth/auth";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { CircleX } from "lucide-react";

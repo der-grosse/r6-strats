@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import useMountAssets from "./Assets";
 import StratEditorCanvas from "./Canvas";
-import MAPS from "@/src/static/maps";
+import MAPS from "@/lib/static/maps";
 
 export interface StratViewerProps {
   strat: Strat;

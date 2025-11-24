@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/table";
 import { Copy, Eye, EyeOff, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { createInviteKey, deleteInviteKey } from "@/src/auth/inviteKeys";
+import { createInviteKey, deleteInviteKey } from "@/lib/auth/inviteKeys";
 import { useState } from "react";
 
 export interface TeamInviteKeysProps {

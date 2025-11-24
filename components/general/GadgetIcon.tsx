@@ -3,7 +3,7 @@ import {
   DEFENDER_SECONDARY_GADGETS,
   DefenderSecondaryGadget,
   PrimaryGadget,
-} from "@/src/static/operator";
+} from "@/lib/static/operator";
 import PrimaryGadgetIcon from "./PrimaryGadgetIcon";
 import SecondaryGadgetIcon from "./SecondaryGadgetIcon";
 

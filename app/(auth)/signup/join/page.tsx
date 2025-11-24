@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { register } from "@/src/auth/auth";
+import { register } from "@/lib/auth/auth";
 import { useRouter, useSearchParams } from "next/navigation";
-import { cn } from "@/src/utils";
+import { cn } from "@/lib/utils";
 
 export default function JoinTeam() {
   const router = useRouter();

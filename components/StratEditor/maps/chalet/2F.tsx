@@ -1,4 +1,4 @@
-import { cn } from "@/src/utils";
+import { cn } from "@/lib/utils";
 import FloorClickablerClickHandler from "../clickHandler";
 
 export default function Chalet2F(props: MapFloorClickableProps) {

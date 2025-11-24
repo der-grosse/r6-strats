@@ -1,6 +1,6 @@
 "use client";
 import { useRef } from "react";
-import { cn } from "@/src/utils";
+import { cn } from "@/lib/utils";
 import { useUser } from "../context/UserContext";
 
 interface SVGAssetProps {

@@ -7,10 +7,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useState } from "react";
-import { setMemberColor } from "@/src/auth/team";
+import { setMemberColor } from "@/lib/auth/team";
 import ColorPickerDialog from "@/components/general/ColorPickerDialog";
 import TeamMemberList from "./TeamMemberList";
-import { DEFAULT_COLORS } from "@/src/static/colors";
+import { DEFAULT_COLORS } from "@/lib/static/colors";
 import ChangeUbisoftIDDialog from "./ChangeUbisoftIDDialog";
 
 export interface TeamMembersProps {

@@ -9,8 +9,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { updatePickedOperator } from "@/src/strats/strats";
-import { cn } from "@/src/utils";
+import { updatePickedOperator } from "@/lib/strats/strats";
+import { cn } from "@/lib/utils";
 import { BrickWall, GripVertical, Plus, X, Zap, ZapOff } from "lucide-react";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
@@ -33,7 +33,7 @@ import { forwardRef, useState } from "react";
 import { useEffect } from "react";
 import Shotgun from "../assets/Shotgun";
 import SecondaryGadgetPicker from "@/components/general/SecondaryGadgetPicker";
-import { DEFENDERS, DefenderSecondaryGadget } from "@/src/static/operator";
+import { DEFENDERS, DefenderSecondaryGadget } from "@/lib/static/operator";
 
 export interface StratPositionItemProps {
   stratID: Strat["id"];

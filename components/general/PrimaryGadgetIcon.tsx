@@ -1,5 +1,5 @@
-import { DEFENDER_PRIMARY_GADGETS, PrimaryGadget } from "@/src/static/operator";
-import { cn } from "@/src/utils";
+import { DEFENDER_PRIMARY_GADGETS, PrimaryGadget } from "@/lib/static/operator";
+import { cn } from "@/lib/utils";
 
 export interface PrimaryGadgetIconProps {
   id: PrimaryGadget["id"];

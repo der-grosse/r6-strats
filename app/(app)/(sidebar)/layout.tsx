@@ -1,4 +1,4 @@
-import { getTeam } from "@/src/auth/team";
+import { getTeam } from "@/lib/auth/team";
 import SidebarLayout from "./SidebarLayout";
 
 export default async function SidebarLayoutPage({

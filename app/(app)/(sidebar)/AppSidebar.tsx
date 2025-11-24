@@ -29,7 +29,7 @@ import {
 } from "../../../components/ui/collapsible";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { logout } from "@/src/auth/auth";
+import { logout } from "@/lib/auth/auth";
 import { Slot } from "@/components/layout/Slot";
 
 export function AppSidebar(props: { teamName: string }) {

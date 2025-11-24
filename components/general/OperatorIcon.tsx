@@ -3,8 +3,8 @@ import {
   ATTACKERS,
   Defender,
   DEFENDERS,
-} from "@/src/static/operator";
-import { cn } from "@/src/utils";
+} from "@/lib/static/operator";
+import { cn } from "@/lib/utils";
 
 export interface OperatorIconProps {
   op: Attacker | Defender | string;

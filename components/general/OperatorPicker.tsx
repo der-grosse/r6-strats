@@ -1,5 +1,5 @@
 "use client";
-import { DEFENDERS } from "@/src/static/operator";
+import { DEFENDERS } from "@/lib/static/operator";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import OperatorIcon from "./OperatorIcon";
 import { Check, ChevronRight } from "lucide-react";
@@ -16,7 +16,7 @@ import { useRef, useState } from "react";
 
 export interface OperatorPickerProps<
   Multiple extends boolean,
-  Value extends Multiple extends true ? string[] : string | null
+  Value extends Multiple extends true ? string[] : string | null,
 > {
   multiple?: Multiple;
   selected: Value;
@@ -33,7 +33,7 @@ export default function OperatorPicker<
   Multiple extends boolean = false,
   Value extends Multiple extends true
     ? string[]
-    : string | null = Multiple extends true ? string[] : string | null
+    : string | null = Multiple extends true ? string[] : string | null,
 >({
   selected,
   trigger: Trigger,
@@ -99,8 +99,8 @@ export default function OperatorPicker<
                       ? -1
                       : 1
                     : selected === a.name
-                    ? -1
-                    : 1
+                      ? -1
+                      : 1
                 )
                 .map((op) => (
                   <CommandItem

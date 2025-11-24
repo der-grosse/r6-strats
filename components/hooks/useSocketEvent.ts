@@ -1,5 +1,5 @@
 "use client";
-import { ServerToClientSocketEvents } from "@/src/socket/types";
+import { ServerToClientSocketEvents } from "@/lib/socket/types";
 import { useEffect } from "react";
 import { useSocket } from "../context/SocketContext";
 

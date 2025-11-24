@@ -16,8 +16,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { changeUbisoftID } from "@/src/auth/team";
-import { checkUbisoftID } from "@/src/ubisoft/ubi";
+import { changeUbisoftID } from "@/lib/auth/team";
+import { checkUbisoftID } from "@/lib/ubisoft/ubi";
 import { Check, X } from "lucide-react";
 import { useState } from "react";
 

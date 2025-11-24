@@ -1,8 +1,8 @@
 import {
   DEFENDER_SECONDARY_GADGETS,
   DefenderSecondaryGadget,
-} from "@/src/static/operator";
-import { cn } from "@/src/utils";
+} from "@/lib/static/operator";
+import { cn } from "@/lib/utils";
 
 export interface SecondaryGadgetIconProps {
   id: DefenderSecondaryGadget;

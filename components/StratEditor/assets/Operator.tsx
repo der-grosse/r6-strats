@@ -1,6 +1,6 @@
 import OperatorIcon from "@/components/general/OperatorIcon";
 import { getAssetColor } from "../Assets";
-import { cn } from "@/src/utils";
+import { cn } from "@/lib/utils";
 
 export interface OperatorProps {
   asset: Pick<

@@ -1,13 +1,13 @@
 "use server";
 
-import db from "@/src/db/db";
+import db from "@/lib/db/db";
 import {
   pickedOperators,
   playerPositions,
   stratPositions,
   strats,
-} from "@/src/db/schema";
-import { getPayload } from "@/src/auth/getPayload";
+} from "@/lib/db/schema";
+import { getPayload } from "@/lib/auth/getPayload";
 import { and, eq, is, max } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import StratsDB from "./stratsDB";

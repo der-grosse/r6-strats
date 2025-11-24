@@ -30,8 +30,8 @@ import {
   changePassword,
   changeUbisoftID,
   changeUsername,
-} from "@/src/auth/team";
-import { checkUbisoftID } from "@/src/ubisoft/ubi";
+} from "@/lib/auth/team";
+import { checkUbisoftID } from "@/lib/ubisoft/ubi";
 import { Check, RotateCcwKey, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";

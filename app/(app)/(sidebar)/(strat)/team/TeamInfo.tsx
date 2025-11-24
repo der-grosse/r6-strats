@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useRef, useState } from "react";
-import { updateTeamName } from "@/src/auth/team";
+import { updateTeamName } from "@/lib/auth/team";
 import { Edit2, Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";

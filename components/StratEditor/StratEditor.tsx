@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import MAPS from "@/src/static/maps";
+import MAPS from "@/lib/static/maps";
 import StratEditorLayout from "./Layout";
 import StratEditorCanvas, { ASSET_BASE_SIZE, CANVAS_BASE_SIZE } from "./Canvas";
 import useMountAssets from "./Assets";
@@ -9,7 +9,7 @@ import {
   deleteStratAssets,
   getStrat,
   updateStratAssets,
-} from "@/src/strats/strats";
+} from "@/lib/strats/strats";
 import { useKeys } from "../hooks/useKey";
 import { deepCopy, deepEqual } from "../Objects";
 // import { useSocket } from "../context/SocketContext";

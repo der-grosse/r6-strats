@@ -30,15 +30,15 @@ import { Info, Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { createStrat } from "@/src/strats/strats";
+import { createStrat } from "@/lib/strats/strats";
 import { toast } from "sonner";
-import MAPS from "@/src/static/maps";
+import MAPS from "@/lib/static/maps";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { extractDrawingID } from "@/src/googleDrawings";
+import { extractDrawingID } from "@/lib/googleDrawings";
 
 const formSchema = z.object({
   map: z.string().min(1, "Map is required"),
