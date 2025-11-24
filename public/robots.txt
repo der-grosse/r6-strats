@@ -3,4 +3,4 @@ User-agent: *
 Disallow: /
 
 # Allow all auth routes
-Allow: /auth
+Allow: /login

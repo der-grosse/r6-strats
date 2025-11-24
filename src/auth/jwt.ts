@@ -1,6 +1,7 @@
 "use server";
 import * as jwt from "jose";
 import { PHASE_PRODUCTION_BUILD } from "next/constants";
+import { cookies } from "next/headers";
 // These should be set as environment variables in your deployment platform
 const JWT_PRIVATE_KEY = process.env.JWT_PRIVATE_KEY;
 const JWT_PUBLIC_KEY = process.env.JWT_PUBLIC_KEY;
@@ -38,27 +39,33 @@ export async function verifyJWT(token: string) {
     throw new Error("JWT public key not initialized");
   }
   try {
-    const decoded = await jwt.jwtVerify<JWTPayload>(token, publicKey, {
+    const decoded = await jwt.jwtVerify<AllJWTPayloads>(token, publicKey, {
       algorithms: ["RS256"],
     });
-    return decoded.payload;
+    if (!("v" in decoded.payload) || decoded.payload.v !== "2.0") {
+      console.info("Unsupported JWT version:", decoded.payload);
+      (await cookies()).delete("jwt");
+      return null;
+    }
+    return decoded.payload as JWTPayload;
   } catch (err) {
     console.info("JWT verification failed:", err);
     return null;
   }
 }
 
-export async function generateJWT(user: JWTPayload) {
+export async function generateJWT(user: Omit<JWTPayload, "v">) {
   if (!privateKey) {
     throw new Error("JWT private key not initialized");
   }
   const token = await new jwt.SignJWT({
-    id: user.id,
+    v: "2.0",
+    _id: user._id,
     name: user.name,
-    teamID: user.teamID,
-    isAdmin: user.isAdmin,
-  })
-    .setSubject(user.id.toString())
+    teams: user.teams,
+    activeTeamID: user.activeTeamID,
+  } satisfies JWTPayload)
+    .setSubject(user._id.toString())
     .setProtectedHeader({ alg: "RS256", kid: "r6-strats-key-1" })
     .setAudience("r6-strats")
     .setIssuer("https://r6-strats.com")

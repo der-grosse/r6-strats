@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "tsx index.ts",
+    "dev": "next dev",
     "convex": "convex dev",
     "build-server": "esbuild index.ts --bundle --outfile=dist/index.js --platform=node --external:./node_modules/*",
     "build-next": "next build",
@@ -14,7 +14,7 @@
     "typecheck": "tsc --noEmit",
     "push-sql-schema": "drizzle-kit push --config ./drizzle.config.ts",
     "generate-jwt-key": "tsx scripts/generate-keys.ts",
-    "test:socket": "node scripts/test-socket.mjs"
+    "generate-server-jwt": "tsx scripts/generate-server-jwt.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

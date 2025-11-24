@@ -5,26 +5,28 @@ import { requireUser } from "./auth";
 export const get = query({
   args: {},
   async handler(ctx) {
-    const { teamID } = await requireUser(ctx);
+    const { activeTeamID } = await requireUser(ctx);
+    if (!activeTeamID) return null;
 
     const activeStratDoc = await ctx.db
-      .query("activeStrat")
-      .withIndex("byTeam", (q) => q.eq("teamID", teamID))
+      .query("activeStrats")
+      .withIndex("byTeam", (q) => q.eq("teamID", activeTeamID))
       .first();
-    if (!activeStratDoc || activeStratDoc.teamID !== teamID) return null;
+    if (!activeStratDoc || activeStratDoc.teamID !== activeTeamID) return null;
 
     return activeStratDoc.stratID ?? null;
   },
 });
 
 export const set = mutation({
-  args: { stratID: v.union(v.number(), v.null()) },
+  args: { stratID: v.union(v.id("strats"), v.null()) },
   async handler(ctx, { stratID }) {
-    const { teamID } = await requireUser(ctx);
+    const { activeTeamID } = await requireUser(ctx);
+    if (!activeTeamID) throw new Error("No active team set");
 
     const existing = await ctx.db
-      .query("activeStrat")
-      .withIndex("byTeam", (q) => q.eq("teamID", teamID))
+      .query("activeStrats")
+      .withIndex("byTeam", (q) => q.eq("teamID", activeTeamID))
       .first();
 
     // Delete currently active strat if null/undefined passed
@@ -39,7 +41,7 @@ export const set = mutation({
     if (existing) {
       await ctx.db.patch(existing._id, { stratID });
     } else {
-      await ctx.db.insert("activeStrat", { teamID, stratID });
+      await ctx.db.insert("activeStrats", { teamID: activeTeamID, stratID });
     }
 
     return stratID;

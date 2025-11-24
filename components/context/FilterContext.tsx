@@ -13,8 +13,6 @@ import {
   FILTER_COOKIE_KEY,
   LEADING_COOKIE_KEY,
 } from "./FilterContext.functions";
-// import useSocketEvent from "../hooks/useSocketEvent";
-// import { useSocket } from "./SocketContext";
 import { deepEqual } from "../Objects";
 import { setBannedOps } from "@/src/bannedOps/bannedOps";
 
@@ -44,8 +42,6 @@ export const FilterProvider: React.FC<{
   defaultLeading,
   bannedOps: propBannedOps,
 }) => {
-  // const socket = useSocket();
-
   const [bannedOps, setBannedOpsState] = useState<string[]>(
     propBannedOps ?? []
   );
@@ -80,6 +76,7 @@ export const FilterProvider: React.FC<{
   useEffect(() => {
     if (!isLeading) return;
     // socket.emit("operator-bans:change", bannedOps);
+
     setBannedOps(bannedOps);
   }, [bannedOps.join("|"), isLeading]);
   // subscribe to operator bans socket

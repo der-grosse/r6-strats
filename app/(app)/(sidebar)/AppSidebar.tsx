@@ -52,7 +52,7 @@ export function AppSidebar(props: { teamName: string }) {
             size="icon"
             onClick={async () => {
               await logout();
-              router.push("/auth");
+              router.push("/login");
             }}
           >
             <LogOut className="h-5 w-5" />

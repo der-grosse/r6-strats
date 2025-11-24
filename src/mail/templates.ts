@@ -322,9 +322,9 @@ export const PASSWORD_RESET_MAIL_TEMPLATE = (
                                   valign="middle"
                                 >
                                   <a
-                                    href="https://r6-strats.com/auth/reset-password/${token}?email=${encodeURIComponent(
-  email
-)}"
+                                    href="https://r6-strats.com/reset-password/${token}?email=${encodeURIComponent(
+                                      email
+                                    )}"
                                     style="
                                       display: inline-block;
                                       background: #29292c;
@@ -378,9 +378,9 @@ export const PASSWORD_RESET_MAIL_TEMPLATE = (
                               "
                             >
                               <span style="color: rgb(119, 119, 121)"
-                                >https://r6-strats.com/auth/reset-password/${token}?email=${encodeURIComponent(
-  email
-)}</span
+                                >https://r6-strats.com/reset-password/${token}?email=${encodeURIComponent(
+                                  email
+                                )}</span
                               >
                             </p>
                           </div>

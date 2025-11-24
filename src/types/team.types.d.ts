@@ -24,13 +24,6 @@ interface TeamMember {
   ubisoftID: string | null;
 }
 
-interface JWTPayload {
-  id: number;
-  name: string;
-  teamID: number;
-  isAdmin: boolean;
-}
-
 interface InviteKey {
   inviteKey: string;
   teamID: number;

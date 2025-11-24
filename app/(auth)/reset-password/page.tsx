@@ -63,7 +63,7 @@ export default function ResetPassword(props: ResetPasswordProps) {
       </Button>
       <p className="text-sm text-muted-foreground">
         <Link
-          href="/auth"
+          href="/login"
           className="text-primary hover:text-primary/90 hover:underline"
         >
           Back to login

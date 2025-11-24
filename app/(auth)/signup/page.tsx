@@ -20,7 +20,7 @@ export default function Signup() {
           <p className="mt-2 text-center text-sm text-muted-foreground">
             Or{" "}
             <Link
-              href="/auth"
+              href="/login"
               className="font-medium text-primary hover:text-primary/90 hover:underline"
             >
               sign in to your existing team
@@ -38,7 +38,7 @@ export default function Signup() {
             </CardHeader>
             <CardContent>
               <Button asChild className="w-full">
-                <Link href="/auth/signup/create">Create Team</Link>
+                <Link href="/signup/create">Create Team</Link>
               </Button>
             </CardContent>
           </Card>
@@ -52,7 +52,7 @@ export default function Signup() {
             </CardHeader>
             <CardContent>
               <Button asChild variant="outline" className="w-full">
-                <Link href="/auth/signup/join">Join Team</Link>
+                <Link href="/signup/join">Join Team</Link>
               </Button>
             </CardContent>
           </Card>
@@ -60,7 +60,7 @@ export default function Signup() {
 
         <div className="flex justify-center">
           <Button asChild variant="ghost">
-            <Link href="/auth">Back to login</Link>
+            <Link href="/login">Back to login</Link>
           </Button>
         </div>
       </div>

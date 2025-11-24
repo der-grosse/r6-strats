@@ -1,12 +1,11 @@
 "use server";
-import { eq } from "drizzle-orm";
-import db from "../db/db";
-import { passwordResetTokens, teamInvites, users } from "../db/schema";
 import * as bcrypt from "bcrypt-ts";
 import { cookies } from "next/headers";
 import { generateJWT } from "./jwt";
 import { getPayload } from "./getPayload";
-import { DEFAULT_COLORS } from "../static/colors";
+import { fetchMutation, fetchQuery } from "convex/nextjs";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { generate } from "random-words";
 import { sendResetEmail } from "../mail/mail";
 
@@ -16,21 +15,27 @@ export async function hashPassword(password: string) {
   return hash;
 }
 
-export async function resetJWT(payload?: JWTPayload) {
+export async function resetJWT(payload?: Omit<JWTPayload, "v">) {
   if (!payload) {
-    const userid = (await getPayload())?.id;
+    const userid = (await getPayload())?._id;
     if (!userid) throw new Error("User not found");
-    const [user] = await db.select().from(users).where(eq(users.id, userid));
+
+    const user = await fetchQuery(
+      api.auth.getSelf,
+      { userID: userid as Id<"users"> },
+      {
+        token: process.env.SERVER_JWT!,
+      }
+    );
+
     if (!user) throw new Error("User not found");
     payload = {
-      id: user.id,
-      isAdmin: user.isAdmin,
+      _id: user._id,
       name: user.name,
-      teamID: user.teamID,
+      teams: user.teams,
     };
   }
   if (!payload) throw new Error("User not found");
-
   const cookie = await cookies();
   cookie.set("jwt", await generateJWT(payload), {
     httpOnly: true,
@@ -39,56 +44,69 @@ export async function resetJWT(payload?: JWTPayload) {
 }
 
 export async function login(name: string, password: string) {
-  const [user] = await db.select().from(users).where(eq(users.name, name));
-
-  if (!user) return null;
-
+  const user = await fetchQuery(
+    api.auth.getFromName,
+    { name },
+    {
+      token: process.env.SERVER_JWT!,
+    }
+  );
+  if (!user) {
+    console.log("User not found during login for name:", name);
+    return null;
+  }
   // hash password and compare with db password
-  const isValid = await bcrypt.compare(password, user.password);
+  const isValid = await bcrypt.compare(password, user.hashedPassword);
   if (!isValid) return null;
-
   await resetJWT(user);
-
   return user;
 }
 
-export async function register(
-  name: string,
-  password: string,
-  invite_key: string
-) {
-  const [invite] = await db
-    .select()
-    .from(teamInvites)
-    .where(eq(teamInvites.inviteKey, invite_key));
-  if (!invite || invite.usedAt) throw new Error("Invalid invite key");
+export async function createTeam(input: {
+  teamName: string;
+  username: string;
+  email?: string;
+  password: string;
+}) {
+  try {
+    const { teamName, username, email, password } = input;
 
-  const [existingUser] = await db
-    .select()
-    .from(users)
-    .where(eq(users.name, name));
-  if (existingUser) throw new Error("Username already taken");
+    const hashedPassword = await hashPassword(password);
 
-  const hash = await hashPassword(password);
-  const [{ id }] = await db
-    .insert(users)
-    .values({
-      name,
-      password: hash,
-      createdAt: new Date().toISOString(),
-      teamID: invite.teamID,
-      isAdmin: false,
-      defaultColor: DEFAULT_COLORS.at(-1),
-    })
-    .returning({ id: users.id });
-  await db
-    .update(teamInvites)
-    .set({
-      usedBy: id,
-      usedAt: new Date().toISOString(),
-    })
-    .where(eq(teamInvites.inviteKey, invite_key));
-  return id as number;
+    const status = await fetchMutation(
+      api.auth.createTeam,
+      { teamName, name: username, email, password: hashedPassword },
+      {
+        token: process.env.SERVER_JWT!,
+      }
+    );
+    return status;
+  } catch (error) {
+    console.error("Signup error:", error);
+    return { error: "Internal server error" };
+  }
+}
+
+export async function register(input: {
+  name: string;
+  email?: string;
+  password: string;
+  invite_key: string;
+}) {
+  const hashedPassword = await hashPassword(input.password);
+
+  await fetchMutation(
+    api.auth.registerToTeam,
+    {
+      name: input.name,
+      email: input.email,
+      password: hashedPassword,
+      inviteKey: input.invite_key,
+    },
+    {
+      token: process.env.SERVER_JWT!,
+    }
+  );
 }
 
 export async function logout() {
@@ -96,85 +114,50 @@ export async function logout() {
   return true;
 }
 
-export async function checkPassword(password: string) {
-  const userid = (await getPayload())?.id;
-  if (!userid) throw new Error("User not found");
-  const [user] = await db.select().from(users).where(eq(users.id, userid));
-  if (!user) throw new Error("User not found");
-  const valid = await bcrypt.compare(password, user.password);
-  return valid;
-}
-
 export async function requestResetPassword(email: string) {
-  const [user] = await db.select().from(users).where(eq(users.email, email));
+  const user = await fetchQuery(
+    api.auth.getFromName,
+    { name: email },
+    {
+      token: process.env.SERVER_JWT!,
+    }
+  );
   if (!user) return true;
-
   const token = generate({ exactly: 5, join: "-" });
   const expiresAt = new Date(Date.now() + 3600 * 1000).toISOString();
-
-  await db.insert(passwordResetTokens).values({
-    token,
-    userID: user.id,
-    expiresAt,
-  });
-
+  await fetchMutation(
+    api.auth.createResetToken,
+    { userID: user._id, token, expiresAt },
+    {
+      token: process.env.SERVER_JWT!,
+    }
+  );
   // Send email with reset link
   await sendResetEmail(email, token);
-
   return true;
 }
 
-const MAX_TOKEN_TRIES = 10;
 export async function resetPassword(
   email: string,
   token: string,
   newPassword: string
 ) {
-  // check if email exists
-  const [user] = await db.select().from(users).where(eq(users.email, email));
-  if (!user) return true;
-
-  // check if token is valid
-  const [resetToken] = await db
-    .select()
-    .from(passwordResetTokens)
-    .where(eq(passwordResetTokens.token, token))
-    .limit(1);
-
-  if (!resetToken) {
-    // if no valid token, check if someone might try to brute force the token and delete token after MAX_TOKEN_TRIES
-    const [validToken] = await db
-      .select()
-      .from(passwordResetTokens)
-      .where(eq(passwordResetTokens.userID, user.id))
-      .limit(1);
-    if (validToken) {
-      const invalidTokenInsertionCounts =
-        validToken.invalidTokenInsertionCounts + 1;
-      if (invalidTokenInsertionCounts >= MAX_TOKEN_TRIES) {
-        console.warn(
-          "Deleting password reset token due to max tries exceeded for userID:",
-          user.id
-        );
-        await db
-          .delete(passwordResetTokens)
-          .where(eq(passwordResetTokens.token, validToken.token));
-      }
+  const user = await fetchQuery(
+    api.auth.getFromName,
+    { name: email },
+    {
+      token: process.env.SERVER_JWT!,
     }
-    throw new Error("Invalid or expired reset token");
-  }
-  if (resetToken.expiresAt < new Date().toISOString())
-    throw new Error("Invalid or expired reset token");
-
+  );
+  if (!user) return true;
   const hashedPassword = await hashPassword(newPassword);
-  await db
-    .update(users)
-    .set({ password: hashedPassword })
-    .where(eq(users.id, resetToken.userID));
+  const result = await fetchMutation(
+    api.auth.checkResetToken,
+    { userID: user._id, token, newPassword: hashedPassword },
+    {
+      token: process.env.SERVER_JWT!,
+    }
+  );
 
-  await db
-    .delete(passwordResetTokens)
-    .where(eq(passwordResetTokens.token, resetToken.token));
-
-  return true;
+  return result;
 }
