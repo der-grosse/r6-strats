@@ -80,7 +80,7 @@ export default function Login() {
       <p className="text-sm text-muted-foreground">
         Don't have an account?{" "}
         <Link
-          href="/auth/signup"
+          href="/signup"
           className="text-primary hover:text-primary/90 hover:underline"
         >
           Create a team or join existing team
@@ -89,7 +89,7 @@ export default function Login() {
       <p className="text-sm text-muted-foreground -mt-3">
         Forgot your password?{" "}
         <Link
-          href="/auth/reset-password"
+          href="/reset-password"
           className="text-primary hover:text-primary/90 hover:underline"
         >
           Reset it here

@@ -1,9 +1,32 @@
-import type { ActionCtx, MutationCtx, QueryCtx } from "./_generated/server";
+import { v } from "convex/values";
+import { Doc, Id } from "./_generated/dataModel";
+import {
+  mutation,
+  query,
+  type ActionCtx,
+  type MutationCtx,
+  type QueryCtx,
+} from "./_generated/server";
 
-interface User {
-  id: number;
-  teamID: number;
+interface JWTPayload {
+  v: "2.0";
+  _id: string;
+  name: string;
+  teams: {
+    teamID: string;
+    isAdmin: boolean;
+  }[];
+  activeTeamID?: string;
 }
+
+type User = Omit<JWTPayload, "v" | "_id" | "activeTeamID" | "teams"> & {
+  _id: Id<"users">;
+  activeTeamID?: Id<"teams">;
+  teams: {
+    teamID: Id<"teams">;
+    isAdmin: boolean;
+  }[];
+};
 
 export async function requireUser(
   ctx: QueryCtx | ActionCtx | MutationCtx
@@ -20,23 +43,296 @@ export async function requireUser(
   ctx: QueryCtx | ActionCtx | MutationCtx,
   allowNull = false
 ): Promise<User | null> {
-  const user = await ctx.auth.getUserIdentity();
-  if (allowNull && !user) {
+  const payload = await ctx.auth.getUserIdentity();
+  if (allowNull && !payload) {
     return null;
   }
-  if (!user) {
+  if (!payload) {
     throw new Error("Not authenticated");
   }
-  if (
-    !("id" in user) ||
-    !("teamID" in user) ||
-    typeof user.id !== "number" ||
-    typeof user.teamID !== "number"
-  ) {
-    throw new Error("Malformed user object");
+  if (!("v" in payload) || payload.v !== "2.0") {
+    throw new Error("Unsupported JWT version");
   }
+  if (!("_id" in payload) || typeof payload._id !== "string") {
+    console.log(payload);
+    throw new Error("Malformed _id");
+  }
+  if (!("name" in payload) || typeof payload.name !== "string") {
+    throw new Error("Malformed name");
+  }
+  if (
+    !("teams" in payload) ||
+    !Array.isArray(payload.teams) ||
+    payload.teams.some((team) => {
+      if (!team || typeof team !== "object") return true;
+      if (!("teamID" in team) || typeof team.teamID !== "string") return true;
+      if (!("isAdmin" in team) || typeof team.isAdmin !== "boolean")
+        return true;
+      return false;
+    })
+  ) {
+    throw new Error("Malformed teams");
+  }
+  if (
+    "activeTeamID" in payload &&
+    payload.activeTeamID !== undefined &&
+    typeof payload.activeTeamID !== "string"
+  ) {
+    throw new Error("Malformed activeTeamID");
+  }
+
   return {
-    id: user.id,
-    teamID: user.teamID,
+    _id: payload._id,
+    name: payload.name,
+    teams: payload.teams,
+    activeTeamID: payload.activeTeamID,
+  } as User;
+}
+
+async function requireServerJWT(ctx: QueryCtx | ActionCtx | MutationCtx) {
+  const user = await requireUser(ctx);
+  if (!user || user._id !== "NEXTJS_SERVER_JWT") {
+    throw new Error("Unauthorized");
+  }
+}
+
+export const getSelf = query({
+  args: {
+    userID: v.optional(v.id("users")),
+  },
+  async handler(ctx, args) {
+    const payload = await requireUser(ctx);
+    if (args.userID) {
+      await requireServerJWT(ctx);
+    }
+    const userID = args.userID ?? payload._id;
+    const userDoc = await ctx.db.get(userID);
+    if (!userDoc) return null;
+    return await getFullUser(ctx, userDoc);
+  },
+});
+
+export const getFromName = query({
+  args: {
+    name: v.string(),
+  },
+  async handler(ctx, args) {
+    await requireServerJWT(ctx);
+
+    const user =
+      (await ctx.db
+        .query("users")
+        .withIndex("byName", (q) => q.eq("name", args.name))
+        .first()) ??
+      (await ctx.db
+        .query("users")
+        .withIndex("byEmail", (q) => q.eq("email", args.name))
+        .first());
+
+    if (!user) return null;
+
+    const fullUser = await getFullUser(ctx, user);
+    return {
+      ...fullUser,
+      hashedPassword: user.password,
+    };
+  },
+});
+
+async function getFullUser(ctx: QueryCtx, userDoc: Doc<"users">) {
+  const memberships = await ctx.db
+    .query("userTeams")
+    .withIndex("byUser", (q) => q.eq("userID", userDoc._id))
+    .collect();
+
+  if (memberships.length === 0) {
+    return {
+      _id: userDoc._id,
+      name: userDoc.name,
+      email: userDoc.email ?? null,
+      ubisoftID: userDoc.ubisoftID ?? null,
+      teams: [],
+    };
+  }
+
+  const teams = (
+    await Promise.all(
+      memberships.map(async (membership) => {
+        const teamDoc = await ctx.db.get(membership.teamID);
+        if (!teamDoc) return null!;
+        return {
+          teamID: teamDoc._id,
+          isAdmin: membership.isAdmin,
+        };
+      })
+    )
+  ).filter(Boolean);
+
+  return {
+    _id: userDoc._id,
+    name: userDoc.name,
+    email: userDoc.email ?? null,
+    ubisoftID: userDoc.ubisoftID ?? null,
+    defaultColor: userDoc.defaultColor ?? null,
+    teams,
   };
 }
+
+export const createTeam = mutation({
+  args: {
+    teamName: v.string(),
+    name: v.string(),
+    password: v.string(),
+    email: v.optional(v.string()),
+  },
+  async handler(ctx, args) {
+    await requireServerJWT(ctx);
+
+    // search for existing user with same name or email
+    const existingUser =
+      (await ctx.db
+        .query("users")
+        .withIndex("byName", (q) => q.eq("name", args.name))
+        .first()) ??
+      (await ctx.db
+        .query("users")
+        .withIndex("byEmail", (q) => q.eq("email", args.email ?? ""))
+        .first());
+
+    if (existingUser) {
+      return {
+        error: "Username already exists",
+      };
+    }
+
+    const teamID = await ctx.db.insert("teams", {
+      name: args.teamName,
+    });
+    const userID = await ctx.db.insert("users", {
+      name: args.name,
+      password: args.password,
+      email: args.email,
+    });
+    await ctx.db.insert("userTeams", {
+      userID,
+      teamID,
+      isAdmin: true,
+    });
+
+    // create empty player positions
+    const PLAYER_COUNT = 5;
+    const positions = Array.from({ length: PLAYER_COUNT }, (_, i) => ({
+      playerID: undefined,
+      positionName: `Position ${i + 1}`,
+      teamID,
+      index: i,
+    }));
+    for (const position of positions) {
+      await ctx.db.insert("teamPositions", position);
+    }
+
+    return { success: true };
+  },
+});
+
+export const registerToTeam = mutation({
+  args: {
+    name: v.string(),
+    email: v.optional(v.string()),
+    password: v.string(),
+    inviteKey: v.string(),
+  },
+  async handler(ctx, args) {
+    await requireServerJWT(ctx);
+
+    const invite = await ctx.db
+      .query("teamInvites")
+      .withIndex("byInviteKey", (q) => q.eq("inviteKey", args.inviteKey))
+      .first();
+
+    if (!invite || invite.usedAt) {
+      throw new Error("Invalid invite key");
+    }
+
+    const existingUser = await ctx.db
+      .query("users")
+      .withIndex("byName", (q) => q.eq("name", args.name))
+      .first();
+
+    if (existingUser) {
+      throw new Error("Username already taken");
+    }
+
+    const userID = await ctx.db.insert("users", {
+      name: args.name,
+      password: args.password,
+      email: args.email,
+    });
+    await ctx.db.insert("userTeams", {
+      userID,
+      teamID: invite.teamID,
+      isAdmin: false,
+    });
+    await ctx.db.patch(invite._id, {
+      usedBy: userID,
+      usedAt: new Date().toISOString(),
+    });
+  },
+});
+
+export const createResetToken = mutation({
+  args: {
+    userID: v.id("users"),
+    token: v.string(),
+    expiresAt: v.string(),
+  },
+  async handler(ctx, args) {
+    await requireServerJWT(ctx);
+
+    await ctx.db.insert("passwordResetTokens", {
+      userID: args.userID,
+      token: args.token,
+      expiresAt: args.expiresAt,
+      invalidTokenInsertionCounts: 0,
+    });
+  },
+});
+
+export const checkResetToken = mutation({
+  args: {
+    userID: v.id("users"),
+    token: v.string(),
+    newPassword: v.string(),
+  },
+  async handler(ctx, args) {
+    await requireServerJWT(ctx);
+
+    const resetToken = await ctx.db
+      .query("passwordResetTokens")
+      .withIndex("byUser", (q) => q.eq("userID", args.userID))
+      .first();
+
+    const MAX_TOKEN_TRIES = 10;
+
+    const isInvalid =
+      !resetToken ||
+      resetToken.token !== args.token ||
+      resetToken.expiresAt < new Date().toISOString() ||
+      resetToken.invalidTokenInsertionCounts >= MAX_TOKEN_TRIES;
+
+    if (resetToken && isInvalid) {
+      await ctx.db.patch(resetToken._id, {
+        invalidTokenInsertionCounts: resetToken.invalidTokenInsertionCounts + 1,
+      });
+    }
+
+    if (isInvalid) {
+      throw new Error("Invalid or expired reset token");
+    }
+
+    await ctx.db.patch(args.userID, { password: args.newPassword });
+    await ctx.db.delete(resetToken._id);
+
+    return true;
+  },
+});

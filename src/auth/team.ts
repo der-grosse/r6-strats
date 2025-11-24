@@ -4,83 +4,8 @@ import db from "../db/db";
 import { playerPositions, team, users } from "../db/schema";
 import { getPayload } from "./getPayload";
 import { revalidatePath } from "next/cache";
-import { checkPassword, hashPassword, resetJWT } from "./auth";
+import { hashPassword, resetJWT } from "./auth";
 import { PLAYER_COUNT } from "../static/general";
-
-export async function createTeam(input: {
-  teamName: string;
-  username: string;
-  password: string;
-}) {
-  try {
-    const { teamName, username, password } = input;
-
-    // Validate input
-    if (!teamName || !username || !password) {
-      return { error: "Missing required fields" };
-    }
-
-    // Check if team name already exists
-    const existingTeam = await db
-      .select()
-      .from(team)
-      .where(eq(team.name, teamName))
-      .limit(1);
-
-    if (existingTeam.length) {
-      return { error: "Team name already exists" };
-    }
-
-    // Check if username already exists
-    const existingUser = await db
-      .select()
-      .from(users)
-      .where(eq(users.name, username))
-      .limit(1);
-
-    if (existingUser.length) {
-      return { error: "Username already exists" };
-    }
-
-    // Hash password
-    const hashedPassword = await hashPassword(password);
-
-    // Create team and admin user in a transaction
-    await db.transaction(async (tx) => {
-      // Create team
-      const [{ teamID }] = await tx
-        .insert(team)
-        .values({
-          name: teamName,
-          createdAt: new Date().toISOString(),
-        })
-        .returning({ teamID: team.id });
-
-      // Create admin user
-      await tx.insert(users).values({
-        name: username,
-        password: hashedPassword,
-        teamID,
-        isAdmin: true,
-        createdAt: new Date().toISOString(),
-      });
-
-      await tx.insert(playerPositions).values(
-        Array.from({ length: PLAYER_COUNT }, (_, i) => ({
-          playerID: null,
-          positionName: `Position ${i + 1}`,
-          teamID,
-          index: i,
-        }))
-      );
-    });
-
-    return { success: true };
-  } catch (error) {
-    console.error("Signup error:", error);
-    return { error: "Internal server error" };
-  }
-}
 
 export async function getTeam(optTeamID?: number) {
   const user = await getPayload();

@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyJWT } from "./src/auth/jwt";
 
+const AUTH_ROUTES = ["/login", "/signup", "/reset-password"];
+function isAuthRoute(pathname: string) {
+  return AUTH_ROUTES.some((route) => pathname.startsWith(route));
+}
+
 export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith("/api")) {
     return NextResponse.next();
@@ -10,17 +15,17 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get("jwt");
   const payload = token ? await verifyJWT(token.value) : null;
 
-  if (!request.nextUrl.pathname.startsWith("/auth")) {
+  const isAuth = isAuthRoute(request.nextUrl.pathname);
+
+  if (!isAuth) {
     if (!payload) {
-      return NextResponse.redirect(new URL("/auth", request.url));
+      return NextResponse.redirect(new URL("/login", request.url));
     }
     return NextResponse.next();
   }
 
-  if (request.nextUrl.pathname === "/auth") {
-    if (payload) {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
+  if (isAuth && payload) {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();

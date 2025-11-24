@@ -23,6 +23,7 @@ You can use the tool for free at [r6-strats.com](https://r6-strats.com).
 
 #### Selection and Manipulation
 
+- menu can clip outside of screen when element is close to top/side border
 - scrubbing for selecting mulptiple elements at once
 - CTRL+D to duplicate selected elements
 - CTRL+C and CTRL+V to copy and paste selected elements
@@ -47,10 +48,12 @@ You can use the tool for free at [r6-strats.com](https://r6-strats.com).
 
 #### Map View
 
+- you can add multiple reinforcement above each other when clicking hatches (might even be when right clicking?)
 - add toggle for floors of map
 - operator icons with small rectangle shapes clip outside
 - zoom slider
 - scroll bars when zoomed in
+- click an drag to pan map
 
 ### Misc
 
