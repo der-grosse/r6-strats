@@ -2,7 +2,7 @@ import {
   DEFENDER_SECONDARY_GADGETS,
   DEFENDERS,
   DefenderSecondaryGadget,
-} from "@/src/static/operator";
+} from "@/lib/static/operator";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Check, ChevronRight, CircleOff } from "lucide-react";
 import {

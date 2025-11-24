@@ -21,8 +21,8 @@ import {
   demoteFromAdmin,
   promoteToAdmin,
   removeMember,
-} from "@/src/auth/team";
-import { DEFAULT_COLORS } from "@/src/static/colors";
+} from "@/lib/auth/team";
+import { DEFAULT_COLORS } from "@/lib/static/colors";
 import { MoreVertical, Shield, ShieldOff, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 

@@ -18,9 +18,9 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import StratEditorGadgetsSidebar from "./Gadgets";
 import StratEditorMetaSidebar from "./Meta";
-import { cn } from "@/src/utils";
+import { cn } from "@/lib/utils";
 import Reinforcement from "@/components/icons/reinforcement";
-import { MAX_REINFORCEMENT } from "@/src/static/general";
+import { MAX_REINFORCEMENT } from "@/lib/static/general";
 import Link from "next/link";
 import StratEditorPlayerPositionsSidebar from "./StratPositions";
 import StratEditorLayoutSidebar from "./Layout";

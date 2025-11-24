@@ -3,7 +3,7 @@ import {
   DEFENDER_PRIMARY_GADGETS,
   DEFENDER_SECONDARY_GADGETS,
   DEFENDERS,
-} from "@/src/static/operator";
+} from "@/lib/static/operator";
 import { Badge } from "../../ui/badge";
 import { ScrollArea } from "../../ui/scroll-area";
 import { Button } from "../../ui/button";

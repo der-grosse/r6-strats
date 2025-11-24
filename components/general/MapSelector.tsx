@@ -5,7 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import MAPS from "@/src/static/maps";
+import MAPS from "@/lib/static/maps";
 
 export interface MapSelectorProps {
   map: string | null;

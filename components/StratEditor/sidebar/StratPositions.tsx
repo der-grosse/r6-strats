@@ -1,6 +1,6 @@
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { PLAYER_COUNT } from "@/src/static/general";
+import { PLAYER_COUNT } from "@/lib/static/general";
 import { useMemo } from "react";
 import StratPositionItem from "./StratPositionItem";
 import { ScrollArea } from "@/components/ui/scroll-area";

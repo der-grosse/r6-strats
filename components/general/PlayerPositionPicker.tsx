@@ -12,9 +12,9 @@ import {
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
-import { cn } from "@/src/utils";
+import { cn } from "@/lib/utils";
 import { ColorButton } from "./ColorPickerDialog";
-import { DEFAULT_COLORS } from "@/src/static/colors";
+import { DEFAULT_COLORS } from "@/lib/static/colors";
 
 export interface PlayerPositionPickerProps {
   positionID: PlayerPosition["id"] | null | undefined;

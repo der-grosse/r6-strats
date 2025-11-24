@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createTeam } from "@/src/auth/auth";
+import { createTeam } from "@/lib/auth/auth";
 
 export default function CreateTeam() {
   const router = useRouter();

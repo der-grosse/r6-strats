@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useUser } from "./UserContext";
-import { getSocketClient, SocketClient } from "@/src/socket/client";
+import { getSocketClient, SocketClient } from "@/lib/socket/client";
 import { toast } from "sonner";
 import { RotateCw, Unplug } from "lucide-react";
 import { Button } from "../ui/button";

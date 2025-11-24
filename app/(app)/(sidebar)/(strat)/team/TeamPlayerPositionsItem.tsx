@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { setMemberPosition, setMemberPositionName } from "@/src/auth/team";
+import { setMemberPosition, setMemberPositionName } from "@/lib/auth/team";
 import { ChevronRight, GripVertical } from "lucide-react";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";

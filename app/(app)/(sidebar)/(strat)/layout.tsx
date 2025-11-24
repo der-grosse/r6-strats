@@ -34,7 +34,7 @@ import {
 import SidebarStrats from "./SidebarStrats";
 import { useRouter } from "next/navigation";
 import { useFilter } from "@/components/context/FilterContext";
-import { cn } from "@/src/utils";
+import { cn } from "@/lib/utils";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 

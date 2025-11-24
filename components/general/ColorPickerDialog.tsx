@@ -9,9 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
-import { cn } from "@/src/utils";
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { DEFAULT_COLORS } from "@/src/static/colors";
+import { DEFAULT_COLORS } from "@/lib/static/colors";
 
 export interface ColorPickerDialogProps {
   color?: string;

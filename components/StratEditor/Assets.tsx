@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { Button } from "../ui/button";
 import Operator from "./assets/Operator";
-import { cn } from "@/src/utils";
+import { cn } from "@/lib/utils";
 import { useCallback, useMemo, useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import GadgetIcon from "../general/GadgetIcon";

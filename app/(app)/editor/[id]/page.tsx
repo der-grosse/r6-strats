@@ -1,6 +1,6 @@
 import { StratEditor } from "@/components/StratEditor/StratEditor";
-import { getTeam } from "@/src/auth/team";
-import { getStrat } from "@/src/strats/strats";
+import { getTeam } from "@/lib/auth/team";
+import { getStrat } from "@/lib/strats/strats";
 import { CircleX } from "lucide-react";
 import { Metadata } from "next";
 

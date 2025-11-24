@@ -3,7 +3,7 @@
 import {
   getGoogleDrawingsEditURL,
   getGoogleDrawingsPreviewURL,
-} from "@/src/googleDrawings";
+} from "@/lib/googleDrawings";
 import { Ban, Pencil } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
@@ -16,7 +16,7 @@ import Shotgun from "../StratEditor/assets/Shotgun";
 import GadgetIcon from "../general/GadgetIcon";
 import { useFilter } from "../context/FilterContext";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { cn } from "@/src/utils";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -254,15 +254,15 @@ export default function StratDisplay(props: StratDisplayProps) {
                           (asset) => asset.stratPositionID === stratPosition?.id
                         )
                     : viewModifier === "grayscaleForeign"
-                    ? (assets) =>
-                        assets.map((asset) => ({
-                          ...asset,
-                          ...(asset.stratPositionID !== stratPosition?.id && {
-                            stratPositionID: undefined,
-                            customColor: undefined,
-                          }),
-                        }))
-                    : undefined
+                      ? (assets) =>
+                          assets.map((asset) => ({
+                            ...asset,
+                            ...(asset.stratPositionID !== stratPosition?.id && {
+                              stratPositionID: undefined,
+                              customColor: undefined,
+                            }),
+                          }))
+                      : undefined
                 }
               />
             </div>

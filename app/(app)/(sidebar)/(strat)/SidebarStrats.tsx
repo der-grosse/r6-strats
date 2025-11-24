@@ -4,7 +4,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { updateMapIndexes } from "@/src/strats/strats";
+import { updateMapIndexes } from "@/lib/strats/strats";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
 

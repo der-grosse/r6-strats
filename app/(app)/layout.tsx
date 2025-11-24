@@ -4,8 +4,8 @@ import {
   parseCookies,
 } from "@/components/context/FilterContext.functions";
 import Providers from "./Providers";
-import { getAllStrats } from "@/src/strats/strats";
-import { getBannedOps } from "@/src/bannedOps/bannedOps";
+import { getAllStrats } from "@/lib/strats/strats";
+import { getBannedOps } from "@/lib/bannedOps/bannedOps";
 
 export default async function ProvidersLayout({
   children,

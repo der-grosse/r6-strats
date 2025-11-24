@@ -17,7 +17,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import TeamPlayerPositionsItem from "./TeamPlayerPositionsItem";
-import { changePlayerPositionsIndex } from "@/src/auth/team";
+import { changePlayerPositionsIndex } from "@/lib/auth/team";
 
 export interface TeamPlayerPositionsListProps {
   team: Team;

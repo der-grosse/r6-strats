@@ -2,10 +2,10 @@
 import { useFilter } from "@/components/context/FilterContext";
 import OperatorIcon from "@/components/general/OperatorIcon";
 import { Button } from "@/components/ui/button";
-import { DEFENDERS } from "@/src/static/operator";
+import { DEFENDERS } from "@/lib/static/operator";
 import { Eye, GripVertical, Pencil } from "lucide-react";
 import Link from "next/link";
-import { updateMapIndexes } from "@/src/strats/strats";
+import { updateMapIndexes } from "@/lib/strats/strats";
 import { useRouter } from "next/navigation";
 import { CreateStratDialog } from "./CreateStratDialog";
 import { useEffect, useMemo, useState } from "react";
@@ -26,7 +26,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { cn } from "@/src/utils";
+import { cn } from "@/lib/utils";
 import { DeleteStratDialog } from "./DeleteStratDialog";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";

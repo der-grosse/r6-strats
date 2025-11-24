@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { archiveStrat, updateStrat } from "@/src/strats/strats";
+import { archiveStrat, updateStrat } from "@/lib/strats/strats";
 import {
   FolderPen,
   Link,
@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { extractDrawingID } from "@/src/googleDrawings";
+import { extractDrawingID } from "@/lib/googleDrawings";
 
 export interface StratEditorMetaSidebarProps {
   strat: Strat;

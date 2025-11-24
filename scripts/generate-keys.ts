@@ -12,7 +12,7 @@ async function generateKeys() {
     const privateKey = await jwt.exportPKCS8(keys.privateKey);
 
     // Create data directory if it doesn't exist
-    const dataDir = path.join(process.cwd(), "data");
+    const dataDir = path.join(process.cwd(), "keys");
     await fs.mkdir(dataDir, { recursive: true });
 
     // Save keys to files

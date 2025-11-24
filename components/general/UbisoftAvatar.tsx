@@ -1,6 +1,6 @@
 "use client";
-import { getUbisoftAvatarUrl } from "@/src/ubisoft/ubi";
-import { cn } from "@/src/utils";
+import { getUbisoftAvatarUrl } from "@/lib/ubisoft/ubi";
+import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import Ubisoft from "../icons/ubisoft";
 
