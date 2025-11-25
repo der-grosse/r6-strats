@@ -19,7 +19,6 @@ const schema = defineSchema({
     name: v.string(),
     email: v.optional(v.string()),
     password: v.string(),
-    defaultColor: v.optional(v.string()),
     ubisoftID: v.optional(v.string()),
   })
     .index("byName", ["name"])
@@ -29,9 +28,11 @@ const schema = defineSchema({
     userID: v.id("users"),
     teamID: v.id("teams"),
     isAdmin: v.boolean(),
+    defaultColor: v.optional(v.string()),
   })
     .index("byUser", ["userID"])
-    .index("byTeam", ["teamID"]),
+    .index("byTeam", ["teamID"])
+    .index("byUserAndTeam", ["userID", "teamID"]),
 
   passwordResetTokens: defineTable({
     token: v.string(),
@@ -41,7 +42,7 @@ const schema = defineSchema({
   }).index("byUser", ["userID"]),
 
   teamPositions: defineTable({
-    playerID: v.optional(v.number()),
+    playerID: v.optional(v.id("users")),
     positionName: v.string(),
     teamID: v.id("teams"),
     index: v.number(),

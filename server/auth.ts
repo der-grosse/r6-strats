@@ -2,12 +2,12 @@
 import * as bcrypt from "bcrypt-ts";
 import { cookies } from "next/headers";
 import { generateJWT } from "./jwt";
-import { getPayload } from "./getPayload";
+import { getPayload } from "./jwt";
 import { fetchMutation, fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { generate } from "random-words";
-import { sendResetEmail } from "../mail/mail";
+import { sendResetEmail } from "./mail/mail";
 
 export async function hashPassword(password: string) {
   const salt = await bcrypt.genSalt(10);
@@ -21,7 +21,7 @@ export async function resetJWT(payload?: Omit<JWTPayload, "v">) {
     if (!userid) throw new Error("User not found");
 
     const user = await fetchQuery(
-      api.auth.getSelf,
+      api.self.get,
       { userID: userid as Id<"users"> },
       {
         token: process.env.SERVER_JWT!,
@@ -45,7 +45,7 @@ export async function resetJWT(payload?: Omit<JWTPayload, "v">) {
 
 export async function login(name: string, password: string) {
   const user = await fetchQuery(
-    api.auth.getFromName,
+    api.auth.getUserFromName,
     { name },
     {
       token: process.env.SERVER_JWT!,
@@ -58,7 +58,9 @@ export async function login(name: string, password: string) {
   // hash password and compare with db password
   const isValid = await bcrypt.compare(password, user.hashedPassword);
   if (!isValid) return null;
-  await resetJWT(user);
+  // TODO: add selector for active team -> reload JWT with activeTeamID
+  // TODO: handle what happens when user has no teams left
+  await resetJWT({ ...user, activeTeamID: user.teams[0]?.teamID });
   return user;
 }
 
@@ -116,7 +118,7 @@ export async function logout() {
 
 export async function requestResetPassword(email: string) {
   const user = await fetchQuery(
-    api.auth.getFromName,
+    api.auth.getUserFromName,
     { name: email },
     {
       token: process.env.SERVER_JWT!,
@@ -143,7 +145,7 @@ export async function resetPassword(
   newPassword: string
 ) {
   const user = await fetchQuery(
-    api.auth.getFromName,
+    api.auth.getUserFromName,
     { name: email },
     {
       token: process.env.SERVER_JWT!,
@@ -160,4 +162,34 @@ export async function resetPassword(
   );
 
   return result;
+}
+
+export async function changePassword(oldPassword: string, newPassword: string) {
+  const payload = await getPayload();
+  const user = await fetchQuery(
+    api.self.get,
+    { userID: payload?._id as Id<"users"> },
+    {
+      token: process.env.SERVER_JWT!,
+    }
+  );
+  if (!user) {
+    return "User not found";
+  }
+  // hash password and compare with db password
+  const isValid = await bcrypt.compare(oldPassword, user.hashedPassword!);
+
+  if (!isValid) {
+    return "Old password is incorrect";
+  }
+
+  const hashedNewPassword = await hashPassword(newPassword);
+
+  await fetchMutation(
+    api.auth.setPasswordOfUser,
+    { userID: payload?._id as Id<"users">, newPassword: hashedNewPassword },
+    {
+      token: process.env.SERVER_JWT!,
+    }
+  );
 }

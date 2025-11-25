@@ -17,20 +17,25 @@ import {
 } from "@/components/ui/table";
 import { Copy, Eye, EyeOff, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { createInviteKey, deleteInviteKey } from "@/lib/auth/inviteKeys";
 import { useState } from "react";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Id } from "@/convex/_generated/dataModel";
 
-export interface TeamInviteKeysProps {
-  inviteKeys: InviteKey[];
-}
+export default function TeamInviteKeys(props: { teamID: Id<"teams"> }) {
+  const inviteKeys = useQuery(api.team.getInviteKeys);
+  const createInviteKey = useMutation(api.team.createInviteKey);
+  const deleteInviteKey = useMutation(api.team.deleteInviteKey);
 
-export default function TeamInviteKeys(props: TeamInviteKeysProps) {
   const [visibleKeys, setVisibleKeys] = useState<string[]>([]);
 
   const handleCreateInviteKey = async () => {
     try {
-      const key = await createInviteKey();
-      navigator.clipboard.writeText(key);
+      const key = await createInviteKey({
+        teamID: props.teamID,
+      });
+      navigator.clipboard.writeText(getFullInviteURL(key.inviteKey));
       toast.success("Invite key created successfully");
     } catch (err) {
       toast.error(
@@ -39,9 +44,9 @@ export default function TeamInviteKeys(props: TeamInviteKeysProps) {
     }
   };
 
-  const handleDeleteInviteKey = async (key: string) => {
+  const handleDeleteInviteKey = async (id: Id<"teamInvites">) => {
     try {
-      await deleteInviteKey(key);
+      await deleteInviteKey({ inviteKey: id });
       toast.success("Invite key deleted successfully");
     } catch (err) {
       toast.error(
@@ -54,6 +59,10 @@ export default function TeamInviteKeys(props: TeamInviteKeysProps) {
     navigator.clipboard.writeText(text);
     toast.success("Copied to clipboard");
   };
+
+  if (!inviteKeys) {
+    return <Skeleton className="w-full h-24 rounded mb-4" />;
+  }
 
   return (
     <Card>
@@ -75,7 +84,7 @@ export default function TeamInviteKeys(props: TeamInviteKeysProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {props.inviteKeys
+              {inviteKeys
                 .toSorted((a, b) => {
                   if (a.usedAt && b.usedAt) {
                     return (
@@ -92,7 +101,7 @@ export default function TeamInviteKeys(props: TeamInviteKeysProps) {
                   return 0;
                 })
                 .map((key) => (
-                  <TableRow key={key.inviteKey}>
+                  <TableRow key={key._id}>
                     <TableCell className="font-mono w-2/3">
                       <Button
                         size="icon"
@@ -137,8 +146,9 @@ export default function TeamInviteKeys(props: TeamInviteKeysProps) {
                               variant="ghost"
                               size="icon"
                               onClick={() => {
-                                const url = `${window.location.origin}/auth/signup/join?inviteKey=${key.inviteKey}`;
-                                copyToClipboard(url);
+                                copyToClipboard(
+                                  getFullInviteURL(key.inviteKey)
+                                );
                               }}
                             >
                               <Copy className="h-4 w-4" />
@@ -146,9 +156,7 @@ export default function TeamInviteKeys(props: TeamInviteKeysProps) {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() =>
-                                handleDeleteInviteKey(key.inviteKey)
-                              }
+                              onClick={() => handleDeleteInviteKey(key._id)}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -164,4 +172,8 @@ export default function TeamInviteKeys(props: TeamInviteKeysProps) {
       </CardContent>
     </Card>
   );
+}
+
+function getFullInviteURL(inviteKey: string) {
+  return `${window.location.origin}/auth/signup/join?inviteKey=${inviteKey}`;
 }

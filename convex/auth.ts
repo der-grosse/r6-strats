@@ -33,18 +33,28 @@ export async function requireUser(
 ): Promise<User>;
 export async function requireUser(
   ctx: QueryCtx | ActionCtx | MutationCtx,
-  allowNull: true
+  filter: Partial<{ teamID: Id<"teams"> | string; admin: boolean }> & {
+    allowNull: true;
+  }
 ): Promise<User | null>;
 export async function requireUser(
   ctx: QueryCtx | ActionCtx | MutationCtx,
-  allowNull: false
+  filter?: Partial<{
+    teamID: Id<"teams"> | string;
+    admin: boolean;
+    allowNull: false;
+  }>
 ): Promise<User>;
 export async function requireUser(
   ctx: QueryCtx | ActionCtx | MutationCtx,
-  allowNull = false
+  filter?: Partial<{
+    teamID: Id<"teams"> | string;
+    admin: boolean;
+    allowNull: boolean;
+  }>
 ): Promise<User | null> {
   const payload = await ctx.auth.getUserIdentity();
-  if (allowNull && !payload) {
+  if (filter?.allowNull && !payload) {
     return null;
   }
   if (!payload) {
@@ -81,6 +91,18 @@ export async function requireUser(
     throw new Error("Malformed activeTeamID");
   }
 
+  if (filter?.teamID) {
+    const memberData = (payload as unknown as JWTPayload).teams.find(
+      (team) => team.teamID === filter.teamID
+    );
+    if (!memberData) {
+      throw new Error("User is not a member of the specified team");
+    }
+    if (filter.admin && !memberData.isAdmin) {
+      throw new Error("User is not an admin of the specified team");
+    }
+  }
+
   return {
     _id: payload._id,
     name: payload.name,
@@ -89,30 +111,55 @@ export async function requireUser(
   } as User;
 }
 
-async function requireServerJWT(ctx: QueryCtx | ActionCtx | MutationCtx) {
+export async function requireServerJWT(
+  ctx: QueryCtx | ActionCtx | MutationCtx
+) {
   const user = await requireUser(ctx);
   if (!user || user._id !== "NEXTJS_SERVER_JWT") {
     throw new Error("Unauthorized");
   }
 }
 
-export const getSelf = query({
-  args: {
-    userID: v.optional(v.id("users")),
-  },
-  async handler(ctx, args) {
-    const payload = await requireUser(ctx);
-    if (args.userID) {
-      await requireServerJWT(ctx);
-    }
-    const userID = args.userID ?? payload._id;
-    const userDoc = await ctx.db.get(userID);
-    if (!userDoc) return null;
-    return await getFullUser(ctx, userDoc);
-  },
-});
+export async function getFullUser(ctx: QueryCtx, userDoc: Doc<"users">) {
+  const memberships = await ctx.db
+    .query("userTeams")
+    .withIndex("byUser", (q) => q.eq("userID", userDoc._id))
+    .collect();
 
-export const getFromName = query({
+  if (memberships.length === 0) {
+    return {
+      _id: userDoc._id,
+      name: userDoc.name,
+      email: userDoc.email ?? null,
+      ubisoftID: userDoc.ubisoftID ?? null,
+      teams: [],
+    };
+  }
+
+  const teams = (
+    await Promise.all(
+      memberships.map(async (membership) => {
+        const teamDoc = await ctx.db.get(membership.teamID);
+        if (!teamDoc) return null!;
+        return {
+          teamID: teamDoc._id,
+          isAdmin: membership.isAdmin,
+          defaultColor: membership.defaultColor ?? null,
+        };
+      })
+    )
+  ).filter(Boolean);
+
+  return {
+    _id: userDoc._id,
+    name: userDoc.name,
+    email: userDoc.email ?? null,
+    ubisoftID: userDoc.ubisoftID ?? null,
+    teams,
+  };
+}
+
+export const getUserFromName = query({
   args: {
     name: v.string(),
   },
@@ -138,45 +185,6 @@ export const getFromName = query({
     };
   },
 });
-
-async function getFullUser(ctx: QueryCtx, userDoc: Doc<"users">) {
-  const memberships = await ctx.db
-    .query("userTeams")
-    .withIndex("byUser", (q) => q.eq("userID", userDoc._id))
-    .collect();
-
-  if (memberships.length === 0) {
-    return {
-      _id: userDoc._id,
-      name: userDoc.name,
-      email: userDoc.email ?? null,
-      ubisoftID: userDoc.ubisoftID ?? null,
-      teams: [],
-    };
-  }
-
-  const teams = (
-    await Promise.all(
-      memberships.map(async (membership) => {
-        const teamDoc = await ctx.db.get(membership.teamID);
-        if (!teamDoc) return null!;
-        return {
-          teamID: teamDoc._id,
-          isAdmin: membership.isAdmin,
-        };
-      })
-    )
-  ).filter(Boolean);
-
-  return {
-    _id: userDoc._id,
-    name: userDoc.name,
-    email: userDoc.email ?? null,
-    ubisoftID: userDoc.ubisoftID ?? null,
-    defaultColor: userDoc.defaultColor ?? null,
-    teams,
-  };
-}
 
 export const createTeam = mutation({
   args: {
@@ -333,6 +341,19 @@ export const checkResetToken = mutation({
     await ctx.db.patch(args.userID, { password: args.newPassword });
     await ctx.db.delete(resetToken._id);
 
+    return true;
+  },
+});
+
+export const setPasswordOfUser = mutation({
+  args: {
+    userID: v.id("users"),
+    newPassword: v.string(),
+  },
+  async handler(ctx, args) {
+    await requireServerJWT(ctx);
+
+    await ctx.db.patch(args.userID, { password: args.newPassword });
     return true;
   },
 });

@@ -9,7 +9,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { updatePickedOperator } from "@/lib/strats/strats";
+import { updatePickedOperator } from "@/server/OLD_STRATS/strats";
 import { cn } from "@/lib/utils";
 import { BrickWall, GripVertical, Plus, X, Zap, ZapOff } from "lucide-react";
 import { CSS } from "@dnd-kit/utilities";

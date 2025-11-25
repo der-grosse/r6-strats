@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { verifyJWT } from "./src/auth/jwt";
+import { verifyJWT } from "./server/jwt";
 
 const AUTH_ROUTES = ["/login", "/signup", "/reset-password"];
 function isAuthRoute(pathname: string) {

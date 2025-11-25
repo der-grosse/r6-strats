@@ -1,7 +1,7 @@
 import { getStratViewModifierFromCookies } from "@/components/StratDisplay/stratDisplay.functions";
 import { cookies } from "next/headers";
 import { getTeam } from "@/lib/auth/team";
-import { getStrat } from "@/lib/strats/strats";
+import { getStrat } from "@/server/OLD_STRATS/strats";
 import { Metadata } from "next";
 import StratDisplay from "@/components/StratDisplay/StratDisplay";
 

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
-import { archiveStrat } from "@/lib/strats/strats";
+import { archiveStrat } from "@/server/OLD_STRATS/strats";
 import { toast } from "sonner";
 import { useFilter } from "@/components/context/FilterContext";
 

@@ -1,25 +1,27 @@
-import { getPayload } from "@/lib/auth/getPayload";
-import { getInviteKeys } from "@/lib/auth/inviteKeys";
-import { getTeam } from "@/lib/auth/team";
 import { Metadata } from "next";
 import TeamInfo from "./TeamInfo";
 import TeamMembers from "./TeamMembers";
 import TeamInviteKeys from "./TeamInviteKeys";
-import TeamPlayerPositions from "./TeamPlayerPositions";
+import TeamPositions from "./TeamPositions";
 import AccountInfo from "./AccountInfo";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata: Metadata = {
   title: "Team Management",
 };
 
-export default async function TeamManagementPage() {
-  const user = await getPayload();
-  const team = await getTeam();
-  const inviteKeys = user?.isAdmin ? await getInviteKeys() : [];
+export default function TeamManagementPage() {
+  const team = useQuery(api.team.get);
+
+  if (!team) {
+    return <Skeleton className="w-full h-8 rounded mb-4" />;
+  }
 
   return (
     <div className="container mx-auto py-8 px-4 space-y-8">
-      {user?.isAdmin ? (
+      {team.isSelfAdmin ? (
         <div className="grid grid-cols-2 gap-8">
           <TeamInfo team={team} />
 
@@ -31,9 +33,9 @@ export default async function TeamManagementPage() {
 
       <TeamMembers team={team} />
 
-      <TeamPlayerPositions team={team} canEdit={user?.isAdmin ?? false} />
+      <TeamPositions team={team} canEdit={team.isSelfAdmin} />
 
-      {user?.isAdmin && <TeamInviteKeys inviteKeys={inviteKeys} />}
+      {team.isSelfAdmin && <TeamInviteKeys teamID={team._id} />}
     </div>
   );
 }

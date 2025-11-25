@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { DEFENDERS } from "@/lib/static/operator";
 import { Eye, GripVertical, Pencil } from "lucide-react";
 import Link from "next/link";
-import { updateMapIndexes } from "@/lib/strats/strats";
+import { updateMapIndexes } from "@/server/OLD_STRATS/strats";
 import { useRouter } from "next/navigation";
 import { CreateStratDialog } from "./CreateStratDialog";
 import { useEffect, useMemo, useState } from "react";

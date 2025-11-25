@@ -6,25 +6,29 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { setMemberPosition, setMemberPositionName } from "@/lib/auth/team";
 import { ChevronRight, GripVertical } from "lucide-react";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import { ColorButton } from "@/components/general/ColorPickerDialog";
+import { FullTeam, TeamPosition } from "@/lib/types/team.types";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
-export interface TeamPlayerPositionsItemProps {
-  position: PlayerPosition;
+export interface TeamPositionsItemProps {
+  position: TeamPosition;
   canEdit: boolean;
-  team: Team;
+  team: FullTeam;
 }
 
-export default function TeamPlayerPositionsItem({
+export default function TeamPositionsItem({
   canEdit,
   position,
   team,
-}: TeamPlayerPositionsItemProps) {
+}: TeamPositionsItemProps) {
+  const updateTeamPosition = useMutation(api.team.updateTeamPosition);
+
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: position.id });
+    useSortable({ id: position._id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -51,7 +55,11 @@ export default function TeamPlayerPositionsItem({
             defaultValue={position.positionName ?? ""}
             onBlur={(e) => {
               if (e.target.value !== position.positionName)
-                setMemberPositionName(position.id, e.target.value);
+                updateTeamPosition({
+                  teamID: team._id,
+                  positionID: position._id,
+                  positionName: e.target.value,
+                });
             }}
           />
           <div>
@@ -80,14 +88,26 @@ export default function TeamPlayerPositionsItem({
               <DropdownMenuContent side="right" className="w-56">
                 <DropdownMenuItem
                   key="clear"
-                  onClick={() => setMemberPosition(position.id, null)}
+                  onClick={() =>
+                    updateTeamPosition({
+                      teamID: team._id,
+                      positionID: position._id,
+                      playerID: null,
+                    })
+                  }
                 >
                   <em>Clear</em>
                 </DropdownMenuItem>
                 {team.members.map((member) => (
                   <DropdownMenuItem
                     key={member.name}
-                    onClick={() => setMemberPosition(position.id, member.id)}
+                    onClick={() =>
+                      updateTeamPosition({
+                        teamID: team._id,
+                        positionID: position._id,
+                        playerID: member.id,
+                      })
+                    }
                   >
                     <ColorButton
                       component="span"

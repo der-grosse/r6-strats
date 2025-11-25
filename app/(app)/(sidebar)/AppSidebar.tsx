@@ -29,8 +29,8 @@ import {
 } from "../../../components/ui/collapsible";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { logout } from "@/lib/auth/auth";
 import { Slot } from "@/components/layout/Slot";
+import { logout } from "@/server/auth";
 
 export function AppSidebar(props: { teamName: string }) {
   const router = useRouter();

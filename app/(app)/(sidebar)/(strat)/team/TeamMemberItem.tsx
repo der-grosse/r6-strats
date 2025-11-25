@@ -16,28 +16,62 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  changeUbisoftID,
-  demoteFromAdmin,
-  promoteToAdmin,
-  removeMember,
-} from "@/lib/auth/team";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { DEFAULT_COLORS } from "@/lib/static/colors";
+import { TeamMember } from "@/lib/types/team.types";
+import { useMutation, useQuery } from "convex/react";
 import { MoreVertical, Shield, ShieldOff, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 export interface TeamMemberItemProps {
+  teamID: Id<"teams">;
   member: TeamMember;
   onChangeColor: () => void;
   onChangeUbisoftID?: () => void;
 }
 
 export default function TeamMemberItem({
+  teamID,
   member,
   onChangeColor,
   onChangeUbisoftID,
 }: TeamMemberItemProps) {
-  const { user } = useUser();
+  const self = useQuery(api.self.get, {});
+  const updateMember = useMutation(api.team.updateTeamMember);
+  const removeMember = useMutation(api.team.removeTeamMember);
+
+  const handleRemoveUser = async (userID: Id<"users">) => {
+    try {
+      await removeMember({ userID: member.id, teamID });
+      toast.success("User removed successfully");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to remove user");
+    }
+  };
+
+  const handlePromoteToAdmin = async (userID: Id<"users">) => {
+    try {
+      await updateMember({ userID, teamID, isAdmin: true });
+      toast.success("User promoted to admin successfully");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to promote user to admin"
+      );
+    }
+  };
+
+  const handleDemoteFromAdmin = async (userID: Id<"users">) => {
+    try {
+      await updateMember({ userID, teamID, isAdmin: false });
+      toast.success("User demoted from admin successfully");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to demote user from admin"
+      );
+    }
+  };
+
   return (
     <TableRow key={member.id}>
       <TableCell className="w-[50px]">
@@ -47,7 +81,7 @@ export default function TeamMemberItem({
           onClick={() => {
             onChangeColor();
           }}
-          disabled={member.id !== user?.id && !user?.isAdmin}
+          disabled={member.id !== self?._id && !self?.team?.isAdmin}
           className="align-middle m-auto"
         />
       </TableCell>
@@ -68,28 +102,28 @@ export default function TeamMemberItem({
             </Tooltip>
           )}
           {member.name}
-          {user?.id === member.id && (
+          {self?._id === member.id && (
             <span className="ml-2 text-muted-foreground text-sm">(You)</span>
           )}
         </div>
       </TableCell>
       <TableCell>{member.isAdmin ? "Admin" : "Member"}</TableCell>
       <TableCell>
-        {new Date(member.createdAt).toLocaleDateString("de-DE", {
+        {new Date(member.memberSince).toLocaleDateString("de-DE", {
           year: "numeric",
           month: "2-digit",
           day: "2-digit",
         })}
       </TableCell>
-      {user?.isAdmin && (
+      {self?.team?.isAdmin && (
         <TableCell>
-          {member.id !== user?.id ? (
+          {member.id !== self?._id ? (
             <DropdownMenu modal>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  disabled={user?.id !== member.id && !user?.isAdmin}
+                  disabled={self?._id !== member.id && !self?.team?.isAdmin}
                 >
                   <MoreVertical className="h-4 w-4" />
                 </Button>
@@ -101,7 +135,9 @@ export default function TeamMemberItem({
                 </DropdownMenuItem>
                 {member.ubisoftID && (
                   <DropdownMenuItem
-                    onClick={() => changeUbisoftID("", member.id)}
+                    onClick={() =>
+                      updateMember({ ubisoftID: "", userID: member.id, teamID })
+                    }
                     className="text-destructive"
                   >
                     <div className="relative mr-2">
@@ -153,34 +189,3 @@ export default function TeamMemberItem({
     </TableRow>
   );
 }
-
-const handleRemoveUser = async (userID: number) => {
-  try {
-    await removeMember(userID);
-    toast.success("User removed successfully");
-  } catch (err) {
-    toast.error(err instanceof Error ? err.message : "Failed to remove user");
-  }
-};
-
-const handlePromoteToAdmin = async (userID: number) => {
-  try {
-    await promoteToAdmin(userID);
-    toast.success("User promoted to admin successfully");
-  } catch (err) {
-    toast.error(
-      err instanceof Error ? err.message : "Failed to promote user to admin"
-    );
-  }
-};
-
-const handleDemoteFromAdmin = async (userID: number) => {
-  try {
-    await demoteFromAdmin(userID);
-    toast.success("User demoted from admin successfully");
-  } catch (err) {
-    toast.error(
-      err instanceof Error ? err.message : "Failed to demote user from admin"
-    );
-  }
-};

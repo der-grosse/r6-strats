@@ -16,8 +16,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { changeUbisoftID } from "@/lib/auth/team";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import { TeamMember } from "@/lib/types/team.types";
 import { checkUbisoftID } from "@/lib/ubisoft/ubi";
+import { useMutation } from "convex/react";
 import { Check, X } from "lucide-react";
 import { useState } from "react";
 
@@ -25,11 +28,14 @@ export interface ChangeUbisoftIDDialogProps {
   open: boolean;
   onClose: () => void;
   member: TeamMember | null;
+  teamID: Id<"teams">;
 }
 
 export default function ChangeUbisoftIDDialog(
   props: ChangeUbisoftIDDialogProps
 ) {
+  const updateTeamMember = useMutation(api.team.updateTeamMember);
+
   const [newUbisoftID, setNewUbisoftID] = useState("");
   const [newUbisoftIDValid, setNewUbisoftIDValid] = useState<boolean | null>(
     null
@@ -109,7 +115,11 @@ export default function ChangeUbisoftIDDialog(
             variant="outline"
             onClick={async () => {
               if (props.member) {
-                await changeUbisoftID(newUbisoftID, props.member.id);
+                await updateTeamMember({
+                  ubisoftID: newUbisoftID,
+                  teamID: props.teamID,
+                  userID: props.member.id,
+                });
                 props.onClose();
               }
             }}

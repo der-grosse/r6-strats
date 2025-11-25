@@ -13,16 +13,14 @@ import {
   FILTER_COOKIE_KEY,
   LEADING_COOKIE_KEY,
 } from "./FilterContext.functions";
-import { deepEqual } from "../Objects";
-import { setBannedOps } from "@/lib/bannedOps/bannedOps";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 interface FilterContextType {
   filter: Filter;
   setFilter: React.Dispatch<React.SetStateAction<Filter>>;
   playableStrats: Strat[];
   availableStrats: { playable: boolean; strat: Strat }[];
-  bannedOps: string[];
-  setBannedOps: React.Dispatch<React.SetStateAction<string[]>>;
   isLeading: boolean;
   setIsLeading: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -34,17 +32,10 @@ export const FilterProvider: React.FC<{
   defaultFilter?: Filter;
   defaultLeading?: boolean;
   allStrats?: Strat[];
-  bannedOps?: string[];
-}> = ({
-  allStrats,
-  children,
-  defaultFilter,
-  defaultLeading,
-  bannedOps: propBannedOps,
-}) => {
-  const [bannedOps, setBannedOpsState] = useState<string[]>(
-    propBannedOps ?? []
-  );
+}> = ({ allStrats, children, defaultFilter, defaultLeading }) => {
+  const setBannedOps = useMutation(api.bannedOps.set);
+  const bannedOps = useQuery(api.bannedOps.get) || [];
+
   const [filter, setFilter] = useState<Filter>(defaultFilter ?? EMPTY_FILTER);
 
   // set initial filter from cookies
@@ -61,31 +52,15 @@ export const FilterProvider: React.FC<{
   }, []);
 
   // leading state
-
   const [isLeading, setIsLeading] = useState(
     defaultLeading ?? Cookie.get(LEADING_COOKIE_KEY) === "true"
   );
 
-  // useSocketEvent("operator-bans:changed", (bans) => {
-  //   setBannedOpsState((prev) => {
-  //     if (deepEqual(prev, bans)) return prev;
-  //     return bans;
-  //   });
-  // });
   // push banned ops filter change to socket
   useEffect(() => {
     if (!isLeading) return;
-    // socket.emit("operator-bans:change", bannedOps);
-
-    setBannedOps(bannedOps);
+    setBannedOps({ operators: bannedOps });
   }, [bannedOps.join("|"), isLeading]);
-  // subscribe to operator bans socket
-  useEffect(() => {
-    // socket.emit("operator-bans:subscribe");
-    return () => {
-      // socket.emit("operator-bans:unsubscribe");
-    };
-  }, []);
 
   const availableStrats = useMemo(
     () =>
@@ -140,8 +115,6 @@ export const FilterProvider: React.FC<{
         availableStrats,
         isLeading,
         setIsLeading,
-        bannedOps,
-        setBannedOps: setBannedOpsState,
       }}
     >
       {children}

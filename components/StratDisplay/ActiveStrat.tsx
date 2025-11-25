@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import StratDisplay from "./StratDisplay";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { getStrat } from "@/lib/strats/strats";
+import { getStrat } from "@/server/OLD_STRATS/strats";
 
 export interface ActiveStratProps {
   defaultOpen?: Strat | null;

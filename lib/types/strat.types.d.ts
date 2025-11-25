@@ -12,7 +12,7 @@ interface R6Floor {
 }
 
 interface Strat {
-  id: number;
+  id: Id<"strats">;
   map: string;
   site: string;
   name: string;

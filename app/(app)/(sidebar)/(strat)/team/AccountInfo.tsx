@@ -25,26 +25,29 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  changeEmail,
-  changePassword,
-  changeUbisoftID,
-  changeUsername,
-} from "@/lib/auth/team";
+import { api } from "@/convex/_generated/api";
+import { FullTeam } from "@/lib/types/team.types";
 import { checkUbisoftID } from "@/lib/ubisoft/ubi";
+import { changePassword } from "@/server/auth";
+import { useMutation, useQuery } from "convex/react";
 import { Check, RotateCcwKey, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-export default function AccountInfo(props: { team: Pick<Team, "members"> }) {
-  const { user: payload } = useUser();
+export default function AccountInfo(props: {
+  team: Pick<FullTeam, "members">;
+}) {
+  const self = useQuery(api.self.get, {});
   const user = useMemo(
-    () => props.team.members.find((m) => m.id === payload?.id),
-    [props.team, payload]
+    () => props.team.members.find((m) => m.id === self?._id),
+    [props.team, self]
   );
+
+  const updateSelf = useMutation(api.self.update);
+
   const [newUsername, setNewUsername] = useState(user?.name ?? "");
   const [usernameInvalid, setUsernameInvalid] = useState(false);
-  const [newEmail, setNewEmail] = useState(user?.email ?? "");
+  const [newEmail, setNewEmail] = useState(self?.email ?? "");
   const [ubisoftID, setUbisoftID] = useState(user?.ubisoftID ?? "");
   const [ubisoftIDValid, setUbisoftIDValid] = useState<boolean | null>(null);
 
@@ -52,7 +55,9 @@ export default function AccountInfo(props: { team: Pick<Team, "members"> }) {
     newUsername,
     async (newUsername) => {
       try {
-        await changeUsername(newUsername);
+        await updateSelf({
+          name: newUsername,
+        });
       } catch (err) {
         setUsernameInvalid(true);
         toast.error(
@@ -67,7 +72,7 @@ export default function AccountInfo(props: { team: Pick<Team, "members"> }) {
     async (newEmail) => {
       if (newEmail && !isEmailValid(newEmail)) return;
       try {
-        await changeEmail(newEmail);
+        await updateSelf({ email: newEmail });
       } catch (err) {
         toast.error(
           err instanceof Error ? err.message : "Failed to change email"
@@ -80,7 +85,9 @@ export default function AccountInfo(props: { team: Pick<Team, "members"> }) {
     ubisoftID,
     async (ubisoftID) => {
       try {
-        await changeUbisoftID(ubisoftID);
+        await updateSelf({
+          ubisoftID,
+        });
         const isValid = await checkUbisoftID(ubisoftID);
         setUbisoftIDValid(isValid);
       } catch (err) {

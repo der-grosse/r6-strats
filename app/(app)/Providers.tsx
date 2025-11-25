@@ -2,7 +2,6 @@
 import { ConvexClientProvider } from "@/components/context/ConvexClientProvider";
 import { FilterProvider } from "@/components/context/FilterContext";
 import { Filter } from "@/components/context/FilterContext.functions";
-import { SocketProvider } from "@/components/context/SocketContext";
 import { UserProvider } from "@/components/context/UserContext";
 import { SlotProvider } from "@/components/layout/SlotProvider";
 import { DragProvider } from "@/components/ui/draggable-context";
@@ -17,7 +16,6 @@ export interface ProvidersProps {
   jwt?: string;
   defaultLeading?: boolean;
   allStrats: Strat[];
-  bannedOps: string[];
 }
 
 export default function Providers(props: Readonly<ProvidersProps>) {
@@ -30,7 +28,6 @@ export default function Providers(props: Readonly<ProvidersProps>) {
             defaultFilter={props.cookieFilter}
             defaultLeading={props.defaultLeading}
             allStrats={props.allStrats}
-            bannedOps={props.bannedOps}
           >
             <SlotProvider>
               <DragProvider>

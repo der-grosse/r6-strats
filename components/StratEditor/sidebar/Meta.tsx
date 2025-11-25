@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { archiveStrat, updateStrat } from "@/lib/strats/strats";
+import { archiveStrat, updateStrat } from "@/server/OLD_STRATS/strats";
 import {
   FolderPen,
   Link,
