@@ -1,39 +1,45 @@
-interface R6Map {
+import { Id } from "@/convex/_generated/dataModel";
+
+export interface R6Map {
   name: string;
   sites: string[];
   floors: R6Floor[];
 }
 
-type R6FloorLayer = "doors" | "windows" | "reinforcements" | "hatches";
-interface R6Floor {
+export type R6FloorLayer = "doors" | "windows" | "reinforcements" | "hatches";
+export interface R6Floor {
   floor: "B" | "1F" | "2F" | "3F";
   src: string;
   clickables?: React.FC<MapFloorClickableProps>;
 }
 
-interface Strat {
-  id: Id<"strats">;
+export interface Strat {
+  _id: Id<"strats">;
   map: string;
   site: string;
   name: string;
   description: string;
+  drawingID: string | undefined;
+  archived: boolean;
   mapIndex: number;
-  drawingID: string | null;
-
   assets: PlacedAsset[];
-  positions: StratPositions[];
+  stratPositions: StratPositions[];
 }
 
-interface StratPositions {
-  id: number;
+export interface StratPositions {
+  _id: Id<"stratPositions">;
+  teamPositionID?: Id<"teamPositions"> | null;
   isPowerPosition: boolean;
   shouldBringShotgun: boolean;
-  positionID?: number | null;
-  operators: PickedOperator[];
+  index: number;
+  pickedOperators: PickedOperator[];
 }
 
-interface PickedOperator {
+export interface PickedOperator {
+  _id: Id<"pickedOperators">;
+  stratPositionID: Id<"stratPositions">;
   operator: string;
   secondaryGadget: string | null;
   tertiaryGadget: string | null; // only used for operator sentry
+  index: number;
 }

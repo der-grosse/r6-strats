@@ -1,63 +1,36 @@
 "use client";
-import { useEffect, useState } from "react";
-// import { useSocket } from "../context/SocketContext";
-// import useSocketEvent from "../hooks/useSocketEvent";
+import { useEffect } from "react";
 import StratDisplay from "./StratDisplay";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { getStrat } from "@/server/OLD_STRATS/strats";
+import { Strat } from "@/lib/types/strat.types";
+import { Skeleton } from "../ui/skeleton";
 
 export interface ActiveStratProps {
   defaultOpen?: Strat | null;
-  team: Team;
   initialViewModifier?: "none" | "hideForeign" | "grayscaleForeign";
 }
 
 export default function ActiveStrat(props: ActiveStratProps) {
-  const activeStratID = useQuery(api.activeStrat.get);
+  const team = useQuery(api.team.get);
+  const activeStrat = useQuery(api.activeStrat.get);
 
   useEffect(() => {
-    if (!activeStratID) {
+    if (!activeStrat) {
       document.title = "Current strat";
-      setStrat(null);
-      return;
+    } else {
+      document.title = `Current strat | ${activeStrat.name} | ${activeStrat.map} - ${activeStrat.site}`;
     }
-    let mounted = true;
-    (async () => {
-      const strat = await getStrat(activeStratID);
-      if (!mounted) return;
-      setStrat(strat);
-      if (!strat) {
-        document.title = "Current strat";
-      } else {
-        document.title = `Current strat | ${strat.name} | ${strat.map} - ${strat.site}`;
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, [activeStratID]);
+  }, [activeStrat]);
 
-  // const socket = useSocket();
-  // useEffect(() => {
-  //   socket.emit("active-strat:subscribe");
-  //   return () => {
-  //     socket.emit("active-strat:unsubscribe");
-  //   };
-  // }, []);
-  const [strat, setStrat] = useState<Strat | null>(props.defaultOpen ?? null);
-
-  // useSocketEvent("active-strat:changed", (strat) => {
-  //   setStrat(strat);
-  //   if (!strat) document.title = "Current strat";
-  //   else
-  //     document.title = `Current strat | ${strat.name} | ${strat.map} - ${strat.site}`;
-  // });
+  if (!team) {
+    return <Skeleton className="w-full h-96 rounded-md" />;
+  }
 
   return (
     <StratDisplay
-      strat={strat}
-      team={props.team}
+      strat={activeStrat ?? props.defaultOpen ?? null}
+      team={team}
       initialViewModifier={props.initialViewModifier}
     />
   );

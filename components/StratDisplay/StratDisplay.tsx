@@ -24,49 +24,54 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { FullTeam } from "@/lib/types/team.types";
+import { Strat } from "@/lib/types/strat.types";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export interface StratDisplayProps {
   strat: Strat | null;
-  team: Team;
+  team: FullTeam;
   editView?: boolean;
   hideDetails?: boolean;
   initialViewModifier?: "none" | "hideForeign" | "grayscaleForeign";
 }
 
 export default function StratDisplay(props: StratDisplayProps) {
-  const { bannedOps } = useFilter();
+  const bannedOps = useQuery(api.bannedOps.get) ?? [];
   const user = useUser();
   const teamMember = props.team.members.find(
-    (member) => member.id === user?.user?.id
+    (member) => member._id === user?.user?._id
   );
-  const stratPosition = props.strat?.positions.find(
-    (op) => op.positionID === teamMember?.positionID
+  const stratPosition = props.strat?.stratPositions.find(
+    (op) => op.teamPositionID === teamMember?.teamPositionID
   );
 
   const availableOperators = (() => {
-    const ops = stratPosition?.operators.filter(
+    const ops = stratPosition?.pickedOperators.filter(
       (op) => !bannedOps.includes(op.operator)
     );
-    if (!ops?.length) return stratPosition?.operators ?? [];
+    if (!ops?.length) return stratPosition?.pickedOperators ?? [];
     return ops;
   })();
 
   const teamLineUp = (
-    props.strat?.positions.filter(
-      (position) => position.positionID !== teamMember?.positionID
+    props.strat?.stratPositions.filter(
+      (stratPositions) =>
+        stratPositions.teamPositionID !== teamMember?.teamPositionID
     ) ?? []
   )
     .map((pos) => {
-      const teamPosition = props.team.playerPositions.find(
-        (teamPos) => teamPos.id === pos.positionID
+      const teamPosition = props.team.teamPositions.find(
+        (teamPos) => teamPos._id === pos.teamPositionID
       );
       const player = props.team.members.find(
-        (member) => member.positionID === pos.positionID
+        (member) => member.teamPositionID === pos.teamPositionID
       );
       const color = player?.defaultColor ?? undefined;
 
       return {
-        op: pos.operators.find((op) => !bannedOps.includes(op.operator)),
+        op: pos.pickedOperators.find((op) => !bannedOps.includes(op.operator)),
         color,
         playerName: player?.name,
         positionName: teamPosition?.positionName,
@@ -179,7 +184,7 @@ export default function StratDisplay(props: StratDisplayProps) {
             {props.strat.name}
           </span>
           <Link
-            href={`/editor/${props.strat.id}`}
+            href={`/editor/${props.strat._id}`}
             className="text-muted-foreground hover:text-primary"
           >
             <Button
@@ -251,13 +256,15 @@ export default function StratDisplay(props: StratDisplayProps) {
                   viewModifier === "hideForeign"
                     ? (assets) =>
                         assets.filter(
-                          (asset) => asset.stratPositionID === stratPosition?.id
+                          (asset) =>
+                            asset.stratPositionID === stratPosition?._id
                         )
                     : viewModifier === "grayscaleForeign"
                       ? (assets) =>
                           assets.map((asset) => ({
                             ...asset,
-                            ...(asset.stratPositionID !== stratPosition?.id && {
+                            ...(asset.stratPositionID !==
+                              stratPosition?._id && {
                               stratPositionID: undefined,
                               customColor: undefined,
                             }),

@@ -14,7 +14,7 @@ export interface TeamPosition {
 
 export interface TeamMember {
   isAdmin: boolean;
-  id: Id<"users">;
+  _id: Id<"users">;
   name: string;
   ubisoftID: string | null;
   teamPositionID: Id<"teamPositions"> | null;
