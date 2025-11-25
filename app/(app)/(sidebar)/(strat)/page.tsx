@@ -1,12 +1,19 @@
 import ActiveStrat from "@/components/StratDisplay/ActiveStrat";
 import { getStratViewModifierFromCookies } from "@/components/StratDisplay/stratDisplay.functions";
-import { getTeam } from "@/lib/auth/team";
-import { getActive } from "@/server/OLD_STRATS/strats";
+import { api } from "@/convex/_generated/api";
+import { getJWT } from "@/server/jwt";
+import { fetchQuery } from "convex/nextjs";
 import { Metadata } from "next";
 import { cookies } from "next/headers";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const active = await getActive();
+  const active = await fetchQuery(
+    api.activeStrat.get,
+    {},
+    {
+      token: await getJWT(),
+    }
+  );
 
   return {
     title: `Current strat${
@@ -17,16 +24,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const active = await getActive();
-  const team = await getTeam();
   const cookieStore = await cookies();
   const initialViewModifier = getStratViewModifierFromCookies(cookieStore);
 
-  return (
-    <ActiveStrat
-      defaultOpen={active}
-      team={team}
-      initialViewModifier={initialViewModifier}
-    />
-  );
+  return <ActiveStrat initialViewModifier={initialViewModifier} />;
 }

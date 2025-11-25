@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { requireUser } from "./auth";
+import { getStrat } from "./strats";
 
 export const get = query({
   args: {},
@@ -14,7 +15,10 @@ export const get = query({
       .first();
     if (!activeStratDoc || activeStratDoc.teamID !== activeTeamID) return null;
 
-    return activeStratDoc.stratID ?? null;
+    if (!activeStratDoc.stratID) return null;
+
+    const activeStrat = await getStrat(ctx, activeStratDoc.stratID);
+    return activeStrat;
   },
 });
 

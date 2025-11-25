@@ -71,7 +71,7 @@ const schema = defineSchema({
   }).index("byTeam", ["teamID"]),
 
   placedAssets: defineTable({
-    stratsID: v.id("strats"),
+    stratID: v.id("strats"),
     posX: v.number(),
     posY: v.number(),
     width: v.number(),
@@ -86,22 +86,26 @@ const schema = defineSchema({
     gadget: v.optional(v.string()),
     rotate: v.optional(v.string()),
     reinforcementVariant: v.optional(v.string()),
-  }).index("byStrat", ["stratsID"]),
+  }).index("byStrat", ["stratID"]),
 
   stratPositions: defineTable({
-    positionID: v.optional(v.id("teamPositions")),
-    stratsID: v.id("strats"),
+    teamPositionID: v.optional(v.id("teamPositions")),
+    stratID: v.id("strats"),
     isPowerPosition: v.boolean(),
     shouldBringShotgun: v.boolean(),
-  }).index("byStrat", ["stratsID"]),
+    index: v.number(),
+  }).index("byStrat", ["stratID"]),
 
   pickedOperators: defineTable({
+    stratID: v.id("strats"),
     stratPositionID: v.id("stratPositions"),
     operator: v.string(),
     secondaryGadget: v.optional(v.string()),
     tertiaryGadget: v.optional(v.string()),
     index: v.number(),
-  }).index("byPosition", ["stratPositionID"]),
+  })
+    .index("byPosition", ["stratPositionID"])
+    .index("byStrat", ["stratID"]),
 });
 
 export default schema;

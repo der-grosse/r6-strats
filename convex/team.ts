@@ -30,7 +30,7 @@ export const get = query({
         if (!userDoc) return null!;
         return {
           isAdmin: membership.isAdmin,
-          id: userDoc._id,
+          _id: userDoc._id,
           name: userDoc.name,
           ubisoftID: userDoc.ubisoftID ?? null,
           teamPositionID:

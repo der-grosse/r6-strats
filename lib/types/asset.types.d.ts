@@ -1,4 +1,6 @@
-type Asset = BaseAsset &
+import { Id } from "@/convex/_generated/dataModel";
+
+export type Asset = BaseAsset &
   (
     | MarkerAsset
     | OperatorAsset
@@ -7,25 +9,21 @@ type Asset = BaseAsset &
     | ReinforcementAsset
   );
 
-interface BaseAsset {
-  id: string;
-  stratPositionID?: StratPositions["id"];
+export interface BaseAsset {
+  stratPositionID?: Id<"stratPositions">;
   customColor?: string;
 }
 
-interface MarkerAsset {
-  id: `marker-${string}`;
+export interface MarkerAsset {
   type: "marker";
 }
 
-interface ReinforcementAsset {
-  id: `reinforcement-${string}`;
+export interface ReinforcementAsset {
   type: "reinforcement";
   variant: "reinforcement" | "barricade";
 }
 
-interface RotateAsset {
-  id: `rotate-${string}`;
+export interface RotateAsset {
   type: "rotate";
   variant:
     | "full"
@@ -37,32 +35,30 @@ interface RotateAsset {
     | "explosion";
 }
 
-interface OperatorAsset {
-  id: `operator-${string}`;
+export interface OperatorAsset {
   type: "operator";
   operator: string;
   side: "att" | "def";
   iconType: "default" | "hidden" | "bw";
 }
 
-interface GadgetAsset {
-  id: `gadget-${string}`;
+export interface GadgetAsset {
   type: "gadget";
   gadget: string;
 }
 
-type PlacedAsset = Asset & {
+export type PlacedAsset = Asset & {
   position: Position;
   size: Size;
   rotation: number;
 };
 
-interface Position {
+export interface Position {
   x: number;
   y: number;
 }
 
-interface Size {
+export interface Size {
   width: number;
   height: number;
 }
