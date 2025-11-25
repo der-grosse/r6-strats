@@ -57,6 +57,8 @@ You can use the tool for free at [r6-strats.com](https://r6-strats.com).
 
 ### Misc
 
+- duplicate strat
 - add landing page
 - add default strats
 - add link sharing for active strat
+- rework strat filter in sidebar?
