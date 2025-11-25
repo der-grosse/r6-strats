@@ -25,7 +25,7 @@ export const set = mutation({
     if (!activeTeamID) throw new Error("No active team set");
 
     const existing = await ctx.db
-      .query("activeStrats")
+      .query("bannedOps")
       .withIndex("byTeam", (q) => q.eq("teamID", activeTeamID))
       .first();
 
