@@ -9,18 +9,18 @@ export const get = query({
     if (!activeTeamID) return null;
 
     const activeStratDoc = await ctx.db
-      .query("activeStrats")
+      .query("bannedOps")
       .withIndex("byTeam", (q) => q.eq("teamID", activeTeamID))
       .first();
     if (!activeStratDoc || activeStratDoc.teamID !== activeTeamID) return null;
 
-    return activeStratDoc.stratID ?? null;
+    return activeStratDoc.operators ?? null;
   },
 });
 
 export const set = mutation({
-  args: { stratID: v.union(v.id("strats"), v.null()) },
-  async handler(ctx, { stratID }) {
+  args: { operators: v.array(v.string()) },
+  async handler(ctx, { operators }) {
     const { activeTeamID } = await requireUser(ctx);
     if (!activeTeamID) throw new Error("No active team set");
 
@@ -30,7 +30,7 @@ export const set = mutation({
       .first();
 
     // Delete currently active strat if null/undefined passed
-    if (stratID == null) {
+    if (operators.length == 0) {
       if (existing) {
         await ctx.db.delete(existing._id);
       }
@@ -39,27 +39,11 @@ export const set = mutation({
 
     // Update if exists, otherwise create
     if (existing) {
-      await ctx.db.patch(existing._id, { stratID });
+      await ctx.db.patch(existing._id, { operators });
     } else {
-      await ctx.db.insert("activeStrats", { teamID: activeTeamID, stratID });
+      await ctx.db.insert("bannedOps", { teamID: activeTeamID, operators });
     }
 
-    return stratID;
-  },
-});
-
-export const clear = mutation({
-  args: {},
-  async handler(ctx) {
-    const { activeTeamID } = await requireUser(ctx);
-    if (!activeTeamID) throw new Error("No active team set");
-    const existing = await ctx.db
-      .query("activeStrats")
-      .withIndex("byTeam", (q) => q.eq("teamID", activeTeamID))
-      .first();
-    if (existing) {
-      await ctx.db.delete(existing._id);
-    }
-    return null;
+    return operators;
   },
 });

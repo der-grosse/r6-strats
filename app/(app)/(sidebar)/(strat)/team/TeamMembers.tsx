@@ -7,19 +7,24 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useState } from "react";
-import { setMemberColor } from "@/lib/auth/team";
 import ColorPickerDialog from "@/components/general/ColorPickerDialog";
 import TeamMemberList from "./TeamMemberList";
 import { DEFAULT_COLORS } from "@/lib/static/colors";
 import ChangeUbisoftIDDialog from "./ChangeUbisoftIDDialog";
+import { FullTeam, TeamMember } from "@/lib/types/team.types";
+import { Id } from "@/convex/_generated/dataModel";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export interface TeamMembersProps {
-  team: Team;
+  team: FullTeam;
 }
 
 export default function TeamMembers(props: TeamMembersProps) {
+  const updateTeamMember = useMutation(api.team.updateTeamMember);
+
   const [userColorChangeOpen, setUserColorChangeOpen] = useState(false);
-  const [userColorID, setUserColorID] = useState<number | null>(null);
+  const [userColorID, setUserColorID] = useState<Id<"users"> | null>(null);
 
   const [changeUbisoftIDOpen, setChangeUbisoftIDOpen] = useState(false);
   const [changeUbisoftIDUser, setChangeUbisoftIDUser] =
@@ -36,6 +41,7 @@ export default function TeamMembers(props: TeamMembersProps) {
         </CardHeader>
         <CardContent>
           <TeamMemberList
+            teamID={props.team._id}
             members={props.team.members}
             onChangeColor={(member) => {
               setUserColorID(member.id);
@@ -61,13 +67,19 @@ export default function TeamMembers(props: TeamMembersProps) {
           DEFAULT_COLORS.at(-1)
         }
         onChange={async (color) => {
-          if (userColorID) await setMemberColor(color, userColorID);
+          if (userColorID)
+            await updateTeamMember({
+              defaultColor: color,
+              userID: userColorID,
+              teamID: props.team._id,
+            });
           setUserColorID(null);
           setUserColorChangeOpen(false);
         }}
       />
 
       <ChangeUbisoftIDDialog
+        teamID={props.team._id}
         open={changeUbisoftIDOpen}
         onClose={() => setChangeUbisoftIDOpen(false)}
         member={changeUbisoftIDUser}

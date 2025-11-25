@@ -35,7 +35,7 @@ import SidebarStrats from "./SidebarStrats";
 import { useRouter } from "next/navigation";
 import { useFilter } from "@/components/context/FilterContext";
 import { cn } from "@/lib/utils";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
 export default function StratsLayout({
@@ -45,11 +45,11 @@ export default function StratsLayout({
 }) {
   const router = useRouter();
   const setActiveStrat = useMutation(api.activeStrat.set);
+  const bannedOps = useQuery(api.bannedOps.get) || [];
+  const setBannedOps = useMutation(api.bannedOps.set);
   const {
     filter,
     setFilter,
-    bannedOps,
-    setBannedOps,
     playableStrats: filteredStrats,
     isLeading,
     setIsLeading,
@@ -117,7 +117,9 @@ export default function StratsLayout({
                             disabled={!isLeading}
                             multiple
                             selected={bannedOps}
-                            onChange={(bannedOps) => setBannedOps(bannedOps)}
+                            onChange={(bannedOps) =>
+                              setBannedOps({ operators: bannedOps })
+                            }
                             trigger={SidebarMenuButton}
                           />
                         </span>

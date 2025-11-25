@@ -76,3 +76,16 @@ export async function generateJWT(user: Omit<JWTPayload, "v">) {
     .sign(privateKey);
   return token;
 }
+
+export async function getPayload() {
+  const token = await getJWT();
+  if (!token) return null;
+  const payload = await verifyJWT(token);
+  if (!payload) return null;
+  return payload;
+}
+
+export async function getJWT() {
+  const token = (await cookies()).get("jwt")?.value;
+  return token;
+}

@@ -6,14 +6,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import TeamPlayerPositionsList from "./TeamPlayerPositionsList";
+import TeamPositionsList from "./TeamPositionsList";
+import { FullTeam } from "@/lib/types/team.types";
 
-export interface TeamPlayerPositionsProps {
-  team: Team;
+export interface TeamPositionsProps {
+  team: FullTeam;
   canEdit: boolean;
 }
 
-export default function TeamPlayerPositions(props: TeamPlayerPositionsProps) {
+export default function TeamPositions(props: TeamPositionsProps) {
   return (
     <Card>
       <CardHeader>
@@ -24,7 +25,7 @@ export default function TeamPlayerPositions(props: TeamPlayerPositionsProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <TeamPlayerPositionsList canEdit={props.canEdit} team={props.team} />
+        <TeamPositionsList canEdit={props.canEdit} team={props.team} />
       </CardContent>
     </Card>
   );

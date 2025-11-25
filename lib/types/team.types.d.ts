@@ -1,32 +1,30 @@
-interface Team {
-  id: number;
-  name: string;
-  createdAt: string;
-  playerPositions: PlayerPosition[];
+import { Doc, Id } from "@/convex/_generated/dataModel";
+
+export interface FullTeam extends Doc<"teams"> {
+  teamPositions: TeamPosition[];
   members: TeamMember[];
 }
 
-interface PlayerPosition {
-  id: number;
-  playerID: number | null;
+export interface TeamPosition {
+  _id: Id<"teamPositions">;
+  playerID: Id<"users"> | null;
   positionName: string | null;
   index: number;
 }
 
-interface TeamMember {
+export interface TeamMember {
   isAdmin: boolean;
-  id: number;
+  id: Id<"users">;
   name: string;
-  email: string | null;
-  defaultColor: string | null;
-  createdAt: string;
-  positionID: number | null;
   ubisoftID: string | null;
+  teamPositionID: Id<"teamPositions"> | null;
+  defaultColor: string | null;
+  memberSince: number;
 }
 
-interface InviteKey {
+export interface InviteKey {
   inviteKey: string;
-  teamID: number;
-  usedBy: number | null;
+  teamID: Id<"teams">;
+  usedBy: Id<"users"> | null;
   usedAt: string | null;
 }

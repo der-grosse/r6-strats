@@ -1,5 +1,4 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,18 +7,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useRef, useState } from "react";
-import { updateTeamName } from "@/lib/auth/team";
-import { Edit2, Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import useSaveDebounced from "@/components/hooks/useSaveDebounced";
+import { FullTeam } from "@/lib/types/team.types";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export interface TeamInfoProps {
-  team: Team;
+  team: Pick<FullTeam, "_creationTime" | "members" | "name" | "_id">;
 }
 
 export default function TeamInfo(props: TeamInfoProps) {
+  const updateTeam = useMutation(api.team.updateTeam);
   const teamNameInputRef = useRef<HTMLInputElement | null>(null);
   const [newTeamName, setNewTeamName] = useState(props.team.name);
 
@@ -27,7 +28,7 @@ export default function TeamInfo(props: TeamInfoProps) {
     newTeamName,
     async (newTeamName) => {
       try {
-        await updateTeamName(newTeamName);
+        await updateTeam({ _id: props.team._id, name: newTeamName });
         toast.success("Team name updated successfully");
       } catch (err) {
         toast.error(
@@ -63,7 +64,7 @@ export default function TeamInfo(props: TeamInfoProps) {
         <div className="space-y-1">
           <Label htmlFor="created-at-info">Created at</Label>
           <span id="created-at-info" className="text-sm text-muted-foreground">
-            {new Date(props.team.createdAt).toLocaleDateString("de-DE", {
+            {new Date(props.team._creationTime).toLocaleDateString("de-DE", {
               year: "numeric",
               month: "2-digit",
               day: "2-digit",

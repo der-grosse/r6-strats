@@ -12,7 +12,7 @@ import { and, eq, is, max } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import StratsDB from "./stratsDB";
 import ActiveStratDB from "./activeStrat";
-import { PLAYER_COUNT } from "../static/general";
+import { PLAYER_COUNT } from "../../lib/static/general";
 
 export async function createStrat(data: {
   map: string;

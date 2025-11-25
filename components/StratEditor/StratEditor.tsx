@@ -9,7 +9,7 @@ import {
   deleteStratAssets,
   getStrat,
   updateStratAssets,
-} from "@/lib/strats/strats";
+} from "@/server/OLD_STRATS/strats";
 import { useKeys } from "../hooks/useKey";
 import { deepCopy, deepEqual } from "../Objects";
 // import { useSocket } from "../context/SocketContext";

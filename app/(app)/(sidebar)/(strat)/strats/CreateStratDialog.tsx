@@ -30,7 +30,7 @@ import { Info, Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { createStrat } from "@/lib/strats/strats";
+import { createStrat } from "@/server/OLD_STRATS/strats";
 import { toast } from "sonner";
 import MAPS from "@/lib/static/maps";
 import {
