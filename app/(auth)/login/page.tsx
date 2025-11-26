@@ -1,12 +1,13 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { login } from "@/lib/auth/auth";
+import { login } from "@/server/auth";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { CircleX } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
 
 export default function Login() {
   const mounted = useRef(true);
@@ -28,20 +29,26 @@ export default function Login() {
     <form
       className="h-screen flex flex-col items-center justify-center w-full gap-4"
       onSubmit={async (e) => {
-        e.preventDefault();
-        setError(false);
-        setLoading(true);
+        try {
+          e.preventDefault();
+          setError(false);
+          setLoading(true);
 
-        const user = await login(username, password);
+          const user = await login(username, password);
 
-        if (!mounted.current) return;
+          if (!mounted.current) return;
 
-        setError(!user);
+          setError(!user);
 
-        if (user) {
-          router.push("/");
-        } else {
-          setLoading(false);
+          if (user) {
+            router.push("/");
+          }
+        } catch (e) {
+          toast.error("An unexpected error occurred. Please try again.");
+          console.error("Error logging in:", e);
+          if (mounted.current) {
+            setLoading(false);
+          }
         }
       }}
     >

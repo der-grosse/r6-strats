@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { requestResetPassword } from "@/lib/auth/auth";
+import { requestResetPassword } from "@/server/auth";
 import Link from "next/link";
 import { useState } from "react";
 

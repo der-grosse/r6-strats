@@ -8,6 +8,7 @@ import { DragProvider } from "@/components/ui/draggable-context";
 import { ResizeProvider } from "@/components/ui/resize-context";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Toaster } from "@/components/ui/sonner";
+import { Strat } from "@/lib/types/strat.types";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 
 export interface ProvidersProps {

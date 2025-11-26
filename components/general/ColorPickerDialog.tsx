@@ -112,10 +112,10 @@ export function ColorButton(props: {
         props.className
       )}
       disabled={props.disabled}
-      style={{ backgroundColor: props.color ?? DEFAULT_COLORS[0] }}
+      style={{ backgroundColor: props.color ?? DEFAULT_COLORS.at(-1) }}
       onClick={() => {
         if (props.disabled) return;
-        props.onClick?.(props.color ?? DEFAULT_COLORS[0]);
+        props.onClick?.(props.color ?? DEFAULT_COLORS.at(-1)!);
       }}
     />
   );

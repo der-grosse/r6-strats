@@ -4,7 +4,6 @@ import {
   parseCookies,
 } from "@/components/context/FilterContext.functions";
 import Providers from "./Providers";
-import { getAllStrats } from "@/server/OLD_STRATS/strats";
 
 export default async function ProvidersLayout({
   children,
@@ -15,7 +14,7 @@ export default async function ProvidersLayout({
   const filter = parseCookies(cookiesStore);
   const jwt = cookiesStore.get("jwt")?.value;
   const leading = cookiesStore.get(LEADING_COOKIE_KEY)?.value === "true";
-  const allStrats = await getAllStrats();
+  const allStrats = [] as any[]; //TODO: fetch all strats here
   return (
     <Providers
       cookieFilter={filter}
