@@ -1,5 +1,6 @@
-import { verifyJWT } from "@/lib/auth/jwt";
-import { getTeam } from "@/lib/auth/team";
+import { api } from "@/convex/_generated/api";
+import { getJWT, verifyJWT } from "@/server/jwt";
+import { fetchQuery } from "convex/nextjs";
 
 export async function GET(request: Request) {
   const jwt = request.headers.get("Authorization")?.split(" ")[1];
@@ -14,18 +15,19 @@ export async function GET(request: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const team = await getTeam(user.teamID);
+  const team = await fetchQuery(api.team.get, {}, { token: jwt });
+
+  if (!team) return new Response("No active team", { status: 403 });
 
   // Handle the authenticated request
   return Response.json({
-    id: user.id,
+    id: user._id,
     name: user.name,
-    isAdmin: user.isAdmin,
-    teamID: user.teamID,
+    isAdmin: team?.isSelfAdmin,
     team: {
       name: team.name,
       members: team.members.map((member) => ({
-        id: member.id,
+        id: member._id,
         name: member.name,
         ubisoftID: member.ubisoftID,
         isAdmin: member.isAdmin,

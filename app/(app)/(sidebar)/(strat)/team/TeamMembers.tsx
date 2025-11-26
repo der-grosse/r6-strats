@@ -44,7 +44,7 @@ export default function TeamMembers(props: TeamMembersProps) {
             teamID={props.team._id}
             members={props.team.members}
             onChangeColor={(member) => {
-              setUserColorID(member.id);
+              setUserColorID(member._id);
               setUserColorChangeOpen(true);
             }}
             onChangeUbisoftID={(member) => {
@@ -63,7 +63,7 @@ export default function TeamMembers(props: TeamMembersProps) {
         open={userColorChangeOpen}
         onClose={() => setUserColorChangeOpen(false)}
         color={
-          props.team.members.find((u) => u.id === userColorID)?.defaultColor ??
+          props.team.members.find((u) => u._id === userColorID)?.defaultColor ??
           DEFAULT_COLORS.at(-1)
         }
         onChange={async (color) => {

@@ -118,7 +118,7 @@ export default function ChangeUbisoftIDDialog(
                 await updateTeamMember({
                   ubisoftID: newUbisoftID,
                   teamID: props.teamID,
-                  userID: props.member.id,
+                  userID: props.member._id,
                 });
                 props.onClose();
               }

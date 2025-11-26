@@ -31,7 +31,7 @@ import { checkUbisoftID } from "@/lib/ubisoft/ubi";
 import { changePassword } from "@/server/auth";
 import { useMutation, useQuery } from "convex/react";
 import { Check, RotateCcwKey, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 export default function AccountInfo(props: {
@@ -39,7 +39,7 @@ export default function AccountInfo(props: {
 }) {
   const self = useQuery(api.self.get, {});
   const user = useMemo(
-    () => props.team.members.find((m) => m.id === self?._id),
+    () => props.team.members.find((m) => m._id === self?._id),
     [props.team, self]
   );
 
@@ -50,6 +50,13 @@ export default function AccountInfo(props: {
   const [newEmail, setNewEmail] = useState(self?.email ?? "");
   const [ubisoftID, setUbisoftID] = useState(user?.ubisoftID ?? "");
   const [ubisoftIDValid, setUbisoftIDValid] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!user || !self) return;
+    if (!newUsername) setNewUsername(user.name);
+    if (!newEmail) setNewEmail(self.email ?? "");
+    if (!ubisoftID) setUbisoftID(user.ubisoftID ?? "");
+  }, [user]);
 
   const { saveNow: saveUsername } = useSaveDebounced(
     newUsername,

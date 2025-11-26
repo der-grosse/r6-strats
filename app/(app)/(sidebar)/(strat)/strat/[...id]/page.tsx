@@ -1,9 +1,11 @@
 import { getStratViewModifierFromCookies } from "@/components/StratDisplay/stratDisplay.functions";
 import { cookies } from "next/headers";
-import { getTeam } from "@/lib/auth/team";
-import { getStrat } from "@/server/OLD_STRATS/strats";
 import { Metadata } from "next";
 import StratDisplay from "@/components/StratDisplay/StratDisplay";
+import { fetchQuery } from "convex/nextjs";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import { getJWT } from "@/server/jwt";
 
 export async function generateMetadata({
   params,
@@ -11,7 +13,11 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const strat = await getStrat(Number(id));
+  const strat = await fetchQuery(
+    api.strats.get,
+    { id: id as Id<"strats"> },
+    { token: await getJWT() }
+  );
 
   return {
     title: `${strat?.name} | ${strat?.map} - ${strat?.site}`,
@@ -25,9 +31,13 @@ export default async function Page({
   params: Promise<{ id: string[] }>;
 }>) {
   const params = (await paramsRaw).id;
-  const id = Number(params[0]);
-  const strat = await getStrat(id);
-  const team = await getTeam();
+  const id = params[0];
+  const strat = await fetchQuery(
+    api.strats.get,
+    { id: id as Id<"strats"> },
+    { token: await getJWT() }
+  );
+  const team = await fetchQuery(api.team.get, {}, { token: await getJWT() });
   const cookieStore = await cookies();
   const initialViewModifier = getStratViewModifierFromCookies(cookieStore);
 

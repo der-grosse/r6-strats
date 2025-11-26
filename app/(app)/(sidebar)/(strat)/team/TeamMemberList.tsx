@@ -37,7 +37,7 @@ export default function TeamMemberList(props: TeamMemberListProps) {
           .toSorted((a, b) => (a.memberSince < b.memberSince ? -1 : 1))
           .map((member) => (
             <TeamMemberItem
-              key={member.id}
+              key={member._id}
               teamID={props.teamID}
               member={member}
               onChangeColor={props.onChangeColor.bind(null, member)}

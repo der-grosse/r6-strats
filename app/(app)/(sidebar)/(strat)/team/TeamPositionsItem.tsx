@@ -68,7 +68,7 @@ export default function TeamPositionsItem({
                 <Button variant="ghost">
                   {(() => {
                     const member = team.members.find(
-                      (m) => m.id === position.playerID
+                      (m) => m._id === position.playerID
                     );
                     if (!member) return <em>Select player</em>;
                     return (
@@ -105,7 +105,7 @@ export default function TeamPositionsItem({
                       updateTeamPosition({
                         teamID: team._id,
                         positionID: position._id,
-                        playerID: member.id,
+                        playerID: member._id,
                       })
                     }
                   >
@@ -127,7 +127,7 @@ export default function TeamPositionsItem({
           <span>
             {(() => {
               const member = team.members.find(
-                (m) => m.id === position.playerID
+                (m) => m._id === position.playerID
               );
               if (!member) return <em>Unassigned</em>;
               return (

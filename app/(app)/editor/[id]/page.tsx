@@ -1,6 +1,8 @@
 import { StratEditor } from "@/components/StratEditor/StratEditor";
-import { getTeam } from "@/lib/auth/team";
-import { getStrat } from "@/server/OLD_STRATS/strats";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import { getJWT } from "@/server/jwt";
+import { fetchQuery } from "convex/nextjs";
 import { CircleX } from "lucide-react";
 import { Metadata } from "next";
 
@@ -10,7 +12,11 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const strat = await getStrat(Number(id));
+  const strat = await fetchQuery(
+    api.strats.get,
+    { id: id as Id<"strats"> },
+    { token: await getJWT() }
+  );
 
   return {
     title: `${strat?.name} | ${strat?.map} - ${strat?.site}`,
@@ -22,9 +28,15 @@ export default async function StratEditorPage({
 }: Readonly<{
   params: Promise<{ id: string }>;
 }>) {
-  const id = Number((await paramsRaw).id);
-  const strat = id && !isNaN(id) ? await getStrat(id) : null;
-  const team = await getTeam();
+  const id = (await paramsRaw).id;
+  const strat = id
+    ? await fetchQuery(
+        api.strats.get,
+        { id: id as Id<"strats"> },
+        { token: await getJWT() }
+      )
+    : null;
+  const team = await fetchQuery(api.team.get, {}, { token: await getJWT() });
 
   if (!strat) {
     return (

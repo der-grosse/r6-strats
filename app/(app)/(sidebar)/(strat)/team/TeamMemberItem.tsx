@@ -43,7 +43,7 @@ export default function TeamMemberItem({
 
   const handleRemoveUser = async (userID: Id<"users">) => {
     try {
-      await removeMember({ userID: member.id, teamID });
+      await removeMember({ userID: member._id, teamID });
       toast.success("User removed successfully");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to remove user");
@@ -73,7 +73,7 @@ export default function TeamMemberItem({
   };
 
   return (
-    <TableRow key={member.id}>
+    <TableRow key={member._id}>
       <TableCell className="w-[50px]">
         <ColorButton
           size="small"
@@ -81,7 +81,7 @@ export default function TeamMemberItem({
           onClick={() => {
             onChangeColor();
           }}
-          disabled={member.id !== self?._id && !self?.team?.isAdmin}
+          disabled={member._id !== self?._id && !self?.team?.isAdmin}
           className="align-middle m-auto"
         />
       </TableCell>
@@ -102,7 +102,7 @@ export default function TeamMemberItem({
             </Tooltip>
           )}
           {member.name}
-          {self?._id === member.id && (
+          {self?._id === member._id && (
             <span className="ml-2 text-muted-foreground text-sm">(You)</span>
           )}
         </div>
@@ -117,13 +117,13 @@ export default function TeamMemberItem({
       </TableCell>
       {self?.team?.isAdmin && (
         <TableCell>
-          {member.id !== self?._id ? (
+          {member._id !== self?._id ? (
             <DropdownMenu modal>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  disabled={self?._id !== member.id && !self?.team?.isAdmin}
+                  disabled={self?._id !== member._id && !self?.team?.isAdmin}
                 >
                   <MoreVertical className="h-4 w-4" />
                 </Button>
@@ -136,7 +136,11 @@ export default function TeamMemberItem({
                 {member.ubisoftID && (
                   <DropdownMenuItem
                     onClick={() =>
-                      updateMember({ ubisoftID: "", userID: member.id, teamID })
+                      updateMember({
+                        ubisoftID: "",
+                        userID: member._id,
+                        teamID,
+                      })
                     }
                     className="text-destructive"
                   >
@@ -150,14 +154,14 @@ export default function TeamMemberItem({
                 <DropdownMenuSeparator />
                 {!member.isAdmin ? (
                   <DropdownMenuItem
-                    onClick={() => handlePromoteToAdmin(member.id)}
+                    onClick={() => handlePromoteToAdmin(member._id)}
                   >
                     <Shield className="mr-2 h-4 w-4" />
                     Promote to Admin
                   </DropdownMenuItem>
                 ) : (
                   <DropdownMenuItem
-                    onClick={() => handleDemoteFromAdmin(member.id)}
+                    onClick={() => handleDemoteFromAdmin(member._id)}
                   >
                     <ShieldOff className="mr-2 h-4 w-4" />
                     Demote from Admin
@@ -165,7 +169,7 @@ export default function TeamMemberItem({
                 )}
                 {!member.isAdmin && (
                   <DropdownMenuItem
-                    onClick={() => handleRemoveUser(member.id)}
+                    onClick={() => handleRemoveUser(member._id)}
                     className="text-destructive"
                   >
                     <Trash2 className="mr-2 h-4 w-4" />

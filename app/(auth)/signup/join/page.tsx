@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { register } from "@/lib/auth/auth";
+import { register } from "@/server/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +28,7 @@ export default function JoinTeam() {
     }
 
     try {
-      await register(username, password, inviteKey);
+      await register({ name: username, password, invite_key: inviteKey });
       // Redirect to login page on success
       router.push("/login");
     } catch (err) {

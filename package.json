@@ -12,8 +12,7 @@
     "lint": "next lint",
     "start-local-db": "docker compose -f docker-compose-postgres.yml up",
     "typecheck": "tsc --noEmit",
-    "generate-jwt-key": "tsx scripts/generate-keys.ts",
-    "generate-server-jwt": "tsx scripts/generate-server-jwt.ts"
+    "setup-local-auth": "tsx scripts/setup-auth.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
