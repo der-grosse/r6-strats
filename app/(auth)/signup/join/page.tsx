@@ -145,7 +145,7 @@ function CodeInput({
   }, [searchParamsInviteKey, onChange]);
 
   return (
-    <div className={cn(!!searchParamsInviteKey && !error && "hidden")}>
+    <div className={cn(!!searchParamsInviteKey && "hidden")}>
       <label htmlFor="invite-key" className="sr-only">
         Invite Key
       </label>

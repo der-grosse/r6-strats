@@ -175,5 +175,5 @@ export default function TeamInviteKeys(props: { teamID: Id<"teams"> }) {
 }
 
 function getFullInviteURL(inviteKey: string) {
-  return `${window.location.origin}/auth/signup/join?inviteKey=${inviteKey}`;
+  return `${window.location.origin}/signup/join?inviteKey=${inviteKey}`;
 }

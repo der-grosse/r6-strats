@@ -248,6 +248,29 @@ export const updateTeamPosition = mutation({
       throw new Error("Position does not belong to the team");
     }
 
+    const teamPositions = await ctx.db
+      .query("teamPositions")
+      .withIndex("byTeam", (q) => q.eq("teamID", args.teamID))
+      .collect();
+
+    if (args.playerID) {
+      const playerMembership = await ctx.db
+        .query("userTeams")
+        .withIndex("byUserAndTeam", (q) =>
+          q.eq("userID", args.playerID!).eq("teamID", args.teamID)
+        )
+        .first();
+      if (!playerMembership) {
+        throw new Error("Player is not a member of the team");
+      }
+      const assignedPosition = teamPositions.find(
+        (pos) => pos.playerID === args.playerID && pos._id !== args.positionID
+      );
+      if (assignedPosition) {
+        await ctx.db.patch(assignedPosition._id, { playerID: undefined });
+      }
+    }
+
     await ctx.db.patch(args.positionID, {
       positionName: args.positionName ?? position.positionName,
       playerID:
@@ -258,11 +281,6 @@ export const updateTeamPosition = mutation({
     });
 
     if (args.index !== undefined) {
-      const teamPositions = await ctx.db
-        .query("teamPositions")
-        .withIndex("byTeam", (q) => q.eq("teamID", args.teamID))
-        .collect();
-
       // Switch indexes
       const oldIndex = position.index;
       const newIndex = args.index;
