@@ -52,7 +52,7 @@ export async function login(name: string, password: string) {
     }
   );
   if (!user) {
-    console.log("User not found during login for name:", name);
+    console.debug("User not found during login for name:", name);
     return null;
   }
   // hash password and compare with db password
