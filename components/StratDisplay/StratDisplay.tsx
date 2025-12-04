@@ -30,7 +30,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
 export interface StratDisplayProps {
-  strat: Strat | null;
+  strat: Strat | null | undefined;
   team: FullTeam;
   editView?: boolean;
   hideDetails?: boolean;
@@ -276,12 +276,12 @@ export default function StratDisplay(props: StratDisplayProps) {
           </div>
           {Details}
         </>
-      ) : (
+      ) : props.strat === null ? (
         <>
           <Ban className="text-muted-foreground" height={64} width={64} />
           <p className="text-muted-foreground">No strat selected</p>
         </>
-      )}
+      ) : null}
     </div>
   );
 }
