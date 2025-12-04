@@ -14,14 +14,8 @@ export default async function ProvidersLayout({
   const filter = parseCookies(cookiesStore);
   const jwt = cookiesStore.get("jwt")?.value;
   const leading = cookiesStore.get(LEADING_COOKIE_KEY)?.value === "true";
-  const allStrats = [] as any[]; //TODO: fetch all strats here
   return (
-    <Providers
-      cookieFilter={filter}
-      jwt={jwt}
-      defaultLeading={leading}
-      allStrats={allStrats}
-    >
+    <Providers cookieFilter={filter} jwt={jwt} defaultLeading={leading}>
       {children}
     </Providers>
   );

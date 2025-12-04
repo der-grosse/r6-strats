@@ -12,24 +12,27 @@ import {
 } from "@/components/ui/dialog";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
-import { archiveStrat } from "@/server/OLD_STRATS/strats";
 import { toast } from "sonner";
-import { useFilter } from "@/components/context/FilterContext";
+import { Id } from "@/convex/_generated/dataModel";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 interface DeleteStratDialogProps {
-  stratId: number;
+  stratID: Id<"strats">;
   stratName: string;
 }
 
 export function DeleteStratDialog({
-  stratId,
+  stratID,
   stratName,
 }: Readonly<DeleteStratDialogProps>) {
+  const archiveStrat = useMutation(api.strats.archive);
+
   const [open, setOpen] = useState(false);
 
   async function handleDelete() {
     try {
-      const result = await archiveStrat(stratId);
+      const result = await archiveStrat({ stratID });
 
       if (!result.success) {
         throw new Error(result.error);

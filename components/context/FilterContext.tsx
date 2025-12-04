@@ -1,11 +1,5 @@
 "use client";
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import Cookie from "js-cookie";
 import {
   EMPTY_FILTER,
@@ -19,8 +13,6 @@ import { api } from "@/convex/_generated/api";
 interface FilterContextType {
   filter: Filter;
   setFilter: React.Dispatch<React.SetStateAction<Filter>>;
-  playableStrats: Strat[];
-  availableStrats: { playable: boolean; strat: Strat }[];
   isLeading: boolean;
   setIsLeading: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -31,8 +23,7 @@ export const FilterProvider: React.FC<{
   children: React.ReactNode;
   defaultFilter?: Filter;
   defaultLeading?: boolean;
-  allStrats?: Strat[];
-}> = ({ allStrats, children, defaultFilter, defaultLeading }) => {
+}> = ({ children, defaultFilter, defaultLeading }) => {
   const setBannedOps = useMutation(api.bannedOps.set);
   const bannedOps = useQuery(api.bannedOps.get) || [];
 
@@ -62,42 +53,6 @@ export const FilterProvider: React.FC<{
     setBannedOps({ operators: bannedOps });
   }, [bannedOps.join("|"), isLeading]);
 
-  const availableStrats = useMemo(
-    () =>
-      allStrats
-        ?.filter((strat) => {
-          if (filter.map && filter.map !== strat.map) return false;
-          if (filter.site && filter.site !== strat.site) return false;
-          return true;
-        })
-        .map((strat) => {
-          const playable = (() => {
-            if (bannedOps.length > 0) {
-              const positionUnplayable = strat.positions.some(
-                (position) =>
-                  position.isPowerPosition &&
-                  position.operators.length &&
-                  position.operators.every((op) =>
-                    bannedOps.includes(op.operator)
-                  )
-              );
-              if (positionUnplayable) return false;
-            }
-            return true;
-          })();
-          return {
-            strat,
-            playable,
-          };
-        }) ?? [],
-    [allStrats, filter, bannedOps]
-  );
-
-  const playableStrats = useMemo(
-    () => availableStrats.filter((strat) => strat.playable).map((s) => s.strat),
-    [availableStrats]
-  );
-
   // store filter in cookies
   useEffect(() => {
     Cookie.set(FILTER_COOKIE_KEY, JSON.stringify(filter));
@@ -111,8 +66,6 @@ export const FilterProvider: React.FC<{
       value={{
         filter,
         setFilter,
-        playableStrats,
-        availableStrats,
         isLeading,
         setIsLeading,
       }}

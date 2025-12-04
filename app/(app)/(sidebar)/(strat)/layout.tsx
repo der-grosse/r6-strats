@@ -37,6 +37,7 @@ import { useFilter } from "@/components/context/FilterContext";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { usePlayableStrats } from "@/lib/strats";
 
 export default function StratsLayout({
   children,
@@ -47,13 +48,12 @@ export default function StratsLayout({
   const setActiveStrat = useMutation(api.activeStrat.set);
   const bannedOps = useQuery(api.bannedOps.get) || [];
   const setBannedOps = useMutation(api.bannedOps.set);
-  const {
-    filter,
-    setFilter,
-    playableStrats: filteredStrats,
-    isLeading,
-    setIsLeading,
-  } = useFilter();
+  const { filter, setFilter, isLeading, setIsLeading } = useFilter();
+  const playableStrats = usePlayableStrats(filter, bannedOps);
+  const filteredStrats =
+    playableStrats
+      ?.filter(({ playable }) => playable)
+      .map(({ strat }) => strat) ?? [];
 
   return (
     <>
@@ -80,14 +80,15 @@ export default function StratsLayout({
                         if (!map) {
                           setFilter({
                             ...filter,
-                            map: null,
-                            site: null,
+                            map: undefined,
+                            site: undefined,
                           });
                         } else {
                           setFilter((filter) => ({
                             ...filter,
                             map: map.name,
-                            site: filter.map === map.name ? filter.site : null,
+                            site:
+                              filter.map === map.name ? filter.site : undefined,
                           }));
                         }
                       }}
@@ -143,12 +144,12 @@ export default function StratsLayout({
                       strats={filteredStrats}
                       onSelect={async (strat) => {
                         if (isLeading) {
-                          await setActiveStrat({ stratID: strat.id });
+                          await setActiveStrat({ stratID: strat._id });
                           if (window.location.pathname !== "/") {
                             router.push("/");
                           }
                         } else {
-                          router.push(`/strat/${strat.id}`);
+                          router.push(`/strat/${strat._id}`);
                         }
                       }}
                       showSite={!filter.site}
