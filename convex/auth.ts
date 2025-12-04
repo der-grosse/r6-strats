@@ -64,7 +64,6 @@ export async function requireUser(
     throw new Error("Unsupported JWT version");
   }
   if (!("_id" in payload) || typeof payload._id !== "string") {
-    console.log(payload);
     throw new Error("Malformed _id");
   }
   if (!("name" in payload) || typeof payload.name !== "string") {

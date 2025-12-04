@@ -49,6 +49,7 @@ export async function verifyJWT(token: string) {
     }
     return decoded.payload as JWTPayload;
   } catch (err) {
+    (await cookies()).delete("jwt");
     console.info("JWT verification failed:", err);
     return null;
   }
