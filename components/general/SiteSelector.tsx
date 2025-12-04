@@ -8,9 +8,9 @@ import {
 import MAPS from "@/lib/static/maps";
 
 export interface SiteSelectorProps {
-  map: string | null;
-  site: string | null;
-  onChange: (site: string | null) => void;
+  map: string | undefined;
+  site: string | undefined;
+  onChange: (site: string | undefined) => void;
   trigger: React.FC<{ children: React.ReactNode }>;
   hideEmpty?: boolean;
 }
@@ -26,7 +26,10 @@ export default function SiteSelector(props: SiteSelectorProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent side="right" className="w-56">
         {!props.hideEmpty && (
-          <DropdownMenuItem key="clear" onClick={() => props.onChange(null)}>
+          <DropdownMenuItem
+            key="clear"
+            onClick={() => props.onChange(undefined)}
+          >
             <em>Clear</em>
           </DropdownMenuItem>
         )}

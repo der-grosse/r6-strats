@@ -6,10 +6,11 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import MAPS from "@/lib/static/maps";
+import { R6Map } from "@/lib/types/strat.types";
 
 export interface MapSelectorProps {
-  map: string | null;
-  onChange: (map: R6Map | null) => void;
+  map: string | undefined;
+  onChange: (map: R6Map | undefined) => void;
   trigger: React.FC<{ children: React.ReactNode }>;
   hideEmpty?: boolean;
 }
@@ -25,7 +26,10 @@ export default function MapSelector(props: MapSelectorProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent side="right" className="w-56">
         {!props.hideEmpty && (
-          <DropdownMenuItem key="clear" onClick={() => props.onChange(null)}>
+          <DropdownMenuItem
+            key="clear"
+            onClick={() => props.onChange(undefined)}
+          >
             <em>Clear</em>
           </DropdownMenuItem>
         )}

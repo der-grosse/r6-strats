@@ -8,7 +8,6 @@ import { DragProvider } from "@/components/ui/draggable-context";
 import { ResizeProvider } from "@/components/ui/resize-context";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Toaster } from "@/components/ui/sonner";
-import { Strat } from "@/lib/types/strat.types";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 
 export interface ProvidersProps {
@@ -16,7 +15,6 @@ export interface ProvidersProps {
   cookieFilter?: Filter;
   jwt?: string;
   defaultLeading?: boolean;
-  allStrats: Strat[];
 }
 
 export default function Providers(props: Readonly<ProvidersProps>) {
@@ -28,7 +26,6 @@ export default function Providers(props: Readonly<ProvidersProps>) {
           <FilterProvider
             defaultFilter={props.cookieFilter}
             defaultLeading={props.defaultLeading}
-            allStrats={props.allStrats}
           >
             <SlotProvider>
               <DragProvider>

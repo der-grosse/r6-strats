@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { DEFENDERS } from "@/lib/static/operator";
 import { Eye, GripVertical, Pencil } from "lucide-react";
 import Link from "next/link";
-import { updateMapIndexes } from "@/server/OLD_STRATS/strats";
 import { useRouter } from "next/navigation";
 import { CreateStratDialog } from "./CreateStratDialog";
 import { useEffect, useMemo, useState } from "react";
@@ -28,8 +27,13 @@ import {
 } from "@dnd-kit/sortable";
 import { cn } from "@/lib/utils";
 import { DeleteStratDialog } from "./DeleteStratDialog";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import type { FullTeam } from "@/lib/types/team.types";
+import { ListStrat } from "@/lib/types/strat.types";
+import { Id } from "@/convex/_generated/dataModel";
+import { usePlayableStrats } from "@/lib/strats";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const TABLE_SIZES = {
   handle: "5%",
@@ -40,26 +44,27 @@ const TABLE_SIZES = {
   actions: "15%",
 };
 
-export default function AllStratsClient({ team }: { team: Team }) {
-  const { availableStrats } = useFilter();
+export default function AllStratsClient({ team }: { team: FullTeam }) {
+  const { filter } = useFilter();
+  const bannedOps = useQuery(api.bannedOps.get);
+  const strats = usePlayableStrats(filter, bannedOps);
   const [mapDragging, setMapDragging] = useState<string | null>(null);
 
-  const stratsByMap = useMemo(
-    () =>
-      Object.entries(
-        availableStrats.reduce(
-          (acc, strat) => {
-            if (!acc[strat.strat.map]) {
-              acc[strat.strat.map] = [];
-            }
-            acc[strat.strat.map].push(strat);
-            return acc;
-          },
-          {} as Record<string, typeof availableStrats>
-        )
-      ),
-    [availableStrats]
-  );
+  const stratsByMap = useMemo(() => {
+    if (!strats) return [];
+    return Object.entries(
+      strats.reduce(
+        (acc, strat) => {
+          if (!acc[strat.strat.map]) {
+            acc[strat.strat.map] = [];
+          }
+          acc[strat.strat.map].push(strat);
+          return acc;
+        },
+        {} as Record<string, typeof strats>
+      )
+    );
+  }, [strats]);
 
   return (
     <div className="w-full h-full p-4 flex flex-col gap-4">
@@ -69,7 +74,7 @@ export default function AllStratsClient({ team }: { team: Team }) {
           All Strats
           <br />
           <span className="text-xs leading-none">
-            (total {availableStrats.length})
+            (total {strats?.length ?? 0})
           </span>
         </p>
         <div className="flex justify-end">
@@ -102,35 +107,37 @@ export default function AllStratsClient({ team }: { team: Team }) {
             Actions
           </div>
         </div>
-        {stratsByMap.flatMap(([map, strats]) => (
-          <MapStrat
-            key={map}
-            team={team}
-            strats={strats}
-            map={map}
-            onDragChange={(dragging) => setMapDragging(dragging ? map : null)}
-            disabled={mapDragging !== null && mapDragging !== map}
-          />
-        ))}
+        {!strats ? (
+          <Skeleton className="col-span-full h-8 mb-2" amount={12} />
+        ) : (
+          stratsByMap.flatMap(([map, strats]) => (
+            <MapStrats
+              key={map}
+              team={team}
+              strats={strats}
+              onDragChange={(dragging) => setMapDragging(dragging ? map : null)}
+              disabled={mapDragging !== null && mapDragging !== map}
+            />
+          ))
+        )}
       </div>
     </div>
   );
 }
 
-function MapStrat({
+function MapStrats({
   strats,
   team,
-  map,
   onDragChange,
   disabled,
 }: {
-  strats: { strat: Strat; playable: boolean }[];
-  team: Team;
-  map: string;
+  strats: { strat: ListStrat; playable: boolean }[];
+  team: FullTeam;
   onDragChange: (dragging: boolean) => void;
   disabled: boolean;
 }) {
   const { filter } = useFilter();
+  const updateStratIndex = useMutation(api.strats.updateIndex);
   const [optimisticStrats, setOptimisticStrats] = useState(strats);
   useEffect(() => {
     setOptimisticStrats(strats);
@@ -150,10 +157,10 @@ function MapStrat({
 
     if (active.id !== over?.id) {
       const oldIndex = optimisticStrats.findIndex(
-        (item) => item.strat.id === active.id
+        (item) => item.strat._id === active.id
       );
       const newIndex = optimisticStrats.findIndex(
-        (item) => item.strat.id === over?.id
+        (item) => item.strat._id === over?.id
       );
 
       // Optimistically update the UI
@@ -166,7 +173,13 @@ function MapStrat({
       );
 
       try {
-        await updateMapIndexes(map, active.id as number, oldIndex, newIndex);
+        const res = await updateStratIndex({
+          stratID: active.id as Id<"strats">,
+          newIndex,
+        });
+        if (!res.success) {
+          throw new Error(res.error);
+        }
       } catch (error) {
         console.error("Error updating member positions:", error);
         // Revert optimistic update on error
@@ -184,12 +197,12 @@ function MapStrat({
       onDragCancel={() => onDragChange(false)}
     >
       <SortableContext
-        items={optimisticStrats.map((item) => item.strat.id)}
+        items={optimisticStrats.map((item) => item.strat._id)}
         strategy={verticalListSortingStrategy}
       >
         {optimisticStrats.map((strat, i) => (
           <StratItem
-            key={strat.strat.id}
+            key={strat.strat._id}
             team={team}
             strat={strat.strat}
             disabled={disabled || !strat.playable}
@@ -207,18 +220,19 @@ function StratItem({
   disabled,
   highlightMap,
 }: {
-  team: Team;
-  strat: Strat;
+  team: FullTeam;
+  strat: ListStrat;
   disabled: boolean;
   highlightMap: boolean;
 }) {
-  const { isLeading, bannedOps } = useFilter();
+  const { isLeading } = useFilter();
+  const bannedOps = useQuery(api.bannedOps.get) ?? [];
   const router = useRouter();
 
   const setActiveStrat = useMutation(api.activeStrat.set);
 
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: strat.id });
+    useSortable({ id: strat._id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -227,7 +241,7 @@ function StratItem({
 
   return (
     <div
-      key={strat.id}
+      key={strat._id}
       ref={setNodeRef}
       style={style}
       className={cn(
@@ -256,15 +270,15 @@ function StratItem({
         style={{ width: TABLE_SIZES.ops }}
         className="flex gap-1 -my-2 overflow-hidden"
       >
-        {strat.positions
-          .map((position) => ({
-            ops: position.operators
+        {strat.stratPositions
+          .map((stratPosition) => ({
+            ops: stratPosition.pickedOperators
               .map((op) => DEFENDERS.find((def) => def.name === op.operator)!)
               .filter(Boolean),
-            isPowerPosition: position.isPowerPosition,
-            id: position.id,
-            position: team.playerPositions.find(
-              (p) => p.id === position.positionID
+            isPowerPosition: stratPosition.isPowerPosition,
+            _id: stratPosition._id,
+            position: team.teamPositions.find(
+              (p) => p._id === stratPosition.teamPositionID
             ),
           }))
           .filter(({ ops }) => ops.length)
@@ -273,9 +287,9 @@ function StratItem({
             if (!a.isPowerPosition && b.isPowerPosition) return 10;
             return (a.position?.index ?? 0) - (b.position?.index ?? 0);
           })
-          .map(({ ops, isPowerPosition, id }) => (
+          .map(({ ops, isPowerPosition, _id }) => (
             <OperatorIcon
-              key={id}
+              key={_id}
               op={ops.find((o) => !bannedOps.includes(o.name))?.name ?? ops[0]}
               className={isPowerPosition ? undefined : "grayscale scale-75"}
             />
@@ -290,7 +304,7 @@ function StratItem({
               className="cursor-pointer"
               onClick={async () => {
                 if (isLeading) {
-                  await setActiveStrat({ stratID: strat.id });
+                  await setActiveStrat({ stratID: strat._id });
                   router.push("/");
                 }
               }}
@@ -301,15 +315,15 @@ function StratItem({
           if (isLeading) {
             return button;
           } else {
-            return <Link href={`/strat/${strat.id}`}>{button}</Link>;
+            return <Link href={`/strat/${strat._id}`}>{button}</Link>;
           }
         })()}
-        <Link href={`/editor/${strat.id}`}>
+        <Link href={`/editor/${strat._id}`}>
           <Button variant="ghost" size="icon" className="cursor-pointer">
             <Pencil />
           </Button>
         </Link>
-        <DeleteStratDialog stratId={strat.id} stratName={strat.name} />
+        <DeleteStratDialog stratID={strat._id} stratName={strat.name} />
       </div>
     </div>
   );

@@ -68,7 +68,10 @@ const schema = defineSchema({
     teamID: v.id("teams"),
     archived: v.boolean(),
     mapIndex: v.number(),
-  }).index("byTeam", ["teamID"]),
+  })
+    .index("byTeam", ["teamID"])
+    .index("byTeamAndMap", ["teamID", "map"])
+    .index("byTeamMapAndSite", ["teamID", "map", "site"]),
 
   placedAssets: defineTable({
     stratID: v.id("strats"),

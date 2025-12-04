@@ -4,29 +4,39 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { updateMapIndexes } from "@/server/OLD_STRATS/strats";
+import { api } from "@/convex/_generated/api";
+import { ListStrat } from "@/lib/types/strat.types";
+import { useMutation } from "convex/react";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
+import { useMemo } from "react";
 
 export interface SidebarStratsProps {
-  strats: Strat[];
-  onSelect: (strat: Strat) => void;
+  strats: ListStrat[];
+  onSelect: (strat: ListStrat) => void;
   showSite: boolean;
 }
 
 export default function SidebarStrats(props: SidebarStratsProps) {
+  const updateStratIndex = useMutation(api.strats.updateIndex);
+  const mappedStrats = useMemo(
+    () =>
+      props.strats.map((strat) => ({
+        ...strat,
+        id: strat._id,
+      })),
+    [props.strats]
+  );
   return (
     <div className="overflow-hidden">
       <DndList
-        items={props.strats}
-        onChange={(strats, oldIndex, newIndex) =>
-          updateMapIndexes(
-            props.strats[0].map,
-            props.strats[oldIndex].id,
-            oldIndex,
-            newIndex
-          )
-        }
+        items={mappedStrats}
+        onChange={(strats, oldIndex, newIndex) => {
+          updateStratIndex({
+            stratID: strats[oldIndex].id,
+            newIndex,
+          });
+        }}
       >
         {(strat, rootProps, handle) => (
           <SidebarMenuItem {...rootProps} className="-ml-1">

@@ -13,6 +13,8 @@ export interface R6Floor {
   clickables?: React.FC<MapFloorClickableProps>;
 }
 
+export type ListStrat = Omit<Strat, "assets">;
+
 export interface Strat {
   _id: Id<"strats">;
   map: string;
@@ -39,7 +41,7 @@ export interface PickedOperator {
   _id: Id<"pickedOperators">;
   stratPositionID: Id<"stratPositions">;
   operator: string;
-  secondaryGadget: string | null;
-  tertiaryGadget: string | null; // only used for operator sentry
+  secondaryGadget: string | undefined;
+  tertiaryGadget: string | undefined; // only used for operator sentry
   index: number;
 }

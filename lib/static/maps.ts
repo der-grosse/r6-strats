@@ -10,6 +10,7 @@ import ClubhouseB from "@/components/StratEditor/maps/clubhouse/B";
 import Consulate1F from "@/components/StratEditor/maps/consulate/1F";
 import Consulate2F from "@/components/StratEditor/maps/consulate/2F";
 import ConsulateB from "@/components/StratEditor/maps/consulate/B";
+import { R6Map } from "../types/strat.types";
 
 const MAPS: R6Map[] = [
   {
