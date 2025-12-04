@@ -80,29 +80,35 @@ export default function TeamPositionsList(props: TeamPositionsListProps) {
     }
   };
 
+  const items = optimisticPositions.map((position, i) => (
+    <Fragment key={position._id}>
+      <TeamPositionsItem
+        canEdit={props.canEdit}
+        position={position}
+        team={props.team}
+      />
+      {i < props.team.teamPositions.length - 1 && <Separator />}
+    </Fragment>
+  ));
+
   return (
     <div className="flex flex-col gap-2">
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext
-          items={optimisticPositions.map((item) => item._id)}
-          strategy={verticalListSortingStrategy}
+      {props.canEdit ? (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
         >
-          {optimisticPositions.map((position, i) => (
-            <Fragment key={position._id}>
-              <TeamPositionsItem
-                canEdit={props.canEdit}
-                position={position}
-                team={props.team}
-              />
-              {i < props.team.teamPositions.length - 1 && <Separator />}
-            </Fragment>
-          ))}
-        </SortableContext>
-      </DndContext>
+          <SortableContext
+            items={optimisticPositions.map((item) => item._id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {items}
+          </SortableContext>
+        </DndContext>
+      ) : (
+        items
+      )}
     </div>
   );
 }

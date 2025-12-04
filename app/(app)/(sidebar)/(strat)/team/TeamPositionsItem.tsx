@@ -41,13 +41,15 @@ export default function TeamPositionsItem({
       ref={setNodeRef}
       style={style}
     >
-      <div
-        {...attributes}
-        {...listeners}
-        className="cursor-grab hover:cursor-grabbing"
-      >
-        <GripVertical className="h-4 w-4 text-gray-400 py-2 box-content" />
-      </div>
+      {canEdit && (
+        <div
+          {...attributes}
+          {...listeners}
+          className="cursor-grab hover:cursor-grabbing"
+        >
+          <GripVertical className="h-4 w-4 text-gray-400 py-2 box-content" />
+        </div>
+      )}
 
       {canEdit ? (
         <>
@@ -62,7 +64,7 @@ export default function TeamPositionsItem({
                 });
             }}
           />
-          <div>
+          <div className="h-9">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost">
@@ -124,7 +126,7 @@ export default function TeamPositionsItem({
       ) : (
         <>
           <span className="min-w-48">{position.positionName}</span>
-          <span>
+          <span className="text-sm flex items-center gap-1">
             {(() => {
               const member = team.members.find(
                 (m) => m._id === position.playerID
