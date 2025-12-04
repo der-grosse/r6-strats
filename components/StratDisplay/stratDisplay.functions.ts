@@ -7,3 +7,9 @@ export function getStratViewModifierFromCookies(cookieStore: {
   if (cookie === "none") return "none";
   return undefined;
 }
+
+export type StratViewModifier =
+  | "hideForeign"
+  | "grayscaleForeign"
+  | "none"
+  | undefined;

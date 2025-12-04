@@ -18,7 +18,7 @@ export const get = query({
     const { activeTeamID } = await requireUser(ctx);
     if (!activeTeamID) return null;
 
-    return await getStrat(ctx, id);
+    return await getStrat(ctx, id as Id<"strats">);
   },
 });
 
