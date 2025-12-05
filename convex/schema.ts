@@ -106,7 +106,7 @@ const schema = defineSchema({
     tertiaryGadget: v.optional(v.string()),
     index: v.number(),
   })
-    .index("byPosition", ["stratPositionID"])
+    .index("byStratPosition", ["stratPositionID"])
     .index("byStrat", ["stratID"]),
 
   selectedAssets: defineTable({
