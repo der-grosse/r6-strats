@@ -189,7 +189,6 @@ export default function useMountAssets(
       selectedBy: TeamMember["_id"][],
       lastestSelected: boolean
     ) {
-      console.log("Rendering asset", asset);
       const assetElement = (() => {
         switch (asset.type) {
           case "operator":
