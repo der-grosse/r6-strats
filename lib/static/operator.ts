@@ -475,7 +475,7 @@ export const DEFENDERS = [
     name: "Solis",
     icon: "/ops/def/solis.webp",
     iconBW: "/ops/def/solis_bw.png",
-    secondaryGadgets: ["proximity_alarm", "bulletproof_camera"],
+    secondaryGadgets: ["proximity_alarm", "impact_grenade"],
     hasPrimaryShotgun: true,
   },
   {

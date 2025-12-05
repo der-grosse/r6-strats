@@ -5,21 +5,11 @@ You can use the tool for free at [r6-strats.com](https://r6-strats.com).
 
 ## Planned Features
 
-### Bugs
-
-- editor saving and collaboration bugs
-
 ### Strat Attributes Editor
 
-- strat position change position when selecting different positions
 - Make current google drawing integration more generic to work with other editors
 
 ### Drag and Drop Strat Editor
-
-#### Saving and Collaboration
-
-- fix saving
-- fix collaboration issues -> use convex?
 
 #### Selection and Manipulation
 
