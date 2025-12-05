@@ -1,4 +1,4 @@
-import { RotateAsset } from "@/lib/types/asset.types";
+import { LayoutAsset } from "@/lib/types/asset.types";
 
 export interface RotationPathProps {
   x: number;
@@ -7,7 +7,10 @@ export interface RotationPathProps {
   height: number;
   innerColor?: string;
   color?: string;
-  variant: Exclude<RotateAsset["variant"], "explosion">;
+  variant: Exclude<
+    LayoutAsset["variant"],
+    "explosion" | "barricade" | "reinforcement"
+  >;
 }
 
 export default function RotationPath(props: RotationPathProps) {

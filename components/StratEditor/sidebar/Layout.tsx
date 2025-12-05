@@ -5,12 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Explosion from "../assets/Explosion";
 import WoodenBarricade from "@/components/icons/woodenBarricade";
-import {
-  Asset,
-  PlacedAsset,
-  ReinforcementAsset,
-  RotateAsset,
-} from "@/lib/types/asset.types";
+import { Asset, PlacedAsset, LayoutAsset } from "@/lib/types/asset.types";
 
 export interface StratEditorLayoutSidebarProps {
   onAssetAdd: (asset: Omit<Asset & Partial<PlacedAsset>, "_id">) => void;
@@ -38,9 +33,9 @@ export default function StratEditorLayoutSidebar(
             className="p-1 h-auto aspect-square"
             onClick={() => {
               props.onAssetAdd({
-                type: "reinforcement",
+                type: "layout",
                 variant: "reinforcement",
-              } as Omit<ReinforcementAsset, "_id">);
+              } as Omit<LayoutAsset, "_id">);
             }}
           >
             <Reinforcement className="size-full" />
@@ -52,9 +47,9 @@ export default function StratEditorLayoutSidebar(
             className="p-1 h-auto aspect-square"
             onClick={() => {
               props.onAssetAdd({
-                type: "reinforcement",
+                type: "layout",
                 variant: "barricade",
-              } as Omit<ReinforcementAsset, "_id">);
+              } as Omit<LayoutAsset, "_id">);
             }}
           >
             <WoodenBarricade />
@@ -79,9 +74,9 @@ export default function StratEditorLayoutSidebar(
               className="p-1 h-auto aspect-square"
               onClick={() => {
                 props.onAssetAdd({
-                  type: "rotate",
+                  type: "layout",
                   variant,
-                } as Omit<RotateAsset, "_id">);
+                } as Omit<LayoutAsset, "_id">);
               }}
             >
               <Rotation variant={variant} className="size-full" />
@@ -94,9 +89,9 @@ export default function StratEditorLayoutSidebar(
             className="p-1 h-auto aspect-square"
             onClick={() => {
               props.onAssetAdd({
-                type: "rotate",
+                type: "layout",
                 variant: "explosion",
-              } as Omit<RotateAsset, "_id">);
+              } as Omit<LayoutAsset, "_id">);
             }}
           >
             <Explosion />

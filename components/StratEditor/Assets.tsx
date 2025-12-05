@@ -209,7 +209,11 @@ export default function useMountAssets(
                 <GadgetIcon id={asset.gadget} className="h-full w-full" />
               </AssetOutline>
             );
+          //@ts-expect-error -- for legacy types, should not occur after migration
           case "reinforcement":
+          //@ts-expect-error
+          case "rotate":
+          case "layout":
             if (asset.variant === "barricade") {
               return (
                 <AssetOutline
@@ -220,16 +224,15 @@ export default function useMountAssets(
                   <WoodenBarricade />
                 </AssetOutline>
               );
-            }
-            return (
-              <Reinforcement
-                height={asset.size.height}
-                width={asset.size.width}
-                color={getAssetColor(asset, stratPositions, team)}
-              />
-            );
-          case "rotate":
-            if (asset.variant === "explosion") {
+            } else if (asset.variant === "reinforcement") {
+              return (
+                <Reinforcement
+                  height={asset.size.height}
+                  width={asset.size.width}
+                  color={getAssetColor(asset, stratPositions, team)}
+                />
+              );
+            } else if (asset.variant === "explosion") {
               return (
                 <Explosion color={getAssetColor(asset, stratPositions, team)} />
               );

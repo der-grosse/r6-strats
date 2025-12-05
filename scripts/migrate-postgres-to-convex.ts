@@ -293,47 +293,12 @@ async function migrate() {
     const pickedOpsRes = await pgClient.query("SELECT * FROM picked_operators");
     const pickedOps = [];
 
-    // We need stratID for pickedOperators.
-    // In PG, pickedOperators -> stratPosition -> strat.
-    // We can use stratPositionIdMap to get newStratPositionId.
-    // But we also need newStratId.
-    // We can look up the original stratPosition to get original stratId, then map to newStratId.
-    // Or we can query strat_positions again or use a map.
-    // Let's build a map of originalStratPositionId -> originalStratId from the previous step.
     const originalStratPosToStratMap = new Map<number, number>();
     for (const row of stratPositionsRes.rows) {
       originalStratPosToStratMap.set(row.id, row.strats_id);
     }
 
     for (const row of pickedOpsRes.rows) {
-      // Note: PG column is "positionID" (based on old_schema.ts: stratPositionID: integer("positionID"))
-      // Wait, old_schema.ts says: stratPositionID: integer("positionID")
-      // Let's check the actual column name in the query result.
-      // Usually drizzle maps it.
-      // In old_schema.ts: `stratPositionID: integer("positionID")`
-      // So the column name in DB is likely `positionID`.
-      // But let's check `picked_operators` table definition in `old_schema.ts`.
-      // `stratPositionID: integer("positionID")`
-      // This looks like the column name is `positionID`.
-
-      const originalStratPosId = row.positionID; // Assuming column name is positionID based on drizzle definition
-      // If drizzle says `integer("positionID")`, the column is `positionID`.
-      // But wait, usually it's snake_case. `position_id`?
-      // Let's check `old_schema.ts` again.
-      // `stratPositionID: integer("positionID")` -> The string inside integer() is the column name.
-      // So it is "positionID" (mixed case? or just "positionid"? Postgres is case insensitive unless quoted).
-      // If it was created with drizzle, it might be "positionID" if quoted, or "positionid".
-      // Let's assume "positionID" or "positionid".
-      // Actually, let's look at `placedAssets` in `old_schema.ts`: `stratPositionID: integer("strat_position_id")`.
-      // `pickedOperators`: `stratPositionID: integer("positionID")`.
-      // This is inconsistent naming in the old schema.
-      // I'll try `row.positionID` or `row.positionid`.
-
-      // Wait, I can just check `row` keys if I could run it.
-      // I'll assume `row.positionID` (case sensitive in JS object from pg).
-      // But pg driver usually returns lowercase column names unless they were quoted in creation.
-      // I'll try `row.positionid` as a fallback.
-
       const posId = row.positionID || row.positionid || row.position_id;
 
       const originalStratId = originalStratPosToStratMap.get(posId);
@@ -371,33 +336,6 @@ async function migrate() {
     for (const row of assetsRes.rows) {
       const newStratId = mapId(stratIdMap, row.strats_id);
       if (newStratId) {
-        // Need to handle pickedOperatorID.
-        // In PG, placedAssets has stratPositionID (column `strat_position_id`).
-        // In Convex, we have `pickedOperatorID`.
-        // If we have a stratPositionID, we can try to find the corresponding pickedOperator.
-        // But a stratPosition can have multiple pickedOperators? No, usually 1.
-        // Let's see if we can link it.
-        // If we have `row.strat_position_id`, we can map it to `newStratPositionId`.
-        // Then we can find the pickedOperator for that `newStratPositionId`.
-        // But we didn't store a map of `newStratPositionId` -> `newPickedOperatorId`.
-        // We can build it from `pickedOps` array we just processed.
-
-        // Let's build a map: `originalStratPositionId` -> `newPickedOperatorId`.
-        // Iterate over `pickedOps` (which has `originalId` of pickedOp, and `stratPositionID` (new)).
-        // Wait, `pickedOps` array has `originalId` (of pickedOp) and `stratPositionID` (new).
-        // But we need `originalStratPositionId` to link from `placedAssets`.
-        // `pickedOps` array has `stratPositionID` which is the NEW ID.
-        // We need to know which original strat position it came from.
-        // In `pickedOps` loop, we had `posId` (original strat position id).
-        // Let's rebuild that map quickly or just do it inside the loop.
-
-        // Actually, `placedAssets` in Convex has `stratPositionID` AND `pickedOperatorID`.
-        // I can just set `stratPositionID` and leave `pickedOperatorID` undefined if I can't easily find it.
-        // Or I can try to find it.
-        // Let's just set `stratPositionID` for now, as that preserves the link to the position.
-        // If the app needs `pickedOperatorID`, it might be an issue.
-        // But `placedAssets` also has `operator` string.
-
         assets.push({
           stratID: newStratId,
           posX: Number(row.position_x),
@@ -408,7 +346,10 @@ async function migrate() {
           stratPositionID: mapId(stratPositionIdMap, row.strat_position_id),
           pickedOperatorID: undefined, // Leaving this undefined for now as mapping is complex without more queries
           customColor: row.custom_color || undefined,
-          type: row.type,
+          type:
+            row.type === "rotate" || row.type === "reinforcement"
+              ? "layout"
+              : row.type,
           operator: row.operator || undefined,
           iconType: row.icon_type || undefined,
           gadget: row.gadget || undefined,

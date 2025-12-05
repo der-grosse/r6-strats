@@ -1,3 +1,5 @@
+"use client";
+
 import { StratEditor } from "@/components/StratEditor/StratEditor";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";

@@ -54,12 +54,17 @@ export default function StratPositionItem({
 }: StratPositionItemProps) {
   const updateStratPosition = useMutation(api.strats.updateStratPosition);
   const updatePickedOperator = useMutation(api.strats.updatePickedOperator);
+  const updatePickedOperatorIndex = useMutation(
+    api.strats.updatePickedOperatorIndex
+  );
+  const deletePickedOperator = useMutation(api.strats.deletePickedOperator);
+  const createPickedOperator = useMutation(api.strats.createPickedOperator);
 
   const [optimisticOps, setOptimisticOps] = useState(
-    stratPosition.pickedOperators.map((op, i) => ({ op, i }))
+    stratPosition.pickedOperators
   );
   useEffect(() => {
-    setOptimisticOps(stratPosition.pickedOperators.map((op, i) => ({ op, i })));
+    setOptimisticOps(stratPosition.pickedOperators);
   }, [stratPosition.pickedOperators]);
 
   const sensors = useSensors(
@@ -73,8 +78,8 @@ export default function StratPositionItem({
     const { active, over } = event;
 
     if (active.id !== over?.id) {
-      const oldIndex = optimisticOps.findIndex((item) => item.i === active.id);
-      const newIndex = optimisticOps.findIndex((item) => item.i === over?.id);
+      const oldIndex = optimisticOps.findIndex((op) => op._id === active.id);
+      const newIndex = optimisticOps.findIndex((op) => op._id === over?.id);
 
       // Optimistically update the UI
       const newPositions = arrayMove(optimisticOps, oldIndex, newIndex).map(
@@ -86,9 +91,10 @@ export default function StratPositionItem({
       setOptimisticOps(newPositions);
 
       try {
-        await updatePickedOperatorIndex(stratID, {
-          id: stratPosition.id,
-          operators: newPositions.map((item) => item.op),
+        await updatePickedOperatorIndex({
+          stratPositionID: stratPosition._id,
+          pickedOperatorID: active.id as Id<"pickedOperators">,
+          newIndex,
         });
       } catch (error) {
         console.error("Error updating member positions:", error);
@@ -179,34 +185,36 @@ export default function StratPositionItem({
           onDragEnd={handleDragEnd}
         >
           <SortableContext
-            items={optimisticOps.map((item) => item.i)}
+            items={optimisticOps.map((item) => ({
+              ...item,
+              id: item._id,
+            }))}
             strategy={verticalListSortingStrategy}
           >
-            {optimisticOps.map(({ op, i }) => (
+            {optimisticOps.map((op) => (
               <OperatorItem
-                key={i}
-                index={i}
+                key={op._id}
                 op={op}
                 otherOps={optimisticOps
-                  .filter((_, j) => j !== i)
-                  .map(({ op }) => op.operator)}
+                  .filter((op2) => op2._id !== op._id)
+                  .map((op2) => op2.operator)}
                 onDelete={() => {
                   const newOps = [...stratPosition.pickedOperators];
-                  newOps.splice(i, 1);
-                  updatePickedOperator(stratID, {
-                    id: stratPosition._id,
-                    operators: newOps,
+                  newOps.splice(op.index, 1);
+                  deletePickedOperator({
+                    pickedOperatorID:
+                      stratPosition.pickedOperators[op.index]._id,
                   });
-                  setOptimisticOps(newOps.map((op, i) => ({ op, i })));
+                  setOptimisticOps(newOps);
                 }}
                 onChange={(op) => {
                   const newOps = [...stratPosition.pickedOperators];
-                  newOps[i] = op;
-                  updatePickedOperator(stratID, {
-                    id: stratPosition._id,
-                    operators: newOps,
+                  newOps[op.index] = op;
+                  updatePickedOperator({
+                    operator: op.operator,
+                    pickedOperatorID: op._id,
                   });
-                  setOptimisticOps(newOps.map((op, i) => ({ op, i })));
+                  setOptimisticOps(newOps);
                 }}
               />
             ))}
@@ -215,25 +223,22 @@ export default function StratPositionItem({
         <div className="flex">
           <OperatorPicker
             closeOnSelect
-            selected={null}
+            selected={null as string | null}
             onChange={(op) => {
               if (!op) return;
-              updatePickedOperator(stratID, {
-                id: stratPosition._id,
-                operators: [
-                  ...stratPosition.pickedOperators,
-                  {
-                    operator: op,
-                    secondaryGadget: null,
-                    tertiaryGadget: null,
-                  },
-                ],
+              createPickedOperator({
+                stratPositionID: stratPosition._id,
+                operator: op,
               });
               setOptimisticOps((prev) => [
                 ...prev,
                 {
-                  op,
-                  i: prev.length, // new index is the end of the list
+                  _id: "UNSET" as Id<"pickedOperators">,
+                  operator: op,
+                  index: prev.length,
+                  stratPositionID: stratPosition._id,
+                  secondaryGadget: undefined,
+                  tertiaryGadget: undefined,
                 },
               ]);
             }}
@@ -255,20 +260,18 @@ export default function StratPositionItem({
 }
 
 function OperatorItem({
-  index,
   op,
   onDelete,
   onChange,
   otherOps,
 }: {
-  index: number;
   op: PickedOperator;
   onDelete: () => void;
   onChange: (pickedOperator: PickedOperator) => void;
   otherOps: string[];
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: index });
+    useSortable({ id: op._id });
 
   const style = {
     transform: CSS.Transform.toString(transform),

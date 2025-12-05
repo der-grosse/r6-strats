@@ -301,36 +301,6 @@ export const updateIndex = mutation({
   },
 });
 
-export const getAssets = query({
-  args: {
-    stratID: v.id("strats"),
-  },
-  async handler(ctx, { stratID }) {
-    const placedAssets = await ctx.db
-      .query("placedAssets")
-      .withIndex("byStrat", (q) => q.eq("stratID", stratID))
-      .collect();
-    return placedAssets.map(
-      (asset) =>
-        ({
-          _id: asset._id,
-          stratPositionID: asset.stratPositionID,
-          customColor: asset.customColor,
-
-          type: asset.type,
-          variant: asset.variant,
-          operator: asset.operator,
-          iconType: asset.iconType,
-          gadget: asset.gadget,
-
-          position: { x: asset.posX, y: asset.posY },
-          size: { width: asset.width, height: asset.height },
-          rotation: asset.rotation,
-        }) as PlacedAsset
-    );
-  },
-});
-
 export const updateStratPosition = mutation({
   args: {
     _id: v.id("stratPositions"),
@@ -395,6 +365,287 @@ export const updatePickedOperator = mutation({
         : {}),
       ...(args.operator !== undefined ? { operator: args.operator } : {}),
     });
+    return { success: true };
+  },
+});
+
+export const updatePickedOperatorIndex = mutation({
+  args: {
+    stratPositionID: v.id("stratPositions"),
+    pickedOperatorID: v.id("pickedOperators"),
+    newIndex: v.number(),
+  },
+  async handler(ctx, args) {
+    const { activeTeamID } = await requireUser(ctx);
+    if (!activeTeamID) {
+      return { success: false, error: "No active team selected" };
+    }
+    const stratPositionDoc = await ctx.db.get(args.stratPositionID);
+    if (!stratPositionDoc) {
+      return { success: false, error: "Strat position not found" };
+    }
+    const stratDoc = await ctx.db.get(stratPositionDoc.stratID);
+    if (!stratDoc || stratDoc.teamID !== activeTeamID) {
+      return { success: false, error: "Strat not found" };
+    }
+    const pickedOperatorDoc = await ctx.db.get(args.pickedOperatorID);
+    if (
+      !pickedOperatorDoc ||
+      pickedOperatorDoc.stratPositionID !== args.stratPositionID
+    ) {
+      return {
+        success: false,
+        error: "Picked operator not found in strat position",
+      };
+    }
+    // Fetch all picked operators for the strat position
+    const pickedOperators = await ctx.db
+      .query("pickedOperators")
+      .withIndex("byStratPosition", (q) =>
+        q.eq("stratPositionID", args.stratPositionID)
+      )
+      .collect();
+
+    // Find the current index of the picked operator
+    const currentIndex = pickedOperators.findIndex(
+      (op) => op._id === args.pickedOperatorID
+    );
+    if (currentIndex === -1) {
+      return {
+        success: false,
+        error: "Picked operator not found in strat position",
+      };
+    }
+
+    // Move the picked operator to the new index
+    const newIndex = args.newIndex;
+    if (newIndex < 0 || newIndex >= pickedOperators.length) {
+      return { success: false, error: "Invalid new index" };
+    }
+
+    const updatedOperators = [...pickedOperators];
+    const [movedOperator] = updatedOperators.splice(currentIndex, 1);
+    updatedOperators.splice(newIndex, 0, movedOperator);
+
+    // Update the index of each picked operator
+    for (let i = 0; i < updatedOperators.length; i++) {
+      const op = updatedOperators[i];
+      if (op.index !== i) {
+        await ctx.db.patch(op._id, { index: i });
+      }
+    }
+
+    return { success: true };
+  },
+});
+
+export const deletePickedOperator = mutation({
+  args: {
+    pickedOperatorID: v.id("pickedOperators"),
+  },
+  async handler(ctx, { pickedOperatorID }) {
+    const { activeTeamID } = await requireUser(ctx);
+    if (!activeTeamID) {
+      return { success: false, error: "No active team selected" };
+    }
+    const pickedOperatorDoc = await ctx.db.get(pickedOperatorID);
+    if (!pickedOperatorDoc) {
+      return { success: false, error: "Picked operator not found" };
+    }
+    const stratDoc = await ctx.db.get(pickedOperatorDoc.stratID);
+    if (!stratDoc || stratDoc.teamID !== activeTeamID) {
+      return { success: false, error: "Strat not found" };
+    }
+    await ctx.db.delete(pickedOperatorID);
+    return { success: true };
+  },
+});
+
+export const createPickedOperator = mutation({
+  args: {
+    stratPositionID: v.id("stratPositions"),
+    operator: v.string(),
+  },
+  async handler(ctx, { stratPositionID, operator }) {
+    const { activeTeamID } = await requireUser(ctx);
+    if (!activeTeamID) {
+      return { success: false, error: "No active team selected" };
+    }
+    const stratPositionDoc = await ctx.db.get(stratPositionID);
+    if (!stratPositionDoc) {
+      return { success: false, error: "Strat position not found" };
+    }
+    const stratDoc = await ctx.db.get(stratPositionDoc.stratID);
+    if (!stratDoc || stratDoc.teamID !== activeTeamID) {
+      return { success: false, error: "Strat not found" };
+    }
+    const existingOperators = await ctx.db
+      .query("pickedOperators")
+      .withIndex("byStratPosition", (q) =>
+        q.eq("stratPositionID", stratPositionID)
+      )
+      .collect();
+    const newIndex =
+      existingOperators.reduce(
+        (max, op) => (op.index > max ? op.index : max),
+        -1
+      ) + 1;
+    const pickedOperatorID = await ctx.db.insert("pickedOperators", {
+      stratID: stratDoc._id,
+      stratPositionID: stratPositionID,
+      operator,
+      index: newIndex,
+    });
+    return { success: true, pickedOperatorID };
+  },
+});
+
+export const getAssets = query({
+  args: {
+    stratID: v.id("strats"),
+  },
+  async handler(ctx, { stratID }) {
+    const placedAssets = await ctx.db
+      .query("placedAssets")
+      .withIndex("byStrat", (q) => q.eq("stratID", stratID))
+      .collect();
+    return placedAssets.map(
+      (asset) =>
+        ({
+          _id: asset._id,
+          stratPositionID: asset.stratPositionID,
+          customColor: asset.customColor,
+
+          type: asset.type,
+          variant: asset.variant,
+          operator: asset.operator,
+          iconType: asset.iconType,
+          gadget: asset.gadget,
+
+          position: { x: asset.posX, y: asset.posY },
+          size: { width: asset.width, height: asset.height },
+          rotation: asset.rotation,
+        }) as PlacedAsset
+    );
+  },
+});
+
+export const addAsset = mutation({
+  args: {
+    stratID: v.id("strats"),
+    type: v.string(),
+    posX: v.number(),
+    posY: v.number(),
+    width: v.number(),
+    height: v.number(),
+    rotation: v.number(),
+    stratPositionID: v.optional(v.id("stratPositions")),
+    pickedOperatorID: v.optional(v.id("pickedOperators")),
+    customColor: v.optional(v.string()),
+
+    variant: v.optional(v.string()),
+    operator: v.optional(v.string()),
+    iconType: v.optional(v.string()),
+    gadget: v.optional(v.string()),
+  },
+  async handler(ctx, args) {
+    const { activeTeamID } = await requireUser(ctx);
+    if (!activeTeamID) {
+      return { success: false, error: "No active team selected" };
+    }
+    const stratDoc = await ctx.db.get(args.stratID);
+    if (!stratDoc || stratDoc.teamID !== activeTeamID) {
+      return { success: false, error: "Strat not found" };
+    }
+    const placedAssetID = await ctx.db.insert("placedAssets", {
+      stratID: args.stratID,
+      posX: args.posX,
+      posY: args.posY,
+      width: args.width,
+      height: args.height,
+      rotation: args.rotation,
+      stratPositionID: args.stratPositionID,
+      pickedOperatorID: args.pickedOperatorID,
+      customColor: args.customColor,
+      type: args.type,
+      variant: args.variant,
+      operator: args.operator,
+      iconType: args.iconType,
+      gadget: args.gadget,
+    });
+    return { success: true, placedAssetID };
+  },
+});
+
+export const updateAssets = mutation({
+  args: {
+    assets: v.array(
+      v.object({
+        _id: v.id("placedAssets"),
+        posX: v.optional(v.number()),
+        posY: v.optional(v.number()),
+        width: v.optional(v.number()),
+        height: v.optional(v.number()),
+        rotation: v.optional(v.number()),
+        stratPositionID: v.optional(v.nullable(v.id("stratPositions"))),
+        pickedOperatorID: v.optional(v.nullable(v.id("pickedOperators"))),
+        customColor: v.optional(v.nullable(v.string())),
+
+        type: v.optional(v.string()),
+        variant: v.optional(v.string()),
+        operator: v.optional(v.string()),
+        iconType: v.optional(v.string()),
+        gadget: v.optional(v.string()),
+      })
+    ),
+  },
+  async handler(ctx, args) {
+    const { activeTeamID } = await requireUser(ctx);
+    if (!activeTeamID) {
+      return { success: false, error: "No active team selected" };
+    }
+
+    for (const asset of args.assets) {
+      await ctx.db.patch(asset._id, {
+        ...(asset.posX !== undefined ? { posX: asset.posX } : {}),
+        ...(asset.posY !== undefined ? { posY: asset.posY } : {}),
+        ...(asset.width !== undefined ? { width: asset.width } : {}),
+        ...(asset.height !== undefined ? { height: asset.height } : {}),
+        ...(asset.rotation !== undefined ? { rotation: asset.rotation } : {}),
+        ...(asset.stratPositionID !== undefined
+          ? { stratPositionID: asset.stratPositionID ?? undefined }
+          : {}),
+        ...(asset.pickedOperatorID !== undefined
+          ? { pickedOperatorID: asset.pickedOperatorID ?? undefined }
+          : {}),
+        ...(asset.customColor !== undefined
+          ? { customColor: asset.customColor ?? undefined }
+          : {}),
+
+        ...(asset.type !== undefined ? { type: asset.type } : {}),
+        ...(asset.variant !== undefined ? { variant: asset.variant } : {}),
+        ...(asset.operator !== undefined ? { operator: asset.operator } : {}),
+        ...(asset.iconType !== undefined ? { iconType: asset.iconType } : {}),
+        ...(asset.gadget !== undefined ? { gadget: asset.gadget } : {}),
+      });
+    }
+    return { success: true };
+  },
+});
+
+export const deleteAssets = mutation({
+  args: {
+    placedAssetIDs: v.array(v.id("placedAssets")),
+  },
+  async handler(ctx, { placedAssetIDs }) {
+    const { activeTeamID } = await requireUser(ctx);
+    if (!activeTeamID) {
+      return { success: false, error: "No active team selected" };
+    }
+
+    for (const placedAssetID of placedAssetIDs) {
+      await ctx.db.delete(placedAssetID);
+    }
     return { success: true };
   },
 });

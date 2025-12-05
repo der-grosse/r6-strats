@@ -26,6 +26,7 @@ export default function StratEditorOperatorsSidebar(
         stratPositionID: stratPos._id,
       }));
     })
+    .filter((v, i, a) => a.findIndex((t) => t.name === v.name) === i) // Prune duplicate operators
     .filter(Boolean);
 
   return (
