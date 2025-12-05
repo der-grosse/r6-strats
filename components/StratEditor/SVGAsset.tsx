@@ -1,7 +1,6 @@
 "use client";
 import { useRef } from "react";
 import { cn } from "@/lib/utils";
-import { useUser } from "../context/UserContext";
 
 interface SVGAssetProps {
   position: { x: number; y: number };

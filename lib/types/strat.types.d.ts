@@ -13,8 +13,6 @@ export interface R6Floor {
   clickables?: React.FC<MapFloorClickableProps>;
 }
 
-export type ListStrat = Omit<Strat, "assets">;
-
 export interface Strat {
   _id: Id<"strats">;
   map: string;
@@ -24,7 +22,6 @@ export interface Strat {
   drawingID: string | undefined;
   archived: boolean;
   mapIndex: number;
-  assets: PlacedAsset[];
   stratPositions: StratPositions[];
 }
 

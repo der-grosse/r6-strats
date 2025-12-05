@@ -1,6 +1,6 @@
 import OperatorIcon from "@/components/general/OperatorIcon";
 import OperatorPicker from "@/components/general/OperatorPicker";
-import PlayerPositionPicker from "@/components/general/PlayerPositionPicker";
+import TeamPositionPicker from "@/components/general/PlayerPositionPicker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -9,9 +9,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { updatePickedOperator } from "@/server/OLD_STRATS/strats";
 import { cn } from "@/lib/utils";
-import { BrickWall, GripVertical, Plus, X, Zap, ZapOff } from "lucide-react";
+import { GripVertical, Plus, X, Zap, ZapOff } from "lucide-react";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import {
@@ -34,10 +33,15 @@ import { useEffect } from "react";
 import Shotgun from "../assets/Shotgun";
 import SecondaryGadgetPicker from "@/components/general/SecondaryGadgetPicker";
 import { DEFENDERS, DefenderSecondaryGadget } from "@/lib/static/operator";
+import { PickedOperator, Strat, StratPositions } from "@/lib/types/strat.types";
+import { FullTeam } from "@/lib/types/team.types";
+import { Id } from "@/convex/_generated/dataModel";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export interface StratPositionItemProps {
-  stratID: Strat["id"];
-  team: Team;
+  stratID: Strat["_id"];
+  team: FullTeam;
   stratPosition: StratPositions;
   hasError?: boolean;
 }
@@ -48,12 +52,15 @@ export default function StratPositionItem({
   stratPosition,
   hasError,
 }: StratPositionItemProps) {
+  const updateStratPosition = useMutation(api.strats.updateStratPosition);
+  const updatePickedOperator = useMutation(api.strats.updatePickedOperator);
+
   const [optimisticOps, setOptimisticOps] = useState(
-    stratPosition.operators.map((op, i) => ({ op, i }))
+    stratPosition.pickedOperators.map((op, i) => ({ op, i }))
   );
   useEffect(() => {
-    setOptimisticOps(stratPosition.operators.map((op, i) => ({ op, i })));
-  }, [stratPosition.operators]);
+    setOptimisticOps(stratPosition.pickedOperators.map((op, i) => ({ op, i })));
+  }, [stratPosition.pickedOperators]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -79,7 +86,7 @@ export default function StratPositionItem({
       setOptimisticOps(newPositions);
 
       try {
-        await updatePickedOperator(stratID, {
+        await updatePickedOperatorIndex(stratID, {
           id: stratPosition.id,
           operators: newPositions.map((item) => item.op),
         });
@@ -100,15 +107,15 @@ export default function StratPositionItem({
             hasError && "outline-2 outline-destructive rounded-md"
           )}
         >
-          <PlayerPositionPicker
+          <TeamPositionPicker
             className="flex-1 px-2 overflow-hidden truncate w-[calc(100%_-_var(--spacing)_*_12)]"
             popoverOffset={88}
-            positionID={stratPosition.positionID}
+            teamPositionID={stratPosition.teamPositionID}
             team={team}
-            onChange={(positionID) => {
-              updatePickedOperator(stratID, {
-                id: stratPosition.id,
-                positionID,
+            onChange={(teamPositionID) => {
+              updateStratPosition({
+                _id: stratPosition._id,
+                teamPositionID,
               });
             }}
           />
@@ -117,8 +124,7 @@ export default function StratPositionItem({
             <TooltipTrigger className="size-9">
               <ShotgunToggle
                 shouldBringShotgun={stratPosition.shouldBringShotgun}
-                stratID={stratID}
-                stratPositionID={stratPosition.id}
+                stratPositionID={stratPosition._id}
               />
             </TooltipTrigger>
             <TooltipContent side="bottom">
@@ -141,8 +147,8 @@ export default function StratPositionItem({
                     : "text-muted-foreground/50"
                 )}
                 onClick={() =>
-                  updatePickedOperator(stratID, {
-                    id: stratPosition.id,
+                  updateStratPosition({
+                    _id: stratPosition._id,
                     isPowerPosition: !stratPosition.isPowerPosition,
                   })
                 }
@@ -185,19 +191,19 @@ export default function StratPositionItem({
                   .filter((_, j) => j !== i)
                   .map(({ op }) => op.operator)}
                 onDelete={() => {
-                  const newOps = [...stratPosition.operators];
+                  const newOps = [...stratPosition.pickedOperators];
                   newOps.splice(i, 1);
                   updatePickedOperator(stratID, {
-                    id: stratPosition.id,
+                    id: stratPosition._id,
                     operators: newOps,
                   });
                   setOptimisticOps(newOps.map((op, i) => ({ op, i })));
                 }}
                 onChange={(op) => {
-                  const newOps = [...stratPosition.operators];
+                  const newOps = [...stratPosition.pickedOperators];
                   newOps[i] = op;
                   updatePickedOperator(stratID, {
-                    id: stratPosition.id,
+                    id: stratPosition._id,
                     operators: newOps,
                   });
                   setOptimisticOps(newOps.map((op, i) => ({ op, i })));
@@ -213,12 +219,15 @@ export default function StratPositionItem({
             onChange={(op) => {
               if (!op) return;
               updatePickedOperator(stratID, {
-                id: stratPosition.id,
-                operators: stratPosition.operators.concat({
-                  operator: op,
-                  secondaryGadget: null,
-                  tertiaryGadget: null,
-                }),
+                id: stratPosition._id,
+                operators: [
+                  ...stratPosition.pickedOperators,
+                  {
+                    operator: op,
+                    secondaryGadget: null,
+                    tertiaryGadget: null,
+                  },
+                ],
               });
               setOptimisticOps((prev) => [
                 ...prev,
@@ -293,7 +302,10 @@ function OperatorItem({
             onChange({
               operator: newOp,
               secondaryGadget: op.secondaryGadget,
-              tertiaryGadget: hasNewOpTertiary ? op.tertiaryGadget : null,
+              tertiaryGadget: hasNewOpTertiary ? op.tertiaryGadget : undefined,
+              _id: op._id,
+              index: op.index,
+              stratPositionID: op.stratPositionID,
             });
           }
         }}
@@ -315,9 +327,12 @@ function OperatorItem({
             operator: op.operator,
             secondaryGadget: gadget,
             tertiaryGadget: op.tertiaryGadget,
+            _id: op._id,
+            index: op.index,
+            stratPositionID: op.stratPositionID,
           })
         }
-        selected={op.secondaryGadget as DefenderSecondaryGadget | null}
+        selected={op.secondaryGadget as DefenderSecondaryGadget | undefined}
         popoverOffset={52}
         closeOnSelect
         onlyShowIcon
@@ -343,9 +358,12 @@ function OperatorItem({
               operator: op.operator,
               secondaryGadget: op.secondaryGadget,
               tertiaryGadget: gadget,
+              _id: op._id,
+              index: op.index,
+              stratPositionID: op.stratPositionID,
             })
           }
-          selected={op.tertiaryGadget as DefenderSecondaryGadget | null}
+          selected={op.tertiaryGadget as DefenderSecondaryGadget | undefined}
           popoverOffset={52}
           closeOnSelect
           onlyShowIcon
@@ -384,18 +402,18 @@ const ShotgunToggle = forwardRef<
   HTMLButtonElement,
   {
     shouldBringShotgun: boolean;
-    stratID: number;
-    stratPositionID: number;
+    stratPositionID: Id<"stratPositions">;
   }
->(({ shouldBringShotgun, stratID, stratPositionID }, ref) => {
+>(({ shouldBringShotgun, stratPositionID }, ref) => {
+  const updateStratPosition = useMutation(api.strats.updateStratPosition);
   return (
     <Button
       ref={ref}
       size="icon"
       variant="ghost"
       onClick={() => {
-        updatePickedOperator(stratID, {
-          id: stratPositionID,
+        updateStratPosition({
+          _id: stratPositionID,
           shouldBringShotgun: !shouldBringShotgun,
         });
       }}

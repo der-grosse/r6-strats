@@ -5,15 +5,15 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { api } from "@/convex/_generated/api";
-import { ListStrat } from "@/lib/types/strat.types";
+import { Strat } from "@/lib/types/strat.types";
 import { useMutation } from "convex/react";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 
 export interface SidebarStratsProps {
-  strats: ListStrat[];
-  onSelect: (strat: ListStrat) => void;
+  strats: Strat[];
+  onSelect: (strat: Strat) => void;
   showSite: boolean;
 }
 

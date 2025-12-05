@@ -1,6 +1,9 @@
 import OperatorIcon from "@/components/general/OperatorIcon";
 import { getAssetColor } from "../Assets";
 import { cn } from "@/lib/utils";
+import { PlacedAsset } from "@/lib/types/asset.types";
+import { StratPositions } from "@/lib/types/strat.types";
+import { FullTeam } from "@/lib/types/team.types";
 
 export interface OperatorProps {
   asset: Pick<
@@ -8,7 +11,7 @@ export interface OperatorProps {
     "customColor" | "stratPositionID" | "iconType" | "operator"
   >;
   stratPositions: StratPositions[];
-  team: Team;
+  team: FullTeam;
   className?: string;
 }
 

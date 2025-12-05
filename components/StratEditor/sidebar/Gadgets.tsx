@@ -10,9 +10,11 @@ import { Button } from "../../ui/button";
 import PrimaryGadgetIcon from "@/components/general/PrimaryGadgetIcon";
 import SecondaryGadgetIcon from "@/components/general/SecondaryGadgetIcon";
 import { ASSET_BASE_SIZE } from "../Canvas";
+import { Asset, GadgetAsset, PlacedAsset } from "@/lib/types/asset.types";
+import { StratPositions } from "@/lib/types/strat.types";
 
 export interface StratEditorGadgetsSidebarProps {
-  onAssetAdd: (asset: Asset & Partial<PlacedAsset>) => void;
+  onAssetAdd: (asset: Omit<Asset & Partial<PlacedAsset>, "_id">) => void;
   stratPositions: StratPositions[];
 }
 
@@ -22,9 +24,9 @@ export default function StratEditorGadgetsSidebar(
   const selectedOperators = props.stratPositions
     .flatMap((position) => {
       const operators = DEFENDERS.filter((def) =>
-        position.operators.some((op) => op.operator === def.name)
+        position.pickedOperators.some((op) => op.operator === def.name)
       );
-      return operators.map((op) => ({ ...op, stratPositionID: position.id }));
+      return operators.map((op) => ({ ...op, stratPositionID: position._id }));
     })
     .filter(Boolean);
   const selectedPrimaryGadetIDs = selectedOperators
@@ -40,7 +42,7 @@ export default function StratEditorGadgetsSidebar(
     .filter(Boolean);
   const selectedSecondaryGadgets = props.stratPositions
     .map((position) => {
-      const gadgetIDs = position.operators.flatMap((op) => [
+      const gadgetIDs = position.pickedOperators.flatMap((op) => [
         op.secondaryGadget,
         ...("tertiaryGadgets" in op ? [op.tertiaryGadget] : []),
       ]);
@@ -84,7 +86,6 @@ export default function StratEditorGadgetsSidebar(
                   className="p-1 h-auto"
                   onClick={() => {
                     props.onAssetAdd({
-                      id: `gadget-${gadget.id}`,
                       type: "gadget",
                       gadget: gadget.id,
                       stratPositionID: gadget.stratPositionID,
@@ -93,7 +94,7 @@ export default function StratEditorGadgetsSidebar(
                         height:
                           ASSET_BASE_SIZE * (gadget.gadget?.aspectRatio ?? 1),
                       },
-                    });
+                    } as Omit<GadgetAsset, "_id">);
                   }}
                 >
                   <PrimaryGadgetIcon id={gadget.id} />
@@ -113,15 +114,14 @@ export default function StratEditorGadgetsSidebar(
                   className="p-1 h-auto"
                   onClick={() => {
                     props.onAssetAdd({
-                      id: `gadget-${gadget.id}`,
                       type: "gadget",
                       gadget: gadget.id,
-                      stratPositionID: position.id,
+                      stratPositionID: position._id,
                       size: {
                         width: ASSET_BASE_SIZE,
                         height: ASSET_BASE_SIZE * (gadget.aspectRatio ?? 1),
                       },
-                    });
+                    } as Omit<GadgetAsset, "_id">);
                   }}
                 >
                   <SecondaryGadgetIcon id={gadget.id} />
@@ -139,14 +139,13 @@ export default function StratEditorGadgetsSidebar(
               className="p-1 h-auto"
               onClick={() => {
                 props.onAssetAdd({
-                  id: `gadget-${gadget.id}`,
                   type: "gadget",
                   gadget: gadget.id,
                   size: {
                     width: ASSET_BASE_SIZE,
                     height: ASSET_BASE_SIZE * (gadget.aspectRatio ?? 1),
                   },
-                });
+                } as Omit<GadgetAsset, "_id">);
               }}
             >
               <PrimaryGadgetIcon id={gadget.id} />
@@ -162,14 +161,13 @@ export default function StratEditorGadgetsSidebar(
               className="p-1 h-auto"
               onClick={() => {
                 props.onAssetAdd({
-                  id: `gadget-${gadget.id}`,
                   type: "gadget",
                   gadget: gadget.id,
                   size: {
                     width: ASSET_BASE_SIZE,
                     height: ASSET_BASE_SIZE * (gadget.aspectRatio ?? 1),
                   },
-                });
+                } as Omit<GadgetAsset, "_id">);
               }}
             >
               <SecondaryGadgetIcon id={gadget.id} />

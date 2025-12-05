@@ -412,8 +412,12 @@ async function migrate() {
           operator: row.operator || undefined,
           iconType: row.icon_type || undefined,
           gadget: row.gadget || undefined,
-          rotate: row.rotate || undefined,
-          reinforcementVariant: row.reinforcement_variant || undefined,
+          variant:
+            row.type === "rotate"
+              ? row.rotate
+              : row.type === "reinforcement"
+                ? row.reinforcement_variant
+                : undefined,
         });
       }
     }

@@ -1,26 +1,29 @@
 import { DEFAULT_COLORS } from "@/lib/static/colors";
+import { PlacedAsset } from "@/lib/types/asset.types";
+import { StratPositions } from "@/lib/types/strat.types";
+import { FullTeam } from "@/lib/types/team.types";
 import { useMemo } from "react";
 
 export default function AssetOutline(props: {
   children?: React.ReactNode;
   stratPositions: StratPositions[];
   asset: PlacedAsset;
-  team: Team;
+  team: FullTeam;
 }) {
   const color = useMemo(
     () =>
       props.asset.customColor ??
       (() => {
         const pickedOperator = props.stratPositions.find(
-          (op) => op.id === props.asset.stratPositionID
+          (op) => op._id === props.asset.stratPositionID
         );
-        if (!pickedOperator?.positionID) return null;
-        const position = props.team.playerPositions.find(
-          (p) => p.id === pickedOperator.positionID
+        if (!pickedOperator?.teamPositionID) return null;
+        const teamPos = props.team.teamPositions.find(
+          (teamPos) => teamPos._id === pickedOperator.teamPositionID
         );
-        if (!position) return null;
+        if (!teamPos) return null;
         const member = props.team.members.find(
-          (m) => m.id === position.playerID
+          (m) => m._id === teamPos.playerID
         );
         if (!member) return null;
         return member.defaultColor;

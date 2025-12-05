@@ -30,7 +30,7 @@ import { DeleteStratDialog } from "./DeleteStratDialog";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { FullTeam } from "@/lib/types/team.types";
-import { ListStrat } from "@/lib/types/strat.types";
+import { Strat } from "@/lib/types/strat.types";
 import { Id } from "@/convex/_generated/dataModel";
 import { usePlayableStrats } from "@/lib/strats";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -131,7 +131,7 @@ function MapStrats({
   onDragChange,
   disabled,
 }: {
-  strats: { strat: ListStrat; playable: boolean }[];
+  strats: { strat: Strat; playable: boolean }[];
   team: FullTeam;
   onDragChange: (dragging: boolean) => void;
   disabled: boolean;
@@ -221,7 +221,7 @@ function StratItem({
   highlightMap,
 }: {
   team: FullTeam;
-  strat: ListStrat;
+  strat: Strat;
   disabled: boolean;
   highlightMap: boolean;
 }) {

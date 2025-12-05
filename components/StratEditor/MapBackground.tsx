@@ -1,5 +1,11 @@
 import { Fragment } from "react";
 import { clampAssetSize } from "./Canvas";
+import { R6Map } from "@/lib/types/strat.types";
+import {
+  Asset,
+  PlacedAsset,
+  ReinforcementAsset,
+} from "@/lib/types/asset.types";
 
 export interface MapBackgroundProps {
   map: R6Map | null;
@@ -7,7 +13,7 @@ export interface MapBackgroundProps {
     width: number;
     height: number;
   };
-  addAsset: (asset: Asset & Partial<PlacedAsset>) => void;
+  addAsset: (asset: Omit<Asset & Partial<PlacedAsset>, "_id">) => void;
   readonly?: boolean;
 }
 
@@ -56,20 +62,15 @@ export default function MapBackground(props: MapBackgroundProps) {
                         });
                       const abs_x = rel_x * width + x - abs_width / 2;
                       const abs_y = rel_y * width + y - abs_height / 2;
-                      const baseAsset = ((): Pick<
-                        ReinforcementAsset,
-                        "id" | "type" | "variant"
-                      > => {
+                      const baseAsset = ((): ReinforcementAsset => {
                         switch (type) {
                           case "barricade":
                             return {
-                              id: "reinforcement-barricade",
                               type: "reinforcement",
                               variant: "barricade",
                             };
                           case "reinforcement":
                             return {
-                              id: "reinforcement-reinforcement",
                               type: "reinforcement",
                               variant: "reinforcement",
                             };

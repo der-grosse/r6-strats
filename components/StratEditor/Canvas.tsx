@@ -6,10 +6,14 @@ import isKeyDown from "../hooks/isKeyDown";
 import { deepCopy } from "../Objects";
 import MapBackground from "./MapBackground";
 import { Selection } from "./StratEditor";
+import { R6Map } from "@/lib/types/strat.types";
+import { Asset, PlacedAsset } from "@/lib/types/asset.types";
+import { TeamMember } from "@/lib/types/team.types";
+import { Id } from "@/convex/_generated/dataModel";
 // import { useSocket } from "../context/SocketContext";
 
 interface CanvasAsset {
-  id: string;
+  _id: string;
   type: string;
   position: { x: number; y: number };
   size: { width: number; height: number };
@@ -19,12 +23,12 @@ interface CanvasAsset {
 interface CanvasProps<A extends CanvasAsset> {
   map: R6Map | null;
   assets: A[];
-  onAssetAdd: (asset: Asset & Partial<PlacedAsset>) => void;
+  onAssetAdd: (asset: Omit<Asset & Partial<PlacedAsset>, "_id">) => void;
   onAssetChange: (assets: A[]) => void;
-  onAssetRemove: (assets: A["id"][]) => void;
+  onAssetRemove: (assets: A["_id"][]) => void;
   renderAsset: (
     asset: A,
-    selectedBy: TeamMember["id"][],
+    selectedBy: TeamMember["_id"][],
     lastestSelected: boolean
   ) => { asset: React.ReactNode; menu: React.ReactNode | null };
   selectedAssets: Selection[];
@@ -66,12 +70,12 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
   // const socket = useSocket();
 
   const userSelectedAssets = useMemo(
-    () => selectedAssets.map((s) => s.id),
+    () => selectedAssets.map((s) => s._id),
     [selectedAssets]
   );
   // const userSelectedAssets = useMemo(
   //   () =>
-  //     selectedAssets.filter((s) => s.socketID === socket.id).map((s) => s.id),
+  //     selectedAssets.filter((s) => s.socketID === socket._id).map((s) => s._id),
   //   [selectedAssets, socket]
   // );
 
@@ -80,14 +84,14 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
   useEffect(() => {
     setAssets((assets) => {
       const newAssets = propAssets.filter(
-        (a) => !assets.some((b) => b.id === a.id)
+        (a) => !assets.some((b) => b._id === a._id)
       );
       const filteredAssets = assets
-        .filter((a) => propAssets.some((b) => b.id === a.id))
+        .filter((a) => propAssets.some((b) => b._id === a._id))
         .map((a) => {
           const isEditing = isDragging || isResizing || isRotating;
-          if (userSelectedAssets.includes(a.id) && isEditing) return a;
-          return propAssets.find((b) => b.id === a.id) ?? a;
+          if (userSelectedAssets.includes(a._id) && isEditing) return a;
+          return propAssets.find((b) => b._id === a._id) ?? a;
         });
       return [...filteredAssets, ...newAssets];
     });
@@ -97,9 +101,9 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
 
   const sortedAssets = useMemo(() => {
     return [
-      ...assets.filter((a) => !userSelectedAssets.includes(a.id)),
+      ...assets.filter((a) => !userSelectedAssets.includes(a._id)),
       ...(userSelectedAssets
-        .map((s) => assets.find((a) => a.id === s))
+        .map((s) => assets.find((a) => a._id === s))
         .filter(Boolean) as A[]),
     ];
   }, [assets, userSelectedAssets]);
@@ -173,7 +177,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
     y: 0,
     asset: null as A | null,
     startPositions: [] as {
-      id: string;
+      _id: string;
       x: number;
       y: number;
       width: number;
@@ -232,15 +236,17 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
         x: svgP.x,
         y: svgP.y,
         asset: deepCopy(
-          assetsRef.current.find((a) => a.id === assetId) || null
+          assetsRef.current.find((a) => a._id === assetId) || null
         ),
         startPositions: assetsRef.current
-          .filter((a) => userSelectedAssets.includes(a.id) || a.id === assetId)
+          .filter(
+            (a) => userSelectedAssets.includes(a._id) || a._id === assetId
+          )
           .map((a) => ({
             ...a.position,
             ...a.size,
             rotation: a.rotation || 0,
-            id: a.id,
+            _id: a._id,
           })),
       });
     },
@@ -275,9 +281,9 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
 
         setAssets((assets) =>
           assets.map((asset) => {
-            if (!userSelectedAssets.includes(asset.id)) return asset;
+            if (!userSelectedAssets.includes(asset._id)) return asset;
             const startPos = actionStart.startPositions.find(
-              (pos) => pos.id === asset.id
+              (pos) => pos._id === asset._id
             );
             if (!startPos) return asset;
 
@@ -292,7 +298,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
         );
       } else if (isResizing || isRotating) {
         const selected = assets.filter((a) =>
-          userSelectedAssets.includes(a.id)
+          userSelectedAssets.includes(a._id)
         );
         if (selected.length === 0) return;
 
@@ -313,9 +319,9 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
 
           setAssets((assets) =>
             assets.map((a) => {
-              if (!userSelectedAssets.includes(a.id)) return a;
+              if (!userSelectedAssets.includes(a._id)) return a;
               const startPos = actionStart.startPositions.find(
-                (pos) => pos.id === a.id
+                (pos) => pos._id === a._id
               );
               if (!startPos) return a;
               const angle = Math.atan2(deltaY, deltaX);
@@ -349,9 +355,9 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
 
           setAssets((assets) =>
             assets.map((a) => {
-              if (!userSelectedAssets.includes(a.id)) return a;
+              if (!userSelectedAssets.includes(a._id)) return a;
               const startPos = actionStart.startPositions.find(
-                (pos) => pos.id === a.id
+                (pos) => pos._id === a._id
               );
               if (!startPos) return a;
               const newProperties = resizeAsset(
@@ -380,7 +386,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
       if (isDragging || isResizing || isRotating) {
         onAssetChange(
           userSelectedAssets
-            .map((id) => assetsRef.current.find((a) => a.id === id)!)
+            .map((id) => assetsRef.current.find((a) => a._id === id)!)
             .filter(Boolean)
         );
         actionEndTime.current = Date.now();
@@ -483,7 +489,7 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
         if (document.activeElement !== svgRef.current) return;
         onSelect(
           assets
-            .map((a) => a.id)
+            .map((a) => a._id)
             .filter((id) => !userSelectedAssets.includes(id))
         );
         e.preventDefault();
@@ -542,18 +548,18 @@ export default function StratEditorCanvas<A extends CanvasAsset>({
           const render = renderAsset(
             asset,
             selectedAssets
-              .filter((s) => s.id === asset.id)
+              .filter((s) => s._id === asset._id)
               .map((s) => s.userID),
-            userSelectedAssets.at(-1) === asset.id
+            userSelectedAssets.at(-1) === asset._id
           );
           return (
             <SVGAsset
-              key={asset.id}
+              key={asset._id}
               position={asset.position}
               size={asset.size}
               rotation={asset.rotation || 0}
-              onMouseDown={(e, handle) => handleMouseDown(e, asset.id, handle)}
-              selected={userSelectedAssets.includes(asset.id)}
+              onMouseDown={(e, handle) => handleMouseDown(e, asset._id, handle)}
+              selected={userSelectedAssets.includes(asset._id)}
               ctrlKeyDown={ctrlKeyDown}
               menu={render.menu}
               zoom={zoomFactor}

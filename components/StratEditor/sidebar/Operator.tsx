@@ -5,9 +5,11 @@ import { ScrollArea } from "../../ui/scroll-area";
 import { Button } from "../../ui/button";
 import OperatorIcon from "../../general/OperatorIcon";
 import { DEFAULT_COLORS } from "@/lib/static/colors";
+import { Asset, OperatorAsset } from "@/lib/types/asset.types";
+import { StratPositions } from "@/lib/types/strat.types";
 
 export interface StratEditorOperatorsSidebarProps {
-  onAssetAdd: (asset: Asset) => void;
+  onAssetAdd: (asset: Omit<Asset, "_id">) => void;
   stratPositions: StratPositions[];
 }
 
@@ -15,13 +17,13 @@ export default function StratEditorOperatorsSidebar(
   props: Readonly<StratEditorOperatorsSidebarProps>
 ) {
   const selectedOperators = props.stratPositions
-    .flatMap((position) => {
+    .flatMap((stratPos) => {
       const operators = DEFENDERS.filter((def) =>
-        position.operators.some((op) => op.operator === def.name)
+        stratPos.pickedOperators.some((op) => op.operator === def.name)
       );
       return operators.map((operator) => ({
         ...operator,
-        stratPositionID: position.id,
+        stratPositionID: stratPos._id,
       }));
     })
     .filter(Boolean);
@@ -47,13 +49,12 @@ export default function StratEditorOperatorsSidebar(
                   className="p-1 h-auto"
                   onClick={() => {
                     props.onAssetAdd({
-                      id: `operator-${op.name}`,
                       operator: op.name,
                       type: "operator",
                       side: "def",
                       iconType: "bw",
                       stratPositionID: op.stratPositionID,
-                    });
+                    } as Omit<OperatorAsset, "_id">);
                   }}
                 >
                   <OperatorIcon op={op} />
@@ -69,13 +70,12 @@ export default function StratEditorOperatorsSidebar(
               className="p-1 h-auto"
               onClick={() => {
                 props.onAssetAdd({
-                  id: `operator-${op.name}`,
                   operator: op.name,
                   type: "operator",
                   side: "def",
                   iconType: "bw",
                   customColor: DEFAULT_COLORS.at(-1),
-                });
+                } as Omit<OperatorAsset, "_id">);
               }}
             >
               <OperatorIcon op={op} />

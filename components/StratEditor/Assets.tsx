@@ -19,9 +19,16 @@ import Explosion from "./assets/Explosion";
 import WoodenBarricade from "../icons/woodenBarricade";
 import { useUser } from "../context/UserContext";
 import ColorPickerDialog from "../general/ColorPickerDialog";
+import { FullTeam, TeamMember } from "@/lib/types/team.types";
+import { StratPositions } from "@/lib/types/strat.types";
+import { PlacedAsset } from "@/lib/types/asset.types";
+import { Id } from "@/convex/_generated/dataModel";
 
 export default function useMountAssets(
-  { team, stratPositions }: { team: Team; stratPositions: StratPositions[] },
+  {
+    team,
+    stratPositions,
+  }: { team: FullTeam; stratPositions: StratPositions[] },
   {
     deleteAsset,
     updateAsset,
@@ -39,7 +46,7 @@ export default function useMountAssets(
   const menu = useCallback(
     (asset: PlacedAsset) => {
       const assetStratPosition = stratPositions.find(
-        (op) => op.id === asset.stratPositionID
+        (op) => op._id === asset.stratPositionID
       );
       return (
         <div
@@ -52,33 +59,34 @@ export default function useMountAssets(
           {team.members
             .map((m) => ({
               member: m,
-              position: team.playerPositions.find(
-                (p) => p.id === m.positionID
+              position: team.teamPositions.find(
+                (p) => p._id === m.teamPositionID
               )!,
             }))
             .filter((m) => m.position)
             .sort((a, b) => a.position.index - b.position.index)
             .map(({ member }) => {
               const stratPositionOfMember = stratPositions?.find(
-                (op) => op.positionID === member.positionID
+                (stratPos) => stratPos.teamPositionID === member.teamPositionID
               );
               if (!stratPositionOfMember) return null;
               return (
-                <Tooltip delayDuration={200} key={member.id}>
+                <Tooltip delayDuration={200} key={member._id}>
                   <TooltipTrigger asChild>
                     <Button
                       disabled={!stratPositionOfMember}
                       size="icon"
                       variant="ghost"
                       className={cn(
-                        member.positionID === assetStratPosition?.positionID &&
+                        member.teamPositionID ===
+                          assetStratPosition?.teamPositionID &&
                           "bg-card dark:hover:bg-card"
                       )}
                       onMouseDown={(e) => e.stopPropagation()}
                       onClick={() => {
                         updateAsset({
                           ...asset,
-                          stratPositionID: stratPositionOfMember?.id,
+                          stratPositionID: stratPositionOfMember?._id,
                           customColor: undefined,
                         });
                       }}
@@ -99,8 +107,8 @@ export default function useMountAssets(
                     <p className="text-sm">
                       {member.name} |{" "}
                       {
-                        team.playerPositions.find(
-                          (p) => p.id === member.positionID
+                        team.teamPositions.find(
+                          (p) => p._id === member.teamPositionID
                         )?.positionName
                       }
                     </p>
@@ -178,9 +186,10 @@ export default function useMountAssets(
   const renderAsset = useCallback(
     function renderAsset(
       asset: PlacedAsset,
-      selectedBy: TeamMember["id"][],
+      selectedBy: TeamMember["_id"][],
       lastestSelected: boolean
     ) {
+      console.log("Rendering asset", asset);
       const assetElement = (() => {
         switch (asset.type) {
           case "operator":
@@ -242,12 +251,12 @@ export default function useMountAssets(
       const fullAsset = (() => {
         if (
           selectedBy.length === 0 ||
-          selectedBy.every((id) => id === user?.id)
+          selectedBy.every((id) => id === user?._id)
         ) {
           return assetElement;
         } else {
           const shadowColors = selectedBy
-            .map((id) => team.members.find((m) => m.id === id)?.defaultColor!)
+            .map((id) => team.members.find((m) => m._id === id)?.defaultColor!)
             .filter(Boolean);
           return (
             <div
@@ -258,7 +267,7 @@ export default function useMountAssets(
               }}
               className="size-full"
               title={`Selected by ${selectedBy
-                .map((id) => team.members.find((m) => m.id === id)?.name)
+                .map((id) => team.members.find((m) => m._id === id)?.name)
                 .join(", ")}`}
             >
               {assetElement}
@@ -268,7 +277,9 @@ export default function useMountAssets(
       })();
       return {
         menu:
-          lastestSelected && selectedBy.includes(user?.id ?? -1)
+          user &&
+          lastestSelected &&
+          selectedBy.includes(user._id as Id<"users">)
             ? menu(asset)
             : undefined,
         asset: fullAsset,
@@ -298,18 +309,20 @@ function getNextOperatorIconType(
 export function getAssetColor(
   asset: Pick<PlacedAsset, "customColor" | "stratPositionID">,
   stratPositions: StratPositions[],
-  team: Team
+  team: FullTeam
 ): string | undefined {
   if (asset.customColor) return asset.customColor;
   if (!asset.stratPositionID) return undefined;
-  const pickedOP = stratPositions.find((op) => op.id === asset.stratPositionID);
+  const pickedOP = stratPositions.find(
+    (op) => op._id === asset.stratPositionID
+  );
   if (!pickedOP) return undefined;
-  const postion = team.playerPositions.find(
-    (pos) => pos.id === pickedOP.positionID
+  const postion = team.teamPositions.find(
+    (pos) => pos._id === pickedOP.teamPositionID
   );
   if (!postion) return undefined;
   const teamMember = team.members.find(
-    (member) => member.id === postion.playerID
+    (member) => member._id === postion.playerID
   );
   return teamMember?.defaultColor ?? undefined;
 }

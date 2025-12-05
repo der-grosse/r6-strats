@@ -4,23 +4,25 @@ import { PLAYER_COUNT } from "@/lib/static/general";
 import { useMemo } from "react";
 import StratPositionItem from "./StratPositionItem";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Strat } from "@/lib/types/strat.types";
+import { FullTeam } from "@/lib/types/team.types";
 
 export interface StratEditorPlayerPositionsSidebarProps {
-  strat: Pick<Strat, "positions" | "id">;
-  team: Team;
+  strat: Pick<Strat, "stratPositions" | "_id">;
+  team: FullTeam;
 }
 
 export default function StratEditorPlayerPositionsSidebar({
-  strat: { positions, id: stratID },
+  strat: { stratPositions, _id: stratID },
   team,
 }: StratEditorPlayerPositionsSidebarProps) {
-  const sortedPositions = useMemo(
+  const sortedStratPositions = useMemo(
     () =>
-      positions
+      stratPositions
         .map((data) => ({
           data,
-          position: team.playerPositions.find(
-            (pos) => pos.id === data.positionID
+          position: team.teamPositions.find(
+            (pos) => pos._id === data.teamPositionID
           ),
         }))
         .sort((a, b) => {
@@ -30,7 +32,7 @@ export default function StratEditorPlayerPositionsSidebar({
           return 0;
         })
         .map(({ data }) => data),
-    [positions]
+    [stratPositions, team]
   );
 
   return (
@@ -40,20 +42,20 @@ export default function StratEditorPlayerPositionsSidebar({
           Player positions
         </Label>
 
-        {sortedPositions.map((position) => (
+        {sortedStratPositions.map((stratPos) => (
           <StratPositionItem
-            key={position.id}
+            key={stratPos._id}
             stratID={stratID}
             team={team}
-            stratPosition={position}
-            hasError={positions.some(
+            stratPosition={stratPos}
+            hasError={stratPositions.some(
               (o) =>
-                o.id !== position.id &&
-                ((position.positionID &&
-                  o.positionID === position.positionID) ||
-                  (o.operators.length === 1 &&
-                    position.operators.length === 1 &&
-                    o.operators[0] === position.operators[0]))
+                o._id !== stratPos._id &&
+                ((stratPos.teamPositionID &&
+                  o.teamPositionID === stratPos.teamPositionID) ||
+                  (o.pickedOperators.length === 1 &&
+                    stratPos.pickedOperators.length === 1 &&
+                    o.pickedOperators[0] === stratPos.pickedOperators[0]))
             )}
           />
         ))}

@@ -15,24 +15,25 @@ import { Label } from "../ui/label";
 import { cn } from "@/lib/utils";
 import { ColorButton } from "./ColorPickerDialog";
 import { DEFAULT_COLORS } from "@/lib/static/colors";
+import { FullTeam, TeamPosition } from "@/lib/types/team.types";
 
-export interface PlayerPositionPickerProps {
-  positionID: PlayerPosition["id"] | null | undefined;
-  onChange: (positionID: PlayerPosition["id"] | null) => void;
-  team: Team;
+export interface TeamPositionPickerProps {
+  teamPositionID: TeamPosition["_id"] | null | undefined;
+  onChange: (positionID: TeamPosition["_id"] | null) => void;
+  team: FullTeam;
   modal?: boolean;
   popoverOffset?: number;
   className?: string;
 }
 
-export default function PlayerPositionPicker(props: PlayerPositionPickerProps) {
+export default function TeamPositionPicker(props: TeamPositionPickerProps) {
   const [open, setOpen] = useState(false);
 
   const teamMember = props.team.members.find(
-    (member) => member.positionID === props.positionID
+    (member) => member.teamPositionID === props.teamPositionID
   );
-  const position = props.team.playerPositions.find(
-    (pos) => pos.id === props.positionID
+  const position = props.team.teamPositions.find(
+    (teamPos) => teamPos._id === props.teamPositionID
   );
 
   return (
@@ -42,7 +43,7 @@ export default function PlayerPositionPicker(props: PlayerPositionPickerProps) {
           variant="ghost"
           className={cn("text-left justify-start", props.className)}
         >
-          {props.positionID ? (
+          {props.teamPositionID ? (
             <>
               <ColorButton
                 component="span"
@@ -86,17 +87,17 @@ export default function PlayerPositionPicker(props: PlayerPositionPickerProps) {
               </CommandItem>
             </CommandGroup>
             <CommandGroup>
-              {props.team.playerPositions.map((position) => (
+              {props.team.teamPositions.map((teamPosition) => (
                 <CommandItem
-                  key={position.id}
+                  key={teamPosition._id}
                   onSelect={() => {
-                    props.onChange(position.id);
+                    props.onChange(teamPosition._id);
                     setOpen(false);
                   }}
                 >
-                  {position.positionName}
+                  {teamPosition.positionName}
                   <CommandShortcut>
-                    {props.positionID === position.id && (
+                    {props.teamPositionID === teamPosition._id && (
                       <Check className="text-muted-foreground" />
                     )}
                   </CommandShortcut>
@@ -106,12 +107,12 @@ export default function PlayerPositionPicker(props: PlayerPositionPickerProps) {
             <CommandGroup>
               {props.team.members
                 .toSorted((a, b) => {
-                  if (a.positionID && b.positionID) {
-                    const indexA = props.team.playerPositions.findIndex(
-                      (pos) => pos.id === a.positionID
+                  if (a.teamPositionID && b.teamPositionID) {
+                    const indexA = props.team.teamPositions.findIndex(
+                      (teamPos) => teamPos._id === a.teamPositionID
                     );
-                    const indexB = props.team.playerPositions.findIndex(
-                      (pos) => pos.id === b.positionID
+                    const indexB = props.team.teamPositions.findIndex(
+                      (teamPos) => teamPos._id === b.teamPositionID
                     );
                     return indexA - indexB;
                   }
@@ -119,11 +120,11 @@ export default function PlayerPositionPicker(props: PlayerPositionPickerProps) {
                 })
                 .map((member) => (
                   <CommandItem
-                    key={member.id}
-                    disabled={!member.positionID}
+                    key={member._id}
+                    disabled={!member.teamPositionID}
                     onSelect={() => {
-                      if (!member.positionID) return;
-                      props.onChange(member.positionID);
+                      if (!member.teamPositionID) return;
+                      props.onChange(member.teamPositionID);
                       setOpen(false);
                     }}
                   >
@@ -134,7 +135,7 @@ export default function PlayerPositionPicker(props: PlayerPositionPickerProps) {
                     />
                     {member.name}
                     <CommandShortcut>
-                      {props.positionID === member.positionID && (
+                      {props.teamPositionID === member.teamPositionID && (
                         <Check className="text-muted-foreground" />
                       )}
                     </CommandShortcut>
