@@ -1,3 +1,4 @@
+import { RotateAsset } from "@/lib/types/asset.types";
 import RotationPath from "./rotationPath";
 
 export interface RotationProps {

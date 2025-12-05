@@ -30,7 +30,6 @@ import { Info, Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { createStrat } from "@/server/OLD_STRATS/strats";
 import { toast } from "sonner";
 import MAPS from "@/lib/static/maps";
 import {
@@ -39,6 +38,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { extractDrawingID } from "@/lib/googleDrawings";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 const formSchema = z.object({
   map: z.string().min(1, "Map is required"),
@@ -49,6 +50,7 @@ const formSchema = z.object({
 });
 
 export function CreateStratDialog() {
+  const createStrat = useMutation(api.strats.create);
   const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({

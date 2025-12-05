@@ -1,0 +1,34 @@
+import { StratEditor } from "@/components/StratEditor/StratEditor";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import { useQuery } from "convex/react";
+import { CircleX } from "lucide-react";
+
+export interface StratEditorClientProps {
+  id: string | undefined;
+}
+
+export default function StratEditorClient(props: StratEditorClientProps) {
+  const strat = useQuery(
+    api.strats.get,
+    props.id ? { id: props.id as Id<"strats"> } : "skip"
+  );
+  const team = useQuery(api.team.get, {});
+
+  if (!team) return null;
+
+  if (!strat || !props.id) {
+    return (
+      <div className="h-screen w-full flex flex-col justify-center items-center">
+        <CircleX className="text-destructive" size={64} />
+        <h2 className="text-destructive">Strat not found</h2>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-screen w-screen overflow-hidden">
+      <StratEditor team={team} strat={strat} />
+    </div>
+  );
+}

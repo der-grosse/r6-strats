@@ -210,6 +210,45 @@ export const update = mutation({
   },
 });
 
+export const create = mutation({
+  args: {
+    map: v.string(),
+    site: v.string(),
+    name: v.string(),
+    description: v.string(),
+    drawingID: v.optional(v.nullable(v.string())),
+  },
+  async handler(ctx, args) {
+    const { activeTeamID } = await requireUser(ctx);
+    if (!activeTeamID) {
+      return { success: false, error: "No active team selected" };
+    }
+    const mapStrats = await ctx.db
+      .query("strats")
+      .withIndex("byTeamAndMap", (q) =>
+        q.eq("teamID", activeTeamID).eq("map", args.map)
+      )
+      .collect();
+
+    const maxIndex = mapStrats.reduce(
+      (max, strat) => (strat.mapIndex > max ? strat.mapIndex : max),
+      -1
+    );
+
+    const stratID = await ctx.db.insert("strats", {
+      map: args.map,
+      site: args.site,
+      name: args.name,
+      description: args.description,
+      drawingID: args.drawingID ?? undefined,
+      teamID: activeTeamID,
+      archived: false,
+      mapIndex: maxIndex + 1,
+    });
+    return { success: true, stratID };
+  },
+});
+
 export const updateIndex = mutation({
   args: {
     stratID: v.id("strats"),

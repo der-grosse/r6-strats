@@ -1,3 +1,5 @@
+import { RotateAsset } from "@/lib/types/asset.types";
+
 export interface RotationPathProps {
   x: number;
   y: number;
