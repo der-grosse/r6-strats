@@ -1,15 +1,27 @@
-import { fetchQuery } from "convex/nextjs";
-import SidebarLayout from "./SidebarLayout";
-import { api } from "@/convex/_generated/api";
-import { getJWT } from "@/server/jwt";
+"use client";
 
-export default async function SidebarLayoutPage({
-  children,
-}: Readonly<{
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { AppSidebar } from "./AppSidebar";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+
+export interface SidebarLayoutProps {
   children: React.ReactNode;
-}>) {
-  const team = await fetchQuery(api.team.get, undefined, {
-    token: await getJWT(),
-  });
-  return <SidebarLayout team={team}>{children}</SidebarLayout>;
+}
+
+export default function SidebarLayout(props: SidebarLayoutProps) {
+  const team = useQuery(api.team.get);
+  return (
+    <SidebarProvider defaultOpen>
+      <AppSidebar teamName={team?.name ?? ""} />
+      <SidebarInset>
+        <SidebarTrigger className="absolute top-0 left-0 z-10 cursor-pointer" />
+        {props.children}
+      </SidebarInset>
+    </SidebarProvider>
+  );
 }
