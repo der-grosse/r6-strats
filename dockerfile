@@ -29,7 +29,6 @@ WORKDIR /app
 COPY --from=base /app/package.json /app/pnpm-lock.yaml ./
 COPY --from=base /app/.next ./.next
 COPY --from=base /app/public ./public
-COPY --from=base /app/dist ./dist
 
 RUN pnpm install --frozen-lockfile --prod
 
