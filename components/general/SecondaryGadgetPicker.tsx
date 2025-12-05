@@ -17,12 +17,11 @@ import {
 } from "../ui/command";
 import { useMemo, useRef, useState } from "react";
 import GadgetIcon from "./GadgetIcon";
-import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
 export interface SecondaryGadgetPickerProps {
-  selected: DefenderSecondaryGadget | null;
-  onChange: (value: DefenderSecondaryGadget | null) => void;
+  selected: DefenderSecondaryGadget | undefined;
+  onChange: (value: DefenderSecondaryGadget | undefined) => void;
   trigger?: React.FC<{ children: React.ReactNode }>;
   modal?: boolean;
   closeOnSelect?: boolean;
@@ -126,7 +125,7 @@ export default function SecondaryGadgetPicker({
               <CommandItem
                 key="clear"
                 onSelect={() => {
-                  onChange(null);
+                  onChange(undefined);
                   if (closeOnSelect) setOpen(false);
                 }}
               >

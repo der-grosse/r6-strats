@@ -1,13 +1,13 @@
 "use client";
 
 import { Filter } from "@/components/context/FilterContext.functions";
-import { ListStrat } from "./types/strat.types";
+import { Strat } from "./types/strat.types";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
 export function filterPlayableStrats(
-  strats: ListStrat[],
+  strats: Strat[],
   filter: Filter,
   bannedOps: string[]
 ) {

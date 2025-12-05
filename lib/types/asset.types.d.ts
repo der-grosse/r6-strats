@@ -10,6 +10,7 @@ export type Asset = BaseAsset &
   );
 
 export interface BaseAsset {
+  _id: Id<"assets">;
   stratPositionID?: Id<"stratPositions">;
   customColor?: string;
 }
@@ -38,7 +39,6 @@ export interface RotateAsset {
 export interface OperatorAsset {
   type: "operator";
   operator: string;
-  side: "att" | "def";
   iconType: "default" | "hidden" | "bw";
 }
 

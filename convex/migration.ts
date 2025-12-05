@@ -261,8 +261,7 @@ export const importPlacedAssets = mutation({
         operator: v.optional(v.string()),
         iconType: v.optional(v.string()),
         gadget: v.optional(v.string()),
-        rotate: v.optional(v.string()),
-        reinforcementVariant: v.optional(v.string()),
+        variant: v.optional(v.string()),
       })
     ),
   },

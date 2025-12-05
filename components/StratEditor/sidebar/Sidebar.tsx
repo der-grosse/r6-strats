@@ -26,11 +26,15 @@ import StratEditorPlayerPositionsSidebar from "./StratPositions";
 import StratEditorLayoutSidebar from "./Layout";
 import { getAssetColor } from "../Assets";
 import { ColorButton } from "@/components/general/ColorPickerDialog";
+import { Asset, PlacedAsset } from "@/lib/types/asset.types";
+import { Strat } from "@/lib/types/strat.types";
+import { FullTeam } from "@/lib/types/team.types";
 
 export interface StratEditorSidebarProps {
-  onAssetAdd: (asset: Asset & Partial<PlacedAsset>) => void;
+  onAssetAdd: (asset: Omit<Asset & Partial<PlacedAsset>, "_id">) => void;
   strat: Strat;
-  team: Team;
+  assets: PlacedAsset[];
+  team: FullTeam;
   hideAssets?: boolean;
 }
 
@@ -48,7 +52,7 @@ export default function StratEditorSidebar(
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const onAssetAdd = useCallback(
-    (asset: Asset) => {
+    (asset: Omit<Asset, "_id">) => {
       props.onAssetAdd(asset);
       setSidebarOpen(false);
     },
@@ -58,15 +62,17 @@ export default function StratEditorSidebar(
   const placedReeinforcements = useMemo(
     () =>
       Array.from(
-        props.strat.assets
+        props.assets
           .filter(
             (a) => a.type === "reinforcement" && a.variant === "reinforcement"
           )
           .reduce(
             (acc, asset) => {
-              const cur = acc.get(asset.stratPositionID ?? -1);
+              const cur = asset.stratPositionID
+                ? acc.get(asset.stratPositionID)
+                : undefined;
               if (cur) {
-                acc.set(asset.stratPositionID ?? -1, {
+                acc.set(asset.stratPositionID!, {
                   ...cur,
                   count: cur.count + 1,
                 });
@@ -74,38 +80,35 @@ export default function StratEditorSidebar(
               return acc;
             },
             new Map([
-              ...props.strat.positions.map((positions) => {
+              ...props.strat.stratPositions.map((stratPos) => {
                 const position =
-                  props.team.playerPositions.find(
-                    (pos) => pos.id === positions.positionID
+                  props.team.teamPositions.find(
+                    (teamPos) => teamPos._id === stratPos.teamPositionID
                   ) ?? null;
                 const player =
-                  props.team.members.find((m) => m.id === position?.playerID) ??
-                  null;
+                  props.team.members.find(
+                    (m) => m._id === position?.playerID
+                  ) ?? null;
                 return [
-                  positions.id,
+                  stratPos._id,
                   {
                     position,
                     player,
                     color:
                       getAssetColor(
-                        { stratPositionID: positions.id },
-                        props.strat.positions,
+                        { stratPositionID: stratPos._id },
+                        props.strat.stratPositions,
                         props.team
                       ) ?? null,
                     count: 0 as number,
                   },
                 ] as const;
               }),
-              [
-                -1,
-                { position: null, player: null, color: null, count: 0 },
-              ] as const,
             ])
           )
           .values()
       ),
-    [props.strat.assets]
+    [props.strat, props.assets]
   );
 
   const sidebarContent = useMemo(() => {
@@ -114,14 +117,14 @@ export default function StratEditorSidebar(
         return (
           <StratEditorOperatorsSidebar
             onAssetAdd={onAssetAdd}
-            stratPositions={props.strat.positions}
+            stratPositions={props.strat.stratPositions}
           />
         );
       case "operator-gadgets":
         return (
           <StratEditorGadgetsSidebar
             onAssetAdd={onAssetAdd}
-            stratPositions={props.strat.positions}
+            stratPositions={props.strat.stratPositions}
           />
         );
       case "meta":
@@ -254,7 +257,7 @@ export default function StratEditorSidebar(
               .map((p) => (
                 <div
                   className="flex items-center gap-1 mt-1"
-                  key={p.position?.id ?? -1}
+                  key={p.position?._id ?? -1}
                 >
                   <p className="w-4">{p.count}x</p>
                   {p.player ? (

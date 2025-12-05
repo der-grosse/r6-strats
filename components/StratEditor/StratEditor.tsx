@@ -4,29 +4,25 @@ import MAPS from "@/lib/static/maps";
 import StratEditorLayout from "./Layout";
 import StratEditorCanvas, { ASSET_BASE_SIZE, CANVAS_BASE_SIZE } from "./Canvas";
 import useMountAssets from "./Assets";
-import {
-  addStratAsset,
-  deleteStratAssets,
-  getStrat,
-  updateStratAssets,
-} from "@/server/OLD_STRATS/strats";
 import { useKeys } from "../hooks/useKey";
 import { deepCopy, deepEqual } from "../Objects";
-// import { useSocket } from "../context/SocketContext";
-// import useSocketEvent from "../hooks/useSocketEvent";
 import { toast } from "sonner";
 import { useUser } from "../context/UserContext";
 import StratDisplay from "../StratDisplay/StratDisplay";
+import { FullTeam, TeamMember } from "@/lib/types/team.types";
+import { Strat } from "@/lib/types/strat.types";
+import { PlacedAsset } from "@/lib/types/asset.types";
+import { Id } from "@/convex/_generated/dataModel";
 
 interface StratEditorProps {
   strat: Strat;
-  team: Team;
+  team: FullTeam;
 }
 
 export interface Selection {
-  id: string;
+  _id: string;
   socketID: string;
-  userID: TeamMember["id"];
+  userID: TeamMember["_id"];
 }
 
 export type HistoryEvent = AssetEvent | SelectionEvent;
@@ -51,13 +47,13 @@ export interface AssetSelection {
   type: "selection-selected";
   selection: string[];
   socketID: string;
-  userID: TeamMember["id"];
+  userID: TeamMember["_id"];
 }
 export interface AssetDeselection {
   type: "selection-deselected";
   selection: string[];
   socketID: string;
-  userID: TeamMember["id"];
+  userID: TeamMember["_id"];
 }
 
 const HISTORY_SIZE = 100;
@@ -74,17 +70,17 @@ export function StratEditor({
   // Refresh local state periodically
   useEffect(() => {
     const interval = setInterval(async () => {
-      const new_strat = await getStrat(strat.id);
+      const new_strat = await getStrat(strat._id);
       if (!new_strat) return;
       setStrat((strat) => {
         if (deepEqual(strat, new_strat)) return strat;
-        console.debug(`refreshed strat ${strat.id} from server`);
+        console.debug(`refreshed strat ${strat._id} from server`);
         return new_strat;
       });
       setAssets((assets) => {
         if (deepEqual(assets, new_strat.assets)) return assets;
         console.debug(
-          `refreshed strat assets of strat ${strat.id} from server`
+          `refreshed strat assets of strat ${strat._id} from server`
         );
         return new_strat.assets;
       });
@@ -105,15 +101,6 @@ export function StratEditor({
   // }, [strat.id]);
 
   const [assets, setAssets] = useState<PlacedAsset[]>(strat.assets);
-  const getHightestID = useCallback(
-    (assets: PlacedAsset[]) =>
-      assets.reduce((acc, asset) => {
-        const id = Number(asset.id.split("-").at(-1));
-        if (isNaN(id)) return acc;
-        return Math.max(acc, id);
-      }, 0),
-    []
-  );
 
   const [selected, setSelected] = useState<Selection[]>([]);
 
@@ -153,13 +140,13 @@ export function StratEditor({
     if (historyIndex.current < history.current.length - 1) {
       historyIndex.current += 1;
       const event = history.current[historyIndex.current];
-      redoEvent(strat.id, event, setAssets, setSelected);
+      redoEvent(strat._id, event, setAssets, setSelected);
       // socket.emit("strat-editor:event", strat.id, event);
     }
   }, [
     setAssets,
     setSelected,
-    strat.id,
+    strat._id,
     addStratAsset,
     updateStratAssets,
     deleteStratAssets,
@@ -168,14 +155,14 @@ export function StratEditor({
     if (historyIndex.current >= 0) {
       const event = history.current[historyIndex.current];
       historyIndex.current -= 1;
-      undoEvent(strat.id, event, setAssets, setSelected);
+      undoEvent(strat._id, event, setAssets, setSelected);
       for (const invertedEvent of invertEvent(event)) {
         // socket.emit("strat-editor:event", strat.id, invertedEvent);
       }
     }
   }, [
     setAssets,
-    strat.id,
+    strat._id,
     addStratAsset,
     updateStratAssets,
     deleteStratAssets,
@@ -199,11 +186,11 @@ export function StratEditor({
   ]);
 
   const { renderAsset, UI } = useMountAssets(
-    { team, stratPositions: strat.positions },
+    { team, stratPositions: strat.stratPositions },
     {
       deleteAsset(asset) {
-        setAssets((assets) => assets.filter((a) => a.id !== asset.id));
-        deleteStratAssets(strat.id, [asset.id]).catch((err) =>
+        setAssets((assets) => assets.filter((a) => a._id !== asset._id));
+        deleteStratAssets(strat._id, [asset._id]).catch((err) =>
           toast.error(
             `Your changes could not be saved! Failed to delete asset: ${err.message}`
           )
@@ -217,12 +204,12 @@ export function StratEditor({
         setAssets((assets) => {
           pushEvent({
             type: "asset-updated",
-            old_assets: assets.filter((a) => a.id === asset.id),
+            old_assets: assets.filter((a) => a._id === asset._id),
             new_assets: [asset],
           });
-          return assets.map((a) => (a.id === asset.id ? asset : a));
+          return assets.map((a) => (a._id === asset._id ? asset : a));
         });
-        updateStratAssets(strat.id, [asset]).catch((err) =>
+        updateStratAssets(strat._id, [asset]).catch((err) =>
           toast.error(
             `Your changes could not be saved! Failed to update assets: ${err.message}`
           )
@@ -245,10 +232,9 @@ export function StratEditor({
           position: { x: CANVAS_BASE_SIZE / 20, y: CANVAS_BASE_SIZE / 20 },
           rotation: 0,
           ...asset,
-          id: `${asset.id}-${getHightestID(assets) + 1}` as any,
         };
         setAssets((assets) => [...assets, placedAsset]);
-        addStratAsset(strat.id, placedAsset).catch((err) =>
+        addStratAsset(strat._id, placedAsset).catch((err) =>
           toast.error(
             `Your changes could not be saved! Failed to add asset: ${err.message}`
           )
@@ -270,12 +256,12 @@ export function StratEditor({
             setSelected((selected) =>
               selected.filter((s) => !deselected.includes(s.id))
             );
-            if (user?.id) {
+            if (user?._id) {
               pushEvent({
                 type: "selection-deselected",
                 selection: deselected,
                 socketID: "",
-                userID: user.id,
+                userID: user._id as Id<"users">,
               });
             }
           }}
@@ -285,16 +271,16 @@ export function StratEditor({
                 newSelected.map((id) => ({
                   id,
                   socketID: "",
-                  userID: user?.id ?? -1,
+                  userID: user?._id as Id<"users">,
                 }))
               )
             );
-            if (user?.id)
+            if (user?._id)
               pushEvent({
                 type: "selection-selected",
                 selection: newSelected,
                 socketID: "",
-                userID: user.id,
+                userID: user._id as Id<"users">,
               });
           }}
           map={map}
@@ -305,10 +291,9 @@ export function StratEditor({
               position: { x: CANVAS_BASE_SIZE / 20, y: CANVAS_BASE_SIZE / 20 },
               rotation: 0,
               ...asset,
-              id: `${asset.id}-${getHightestID(assets) + 1}` as any,
             };
             setAssets((assets) => [...assets, placedAsset]);
-            addStratAsset(strat.id, placedAsset).catch((err) =>
+            addStratAsset(strat._id, placedAsset).catch((err) =>
               toast.error(
                 `Your changes could not be saved! Failed to add asset: ${err.message}`
               )
@@ -323,17 +308,17 @@ export function StratEditor({
               pushEvent({
                 type: "asset-updated",
                 old_assets: existing.filter((a) =>
-                  assets.some((asset) => asset.id === a.id)
+                  assets.some((asset) => asset._id === a._id)
                 ),
                 new_assets: assets,
               });
               return existing.map((a) => {
-                const newAsset = assets.find((asset) => asset.id === a.id);
+                const newAsset = assets.find((asset) => asset._id === a._id);
                 if (!newAsset) return a;
                 return deepCopy(newAsset);
               });
             });
-            updateStratAssets(strat.id, assets).catch((err) =>
+            updateStratAssets(strat._id, assets).catch((err) =>
               toast.error(
                 `Your changes could not be saved! Failed to update asset: ${err.message}`
               )
@@ -341,14 +326,14 @@ export function StratEditor({
           }}
           onAssetRemove={(ids) => {
             setAssets((assets) => {
-              const newAssets = assets.filter((a) => !ids.includes(a.id));
+              const newAssets = assets.filter((a) => !ids.includes(a._id));
               pushEvent({
                 type: "asset-deleted",
                 assets: newAssets,
               });
               return [...newAssets];
             });
-            deleteStratAssets(strat.id, ids).catch((err) =>
+            deleteStratAssets(strat._id, ids).catch((err) =>
               toast.error(
                 `Your changes could not be saved! Failed to delete asset: ${err.message}`
               )
@@ -363,7 +348,7 @@ export function StratEditor({
 }
 
 function undoEvent(
-  stratID: Strat["id"],
+  stratID: Strat["_id"],
   event: HistoryEvent,
   updateAssets: (updater: (assets: PlacedAsset[]) => PlacedAsset[]) => void,
   updateSelection: (updater: (selection: Selection[]) => Selection[]) => void
@@ -382,7 +367,7 @@ function undoEvent(
 }
 
 function redoEvent(
-  stratID: Strat["id"],
+  stratID: Strat["_id"],
   event: HistoryEvent,
   updateAssets: (updater: (assets: PlacedAsset[]) => PlacedAsset[]) => void,
   updateSelection: (updater: (selection: Selection[]) => Selection[]) => void,
@@ -402,20 +387,20 @@ function redoEvent(
 }
 
 function undoAssetEvent(
-  stratID: Strat["id"],
+  stratID: Strat["_id"],
   state: PlacedAsset[],
   event: AssetEvent
 ) {
   switch (event.type) {
     case "asset-added":
       requestAnimationFrame(() => {
-        deleteStratAssets(stratID, [event.asset.id]).catch((err) =>
+        deleteStratAssets(stratID, [event.asset._id]).catch((err) =>
           toast.error(
             `Your changes could not be saved! Failed to delete asset: ${err.message}`
           )
         );
       });
-      return state.filter((a) => a.id !== event.asset.id);
+      return state.filter((a) => a._id !== event.asset._id);
     case "asset-updated":
       requestAnimationFrame(() => {
         updateStratAssets(stratID, event.old_assets).catch((err) =>
@@ -425,7 +410,7 @@ function undoAssetEvent(
         );
       });
       return state.map((a) => {
-        const oldAsset = event.old_assets.find((asset) => asset.id === a.id);
+        const oldAsset = event.old_assets.find((asset) => asset._id === a._id);
         if (!oldAsset) return a;
         return deepCopy(oldAsset);
       });
@@ -446,7 +431,7 @@ function undoAssetEvent(
 }
 
 function redoAssetEvent(
-  stratID: Strat["id"],
+  stratID: Strat["_id"],
   state: PlacedAsset[],
   event: AssetEvent,
   fromRemote = false
@@ -464,7 +449,7 @@ function redoAssetEvent(
           updateStratAssets(stratID, event.new_assets);
         });
       return state.map((a) => {
-        const newAsset = event.new_assets.find((asset) => asset.id === a.id);
+        const newAsset = event.new_assets.find((asset) => asset._id === a._id);
         if (!newAsset) return a;
         return deepCopy(newAsset);
       });
@@ -473,11 +458,11 @@ function redoAssetEvent(
         requestAnimationFrame(() => {
           deleteStratAssets(
             stratID,
-            event.assets.map((a) => a.id)
+            event.assets.map((a) => a._id)
           );
         });
       return state.filter(
-        (a) => !event.assets.some((asset) => asset.id === a.id)
+        (a) => !event.assets.some((asset) => asset._id === a._id)
       );
     default:
       throw new Error(`Unknown event type: ${(event as any)?.type}`);

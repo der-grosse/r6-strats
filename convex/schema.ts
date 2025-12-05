@@ -87,8 +87,7 @@ const schema = defineSchema({
     operator: v.optional(v.string()),
     iconType: v.optional(v.string()),
     gadget: v.optional(v.string()),
-    rotate: v.optional(v.string()),
-    reinforcementVariant: v.optional(v.string()),
+    variant: v.optional(v.string()),
   }).index("byStrat", ["stratID"]),
 
   stratPositions: defineTable({
@@ -109,6 +108,12 @@ const schema = defineSchema({
   })
     .index("byPosition", ["stratPositionID"])
     .index("byStrat", ["stratID"]),
+
+  selectedAssets: defineTable({
+    stratID: v.id("strats"),
+    userID: v.id("users"),
+    placedAssetID: v.id("placedAssets"),
+  }).index("byStratAndUser", ["stratID", "userID"]),
 });
 
 export default schema;

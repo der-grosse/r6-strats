@@ -8,7 +8,8 @@ import {
 } from "./_generated/server";
 import { requireUser } from "./auth";
 import { Doc, Id } from "./_generated/dataModel";
-import { ListStrat } from "../lib/types/strat.types";
+import { Strat } from "../lib/types/strat.types";
+import { PlacedAsset } from "../lib/types/asset.types";
 
 export const get = query({
   args: {
@@ -57,7 +58,7 @@ export const list = query({
       strats = strats.filter((strat) => !strat.archived);
     }
 
-    const fullStrats: ListStrat[] = [];
+    const fullStrats: Strat[] = [];
     for (const strat of strats) {
       const stratPositions = await ctx.db
         .query("stratPositions")
@@ -107,7 +108,10 @@ export const list = query({
   },
 });
 
-export async function getStrat(ctx: QueryCtx | MutationCtx, id: Id<"strats">) {
+export async function getStrat(
+  ctx: QueryCtx | MutationCtx,
+  id: Id<"strats">
+): Promise<Strat | null> {
   const stratDoc = await ctx.db.get(id);
   if (!stratDoc) return null;
 
@@ -121,11 +125,6 @@ export async function getStrat(ctx: QueryCtx | MutationCtx, id: Id<"strats">) {
     .withIndex("byStrat", (q) => q.eq("stratID", id))
     .collect();
 
-  const placedAssets = await ctx.db
-    .query("placedAssets")
-    .withIndex("byStrat", (q) => q.eq("stratID", id))
-    .collect();
-
   return {
     _id: stratDoc._id,
     map: stratDoc.map,
@@ -135,7 +134,6 @@ export async function getStrat(ctx: QueryCtx | MutationCtx, id: Id<"strats">) {
     drawingID: stratDoc.drawingID,
     archived: stratDoc.archived,
     mapIndex: stratDoc.mapIndex,
-    assets: placedAssets,
     stratPositions: stratPositions
       .map((pos) => ({
         _id: pos._id,
@@ -173,6 +171,41 @@ export const archive = mutation({
       return { success: false, error: "Strat not found" };
     }
     await ctx.db.patch(stratID, { archived: true, mapIndex: -1 });
+    return { success: true };
+  },
+});
+
+export const update = mutation({
+  args: {
+    _id: v.id("strats"),
+    name: v.optional(v.string()),
+    description: v.optional(v.string()),
+    map: v.optional(v.string()),
+    site: v.optional(v.string()),
+    drawingID: v.optional(v.nullable(v.string())),
+  },
+  async handler(ctx, args) {
+    const { activeTeamID } = await requireUser(ctx);
+    if (!activeTeamID) {
+      return { success: false, error: "No active team selected" };
+    }
+
+    const stratDoc = await ctx.db.get(args._id);
+    if (!stratDoc || stratDoc.teamID !== activeTeamID) {
+      return { success: false, error: "Strat not found" };
+    }
+
+    await ctx.db.patch(args._id, {
+      ...(args.name !== undefined ? { name: args.name } : {}),
+      ...(args.description !== undefined
+        ? { description: args.description }
+        : {}),
+      ...(args.map !== undefined ? { map: args.map } : {}),
+      ...(args.site !== undefined ? { site: args.site } : {}),
+      ...(args.drawingID !== undefined
+        ? { drawingID: args.drawingID ?? undefined } // when drawingID is null, we want to remove it
+        : {}),
+    });
     return { success: true };
   },
 });
@@ -225,6 +258,104 @@ export const updateIndex = mutation({
         await ctx.db.patch(strat._id, { mapIndex: updatedIndex });
       }
     }
+    return { success: true };
+  },
+});
+
+export const getAssets = query({
+  args: {
+    stratID: v.id("strats"),
+  },
+  async handler(ctx, { stratID }) {
+    const placedAssets = await ctx.db
+      .query("placedAssets")
+      .withIndex("byStrat", (q) => q.eq("stratID", stratID))
+      .collect();
+    return placedAssets.map(
+      (asset) =>
+        ({
+          _id: asset._id,
+          stratID: asset.stratID,
+          customColor: asset.customColor,
+
+          type: asset.type,
+          variant: asset.variant,
+          operator: asset.operator,
+          iconType: asset.iconType,
+          gadget: asset.gadget,
+
+          position: { x: asset.posX, y: asset.posY },
+          size: { width: asset.width, height: asset.height },
+          rotation: asset.rotation,
+        }) as PlacedAsset
+    );
+  },
+});
+
+export const updateStratPosition = mutation({
+  args: {
+    _id: v.id("stratPositions"),
+    isPowerPosition: v.optional(v.boolean()),
+    shouldBringShotgun: v.optional(v.boolean()),
+    teamPositionID: v.optional(v.nullable(v.id("teamPositions"))),
+  },
+  async handler(ctx, args) {
+    const { activeTeamID } = await requireUser(ctx);
+    if (!activeTeamID) {
+      return { success: false, error: "No active team selected" };
+    }
+    const stratPositionDoc = await ctx.db.get(args._id);
+    if (!stratPositionDoc) {
+      return { success: false, error: "Strat position not found" };
+    }
+    const stratDoc = await ctx.db.get(stratPositionDoc.stratID);
+    if (!stratDoc || stratDoc.teamID !== activeTeamID) {
+      return { success: false, error: "Strat not found" };
+    }
+    await ctx.db.patch(args._id, {
+      ...(args.isPowerPosition !== undefined
+        ? { isPowerPosition: args.isPowerPosition }
+        : {}),
+      ...(args.shouldBringShotgun !== undefined
+        ? { shouldBringShotgun: args.shouldBringShotgun }
+        : {}),
+      ...(args.teamPositionID !== undefined
+        ? { teamPositionID: args.teamPositionID ?? undefined } // when null, remove it
+        : {}),
+    });
+    return { success: true };
+  },
+});
+
+export const updatePickedOperator = mutation({
+  args: {
+    pickedOperatorID: v.id("pickedOperators"),
+    secondaryGadget: v.optional(v.string()),
+    tertiaryGadget: v.optional(v.string()),
+    operator: v.optional(v.string()),
+  },
+  async handler(ctx, args) {
+    const { activeTeamID } = await requireUser(ctx);
+    if (!activeTeamID) {
+      return { success: false, error: "No active team selected" };
+    }
+    const pickedOperatorDoc = await ctx.db.get(args.pickedOperatorID);
+    if (!pickedOperatorDoc) {
+      return { success: false, error: "Picked operator not found" };
+    }
+    const stratDoc = await ctx.db.get(pickedOperatorDoc.stratID);
+    if (!stratDoc || stratDoc.teamID !== activeTeamID) {
+      return { success: false, error: "Strat not found" };
+    }
+    await ctx.db.patch(args.pickedOperatorID, {
+      ...(args.secondaryGadget !== undefined
+        ? { secondaryGadget: args.secondaryGadget }
+        : {}),
+      ...(args.tertiaryGadget !== undefined
+        ? { tertiaryGadget: args.tertiaryGadget }
+        : {}),
+      ...(args.operator !== undefined ? { operator: args.operator } : {}),
+    });
     return { success: true };
   },
 });

@@ -4,10 +4,15 @@ import { useMemo } from "react";
 import useMountAssets from "./Assets";
 import StratEditorCanvas from "./Canvas";
 import MAPS from "@/lib/static/maps";
+import { Strat } from "@/lib/types/strat.types";
+import { FullTeam } from "@/lib/types/team.types";
+import { PlacedAsset } from "@/lib/types/asset.types";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export interface StratViewerProps {
   strat: Strat;
-  team: Team;
+  team: FullTeam;
   assetModifier?: (assets: PlacedAsset[]) => PlacedAsset[];
 }
 
@@ -17,7 +22,7 @@ export default function StratViewer({
   assetModifier,
 }: StratViewerProps) {
   const { renderAsset, UI } = useMountAssets(
-    { team, stratPositions: strat.positions },
+    { team, stratPositions: strat.stratPositions },
     {
       deleteAsset(asset) {},
       updateAsset(asset) {},
@@ -29,12 +34,15 @@ export default function StratViewer({
     [strat.map]
   );
 
+  const allAssets =
+    useQuery(api.strats.getAssets, { stratID: strat._id }) ?? [];
+
   const assets = useMemo(() => {
     if (assetModifier) {
-      return assetModifier(strat.assets);
+      return assetModifier(allAssets);
     }
-    return strat.assets;
-  }, [strat.assets, assetModifier]);
+    return allAssets;
+  }, [allAssets, assetModifier]);
 
   return (
     <StratEditorCanvas
