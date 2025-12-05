@@ -17,7 +17,7 @@ export default function StratEditorClient(props: StratEditorClientProps) {
   );
   const team = useQuery(api.team.get, {});
 
-  if (!team) return null;
+  if (!team || strat === undefined) return null;
 
   if (!strat || !props.id) {
     return (

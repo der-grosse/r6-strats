@@ -249,6 +249,99 @@ export const create = mutation({
   },
 });
 
+export const createCopy = mutation({
+  args: {
+    stratID: v.id("strats"),
+  },
+  async handler(ctx, { stratID }) {
+    const { activeTeamID } = await requireUser(ctx);
+    if (!activeTeamID) {
+      return { success: false, error: "No active team selected" };
+    }
+    const stratDoc = await ctx.db.get(stratID);
+    if (!stratDoc || stratDoc.teamID !== activeTeamID) {
+      return { success: false, error: "Strat not found" };
+    }
+
+    const stratsOnMap = await ctx.db
+      .query("strats")
+      .withIndex("byTeamAndMap", (q) =>
+        q.eq("teamID", activeTeamID).eq("map", stratDoc.map)
+      )
+      .collect();
+    const mapIndex =
+      stratsOnMap.reduce(
+        (max, strat) => (strat.mapIndex > max ? strat.mapIndex : max),
+        -1
+      ) + 1;
+
+    const stratPositions = await ctx.db
+      .query("stratPositions")
+      .withIndex("byStrat", (q) => q.eq("stratID", stratID))
+      .collect();
+    const pickedOperators = await ctx.db
+      .query("pickedOperators")
+      .withIndex("byStrat", (q) => q.eq("stratID", stratID))
+      .collect();
+
+    const placedAssets = await ctx.db
+      .query("placedAssets")
+      .withIndex("byStrat", (q) => q.eq("stratID", stratID))
+      .collect();
+
+    const newStratID = await ctx.db.insert("strats", {
+      map: stratDoc.map,
+      site: stratDoc.site,
+      name: `${stratDoc.name} (Copy)`,
+      description: stratDoc.description,
+      drawingID: stratDoc.drawingID,
+      archived: false,
+      teamID: activeTeamID,
+      mapIndex,
+    });
+
+    const stratPositionIDMap: Record<string, Id<"stratPositions">> = {};
+
+    for (const pos of stratPositions) {
+      const newPosID = await ctx.db.insert("stratPositions", {
+        stratID: newStratID,
+        teamPositionID: pos.teamPositionID,
+        isPowerPosition: pos.isPowerPosition,
+        shouldBringShotgun: pos.shouldBringShotgun,
+        index: pos.index,
+      });
+      stratPositionIDMap[pos._id] = newPosID;
+    }
+
+    for (const op of pickedOperators) {
+      await ctx.db.insert("pickedOperators", {
+        stratID: newStratID,
+        stratPositionID: stratPositionIDMap[op.stratPositionID],
+        operator: op.operator,
+        secondaryGadget: op.secondaryGadget,
+        tertiaryGadget: op.tertiaryGadget,
+        index: op.index,
+      });
+    }
+
+    for (const asset of placedAssets) {
+      // Remove the _id field before inserting
+      //@ts-ignore
+      delete asset._id;
+      //@ts-ignore
+      delete asset._creationTime;
+      await ctx.db.insert("placedAssets", {
+        ...asset,
+        stratID: newStratID,
+        stratPositionID: asset.stratPositionID
+          ? stratPositionIDMap[asset.stratPositionID]
+          : undefined,
+      });
+    }
+    return { success: true, stratID: newStratID };
+  },
+});
+
 export const updateIndex = mutation({
   args: {
     stratID: v.id("strats"),

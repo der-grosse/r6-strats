@@ -3,7 +3,7 @@ import { useFilter } from "@/components/context/FilterContext";
 import OperatorIcon from "@/components/general/OperatorIcon";
 import { Button } from "@/components/ui/button";
 import { DEFENDERS } from "@/lib/static/operator";
-import { Eye, GripVertical, Pencil } from "lucide-react";
+import { Copy, Eye, GripVertical, Pencil } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CreateStratDialog } from "./CreateStratDialog";
@@ -34,6 +34,8 @@ import { Strat } from "@/lib/types/strat.types";
 import { Id } from "@/convex/_generated/dataModel";
 import { usePlayableStrats } from "@/lib/strats";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
 
 const TABLE_SIZES = {
   handle: "5%",
@@ -226,6 +228,7 @@ function StratItem({
   disabled: boolean;
   highlightMap: boolean;
 }) {
+  const copyStrat = useMutation(api.strats.createCopy);
   const { isLeading } = useFilter();
   const bannedOps = useQuery(api.bannedOps.get) ?? [];
   const router = useRouter();
@@ -239,6 +242,8 @@ function StratItem({
     transform: CSS.Transform.toString(transform),
     transition,
   };
+
+  const [duplicateLoading, setDuplicateLoading] = useState(false);
 
   return (
     <div
@@ -324,6 +329,32 @@ function StratItem({
             <Pencil />
           </Button>
         </Link>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="cursor-pointer"
+          onClick={async () => {
+            if (duplicateLoading) return;
+            setDuplicateLoading(true);
+            try {
+              const res = await copyStrat({
+                stratID: strat._id,
+              });
+              if (!res.success) {
+                toast.error(`Error copying strat: ${res.error}`);
+              } else {
+                router.push(`/editor/${res.stratID}`);
+              }
+            } catch (error) {
+              console.error("Error copying strat:", error);
+              toast.error("Error copying strat");
+            } finally {
+              setDuplicateLoading(false);
+            }
+          }}
+        >
+          {duplicateLoading ? <Spinner /> : <Copy />}
+        </Button>
         <DeleteStratDialog stratID={strat._id} stratName={strat.name} />
       </div>
     </div>

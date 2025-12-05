@@ -16,9 +16,9 @@ export default function StratViewClient(props: StratViewClientProps) {
   const strat = useQuery(api.strats.get, { id: props.id as Id<"strats"> });
   const team = useQuery(api.team.get, {});
 
-  if (!team) return null;
+  if (!team || strat === undefined) return null;
 
-  if (!strat) {
+  if (strat === null) {
     return (
       <div className="flex flex-col items-center justify-center h-full">
         <p className="text-2xl font-bold text-center">
