@@ -275,7 +275,7 @@ export const getAssets = query({
       (asset) =>
         ({
           _id: asset._id,
-          stratID: asset.stratID,
+          stratPositionID: asset.stratPositionID,
           customColor: asset.customColor,
 
           type: asset.type,
