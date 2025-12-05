@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "convex": "convex dev",
-    "build-next": "next build",
-    "build": "npm run build-server && npm run build-next",
+    "build": "next build",
     "start": "NODE_ENV=production node dist/index.js",
     "typecheck": "tsc --noEmit",
     "setup-local-auth": "tsx scripts/setup-auth.ts"
