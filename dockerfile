@@ -22,6 +22,9 @@ RUN pnpm run build
 # Use node for production
 FROM node:22-slim AS production
 
+# Install pnpm
+RUN npm install -g pnpm
+
 # Set the working directory
 WORKDIR /app
 
